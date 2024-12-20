@@ -1,0 +1,474 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    BEG_BRACE
+    COLON
+    COMMA
+    END_BRACE
+    EQUALS
+    GREATER
+    LESS
+    MOD
+    POWER
+    QUOTATION_MARKS
+    SEMICOLON
+    break
+    case
+    chan
+    const
+    continue
+    default
+    defer
+    else
+    fallthrough
+    for
+    func
+    go
+    goto
+    if
+    import
+    interface
+    map
+    package
+    range
+    return
+    select
+    struct
+    switch
+    type
+    var
+
+Grammar
+
+Rule 0     S' -> exp
+Rule 1     exp -> soma
+Rule 2     exp -> sub
+Rule 3     exp -> exp1
+Rule 4     soma -> exp PLUS exp1
+Rule 5     sub -> exp MINUS exp1
+Rule 6     exp1 -> mult
+Rule 7     exp1 -> div
+Rule 8     exp1 -> exp2
+Rule 9     mult -> exp1 TIMES exp2
+Rule 10    div -> exp1 DIVISION exp2
+Rule 11    exp2 -> ID
+Rule 12    exp2 -> NUMBER
+Rule 13    exp2 -> STRING
+Rule 14    exp2 -> exp3
+Rule 15    exp3 -> BEG_PAREN exp END_PAREN
+
+Terminals, with rules where they appear
+
+BEG_BRACE            : 
+BEG_PAREN            : 15
+COLON                : 
+COMMA                : 
+DIVISION             : 10
+END_BRACE            : 
+END_PAREN            : 15
+EQUALS               : 
+GREATER              : 
+ID                   : 11
+LESS                 : 
+MINUS                : 5
+MOD                  : 
+NUMBER               : 12
+PLUS                 : 4
+POWER                : 
+QUOTATION_MARKS      : 
+SEMICOLON            : 
+STRING               : 13
+TIMES                : 9
+break                : 
+case                 : 
+chan                 : 
+const                : 
+continue             : 
+default              : 
+defer                : 
+else                 : 
+error                : 
+fallthrough          : 
+for                  : 
+func                 : 
+go                   : 
+goto                 : 
+if                   : 
+import               : 
+interface            : 
+map                  : 
+package              : 
+range                : 
+return               : 
+select               : 
+struct               : 
+switch               : 
+type                 : 
+var                  : 
+
+Nonterminals, with rules where they appear
+
+div                  : 7
+exp                  : 4 5 15 0
+exp1                 : 3 4 5 9 10
+exp2                 : 8 9 10
+exp3                 : 14
+mult                 : 6
+soma                 : 1
+sub                  : 2
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . exp
+    (1) exp -> . soma
+    (2) exp -> . sub
+    (3) exp -> . exp1
+    (4) soma -> . exp PLUS exp1
+    (5) sub -> . exp MINUS exp1
+    (6) exp1 -> . mult
+    (7) exp1 -> . div
+    (8) exp1 -> . exp2
+    (9) mult -> . exp1 TIMES exp2
+    (10) div -> . exp1 DIVISION exp2
+    (11) exp2 -> . ID
+    (12) exp2 -> . NUMBER
+    (13) exp2 -> . STRING
+    (14) exp2 -> . exp3
+    (15) exp3 -> . BEG_PAREN exp END_PAREN
+
+    ID              shift and go to state 8
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+    BEG_PAREN       shift and go to state 12
+
+    exp                            shift and go to state 1
+    soma                           shift and go to state 2
+    sub                            shift and go to state 3
+    exp1                           shift and go to state 4
+    mult                           shift and go to state 5
+    div                            shift and go to state 6
+    exp2                           shift and go to state 7
+    exp3                           shift and go to state 11
+
+state 1
+
+    (0) S' -> exp .
+    (4) soma -> exp . PLUS exp1
+    (5) sub -> exp . MINUS exp1
+
+    PLUS            shift and go to state 13
+    MINUS           shift and go to state 14
+
+
+state 2
+
+    (1) exp -> soma .
+
+    PLUS            reduce using rule 1 (exp -> soma .)
+    MINUS           reduce using rule 1 (exp -> soma .)
+    $end            reduce using rule 1 (exp -> soma .)
+    END_PAREN       reduce using rule 1 (exp -> soma .)
+
+
+state 3
+
+    (2) exp -> sub .
+
+    PLUS            reduce using rule 2 (exp -> sub .)
+    MINUS           reduce using rule 2 (exp -> sub .)
+    $end            reduce using rule 2 (exp -> sub .)
+    END_PAREN       reduce using rule 2 (exp -> sub .)
+
+
+state 4
+
+    (3) exp -> exp1 .
+    (9) mult -> exp1 . TIMES exp2
+    (10) div -> exp1 . DIVISION exp2
+
+    PLUS            reduce using rule 3 (exp -> exp1 .)
+    MINUS           reduce using rule 3 (exp -> exp1 .)
+    $end            reduce using rule 3 (exp -> exp1 .)
+    END_PAREN       reduce using rule 3 (exp -> exp1 .)
+    TIMES           shift and go to state 15
+    DIVISION        shift and go to state 16
+
+
+state 5
+
+    (6) exp1 -> mult .
+
+    TIMES           reduce using rule 6 (exp1 -> mult .)
+    DIVISION        reduce using rule 6 (exp1 -> mult .)
+    PLUS            reduce using rule 6 (exp1 -> mult .)
+    MINUS           reduce using rule 6 (exp1 -> mult .)
+    $end            reduce using rule 6 (exp1 -> mult .)
+    END_PAREN       reduce using rule 6 (exp1 -> mult .)
+
+
+state 6
+
+    (7) exp1 -> div .
+
+    TIMES           reduce using rule 7 (exp1 -> div .)
+    DIVISION        reduce using rule 7 (exp1 -> div .)
+    PLUS            reduce using rule 7 (exp1 -> div .)
+    MINUS           reduce using rule 7 (exp1 -> div .)
+    $end            reduce using rule 7 (exp1 -> div .)
+    END_PAREN       reduce using rule 7 (exp1 -> div .)
+
+
+state 7
+
+    (8) exp1 -> exp2 .
+
+    TIMES           reduce using rule 8 (exp1 -> exp2 .)
+    DIVISION        reduce using rule 8 (exp1 -> exp2 .)
+    PLUS            reduce using rule 8 (exp1 -> exp2 .)
+    MINUS           reduce using rule 8 (exp1 -> exp2 .)
+    $end            reduce using rule 8 (exp1 -> exp2 .)
+    END_PAREN       reduce using rule 8 (exp1 -> exp2 .)
+
+
+state 8
+
+    (11) exp2 -> ID .
+
+    TIMES           reduce using rule 11 (exp2 -> ID .)
+    DIVISION        reduce using rule 11 (exp2 -> ID .)
+    PLUS            reduce using rule 11 (exp2 -> ID .)
+    MINUS           reduce using rule 11 (exp2 -> ID .)
+    $end            reduce using rule 11 (exp2 -> ID .)
+    END_PAREN       reduce using rule 11 (exp2 -> ID .)
+
+
+state 9
+
+    (12) exp2 -> NUMBER .
+
+    TIMES           reduce using rule 12 (exp2 -> NUMBER .)
+    DIVISION        reduce using rule 12 (exp2 -> NUMBER .)
+    PLUS            reduce using rule 12 (exp2 -> NUMBER .)
+    MINUS           reduce using rule 12 (exp2 -> NUMBER .)
+    $end            reduce using rule 12 (exp2 -> NUMBER .)
+    END_PAREN       reduce using rule 12 (exp2 -> NUMBER .)
+
+
+state 10
+
+    (13) exp2 -> STRING .
+
+    TIMES           reduce using rule 13 (exp2 -> STRING .)
+    DIVISION        reduce using rule 13 (exp2 -> STRING .)
+    PLUS            reduce using rule 13 (exp2 -> STRING .)
+    MINUS           reduce using rule 13 (exp2 -> STRING .)
+    $end            reduce using rule 13 (exp2 -> STRING .)
+    END_PAREN       reduce using rule 13 (exp2 -> STRING .)
+
+
+state 11
+
+    (14) exp2 -> exp3 .
+
+    TIMES           reduce using rule 14 (exp2 -> exp3 .)
+    DIVISION        reduce using rule 14 (exp2 -> exp3 .)
+    PLUS            reduce using rule 14 (exp2 -> exp3 .)
+    MINUS           reduce using rule 14 (exp2 -> exp3 .)
+    $end            reduce using rule 14 (exp2 -> exp3 .)
+    END_PAREN       reduce using rule 14 (exp2 -> exp3 .)
+
+
+state 12
+
+    (15) exp3 -> BEG_PAREN . exp END_PAREN
+    (1) exp -> . soma
+    (2) exp -> . sub
+    (3) exp -> . exp1
+    (4) soma -> . exp PLUS exp1
+    (5) sub -> . exp MINUS exp1
+    (6) exp1 -> . mult
+    (7) exp1 -> . div
+    (8) exp1 -> . exp2
+    (9) mult -> . exp1 TIMES exp2
+    (10) div -> . exp1 DIVISION exp2
+    (11) exp2 -> . ID
+    (12) exp2 -> . NUMBER
+    (13) exp2 -> . STRING
+    (14) exp2 -> . exp3
+    (15) exp3 -> . BEG_PAREN exp END_PAREN
+
+    ID              shift and go to state 8
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+    BEG_PAREN       shift and go to state 12
+
+    exp                            shift and go to state 17
+    soma                           shift and go to state 2
+    sub                            shift and go to state 3
+    exp1                           shift and go to state 4
+    mult                           shift and go to state 5
+    div                            shift and go to state 6
+    exp2                           shift and go to state 7
+    exp3                           shift and go to state 11
+
+state 13
+
+    (4) soma -> exp PLUS . exp1
+    (6) exp1 -> . mult
+    (7) exp1 -> . div
+    (8) exp1 -> . exp2
+    (9) mult -> . exp1 TIMES exp2
+    (10) div -> . exp1 DIVISION exp2
+    (11) exp2 -> . ID
+    (12) exp2 -> . NUMBER
+    (13) exp2 -> . STRING
+    (14) exp2 -> . exp3
+    (15) exp3 -> . BEG_PAREN exp END_PAREN
+
+    ID              shift and go to state 8
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+    BEG_PAREN       shift and go to state 12
+
+    exp1                           shift and go to state 18
+    mult                           shift and go to state 5
+    div                            shift and go to state 6
+    exp2                           shift and go to state 7
+    exp3                           shift and go to state 11
+
+state 14
+
+    (5) sub -> exp MINUS . exp1
+    (6) exp1 -> . mult
+    (7) exp1 -> . div
+    (8) exp1 -> . exp2
+    (9) mult -> . exp1 TIMES exp2
+    (10) div -> . exp1 DIVISION exp2
+    (11) exp2 -> . ID
+    (12) exp2 -> . NUMBER
+    (13) exp2 -> . STRING
+    (14) exp2 -> . exp3
+    (15) exp3 -> . BEG_PAREN exp END_PAREN
+
+    ID              shift and go to state 8
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+    BEG_PAREN       shift and go to state 12
+
+    exp1                           shift and go to state 19
+    mult                           shift and go to state 5
+    div                            shift and go to state 6
+    exp2                           shift and go to state 7
+    exp3                           shift and go to state 11
+
+state 15
+
+    (9) mult -> exp1 TIMES . exp2
+    (11) exp2 -> . ID
+    (12) exp2 -> . NUMBER
+    (13) exp2 -> . STRING
+    (14) exp2 -> . exp3
+    (15) exp3 -> . BEG_PAREN exp END_PAREN
+
+    ID              shift and go to state 8
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+    BEG_PAREN       shift and go to state 12
+
+    exp2                           shift and go to state 20
+    exp3                           shift and go to state 11
+
+state 16
+
+    (10) div -> exp1 DIVISION . exp2
+    (11) exp2 -> . ID
+    (12) exp2 -> . NUMBER
+    (13) exp2 -> . STRING
+    (14) exp2 -> . exp3
+    (15) exp3 -> . BEG_PAREN exp END_PAREN
+
+    ID              shift and go to state 8
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+    BEG_PAREN       shift and go to state 12
+
+    exp2                           shift and go to state 21
+    exp3                           shift and go to state 11
+
+state 17
+
+    (15) exp3 -> BEG_PAREN exp . END_PAREN
+    (4) soma -> exp . PLUS exp1
+    (5) sub -> exp . MINUS exp1
+
+    END_PAREN       shift and go to state 22
+    PLUS            shift and go to state 13
+    MINUS           shift and go to state 14
+
+
+state 18
+
+    (4) soma -> exp PLUS exp1 .
+    (9) mult -> exp1 . TIMES exp2
+    (10) div -> exp1 . DIVISION exp2
+
+    PLUS            reduce using rule 4 (soma -> exp PLUS exp1 .)
+    MINUS           reduce using rule 4 (soma -> exp PLUS exp1 .)
+    $end            reduce using rule 4 (soma -> exp PLUS exp1 .)
+    END_PAREN       reduce using rule 4 (soma -> exp PLUS exp1 .)
+    TIMES           shift and go to state 15
+    DIVISION        shift and go to state 16
+
+
+state 19
+
+    (5) sub -> exp MINUS exp1 .
+    (9) mult -> exp1 . TIMES exp2
+    (10) div -> exp1 . DIVISION exp2
+
+    PLUS            reduce using rule 5 (sub -> exp MINUS exp1 .)
+    MINUS           reduce using rule 5 (sub -> exp MINUS exp1 .)
+    $end            reduce using rule 5 (sub -> exp MINUS exp1 .)
+    END_PAREN       reduce using rule 5 (sub -> exp MINUS exp1 .)
+    TIMES           shift and go to state 15
+    DIVISION        shift and go to state 16
+
+
+state 20
+
+    (9) mult -> exp1 TIMES exp2 .
+
+    TIMES           reduce using rule 9 (mult -> exp1 TIMES exp2 .)
+    DIVISION        reduce using rule 9 (mult -> exp1 TIMES exp2 .)
+    PLUS            reduce using rule 9 (mult -> exp1 TIMES exp2 .)
+    MINUS           reduce using rule 9 (mult -> exp1 TIMES exp2 .)
+    $end            reduce using rule 9 (mult -> exp1 TIMES exp2 .)
+    END_PAREN       reduce using rule 9 (mult -> exp1 TIMES exp2 .)
+
+
+state 21
+
+    (10) div -> exp1 DIVISION exp2 .
+
+    TIMES           reduce using rule 10 (div -> exp1 DIVISION exp2 .)
+    DIVISION        reduce using rule 10 (div -> exp1 DIVISION exp2 .)
+    PLUS            reduce using rule 10 (div -> exp1 DIVISION exp2 .)
+    MINUS           reduce using rule 10 (div -> exp1 DIVISION exp2 .)
+    $end            reduce using rule 10 (div -> exp1 DIVISION exp2 .)
+    END_PAREN       reduce using rule 10 (div -> exp1 DIVISION exp2 .)
+
+
+state 22
+
+    (15) exp3 -> BEG_PAREN exp END_PAREN .
+
+    TIMES           reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
+    DIVISION        reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
+    PLUS            reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
+    MINUS           reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
+    $end            reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
+    END_PAREN       reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
+
