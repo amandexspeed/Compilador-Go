@@ -38,7 +38,7 @@ reserved = {
 }
 
 # Definindo Tokens e padroes
-tokens = ["PLUS", "MINUS","EQUALS","TIMES","DIVISION","MOD","POWER","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","COLON","SEMICOLON","COMMA","ID","STRING"] + list(reserved.values())
+tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -78,6 +78,7 @@ t_QUOTATION_MARKS = r'\"'
 t_COLON = r'\:'
 t_SEMICOLON = r'\;'
 t_COMMA = r'\,'
+t_EXCLAMATION = r'\!'
 
 
 t_ignore = ' \t.'
@@ -109,26 +110,41 @@ def t_newline(t):
     breakLine[t.lineno + 1] = t.lexpos + 1
     t.lexer.lineno += len(t.value)
 
-# Criando Analisador Lexico, passando entrada
-if len(arquivos_go) == 0:
-    print("Nenhum arquivo .go encontrado!")
+lexer = lex.lex()
 
-else:   
-  global isFine 
-  isFine = True
-  for arquivo in arquivos_go:
-      print("-----------Analise lexica do arquivo: ", arquivo,"-----------")
-      breakLine = {1: 0}
-      f = open(arquivo, "r")
-      lexer = lex.lex()
-      lexer.input(f.read())
+def main():
 
-      # Realizando analise lexica
-      for tok in lexer:
-        print('type:', tok.type,', value:',tok.value,", line:", tok.lineno,", column: ", tok.lexpos - breakLine[tok.lineno])
+    global isFine
+    global lexer
 
-      if isFine:
-        print("Analise lexica realizada com sucesso!")
+    # Criando Analisador Lexico, passando entrada
+    if len(arquivos_go) == 0:
+        print("Nenhum arquivo .go encontrado!")
 
-      else:
-        print("Analise lexica realizada com erro!")
+    else:   
+         
+        isFine = True
+        
+        for arquivo in arquivos_go:
+            print("-----------Analise lexica do arquivo: ", arquivo,"-----------")
+            breakLine = {1: 0}
+            f = open(arquivo, "r")
+            
+            lexer = lex.lex()
+            lexer.input(f.read())
+
+            # Realizando analise lexica
+            for tok in lexer:
+                print('type:', tok.type,', value:',tok.value,", line:", tok.lineno,", column: ", tok.lexpos - breakLine[tok.lineno])
+
+            if isFine:
+                print("Analise lexica realizada com sucesso!")
+
+            else:
+                print("Analise lexica realizada com erro!")
+
+if __name__ == "__main__":
+    main()
+"""else:
+    lexer = lex.lex()
+""" 

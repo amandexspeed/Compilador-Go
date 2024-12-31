@@ -34,3 +34,11 @@ func funcFor() {
         fmt.Println(n)
     }
 }
+
+func FuncIf() {
+    if pA,pB := "Amanda","Bruna"; pA == pB {
+        fmt.Println("São xarás!")
+    } else {
+        fmt.Println("São pessoas diferentes!")
+    } 
+}
