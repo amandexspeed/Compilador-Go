@@ -38,7 +38,7 @@ reserved = {
 }
 
 # Definindo Tokens e padroes
-tokens = ["PLUS", "MINUS","EQUALS","TIMES","DIVISION","MOD","POWER","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","COLON","SEMICOLON","COMMA","ID","STRING"] + list(reserved.values())
+tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -78,6 +78,7 @@ t_QUOTATION_MARKS = r'\"'
 t_COLON = r'\:'
 t_SEMICOLON = r'\;'
 t_COMMA = r'\,'
+t_EXCLAMATION = r'\!'
 
 
 t_ignore = ' \t.'
