@@ -7,3 +7,13 @@ func main() {
 	}	
 
 }
+
+func funcif(){
+
+	i:=0;
+	if(true){
+		if(i==0){
+			i++;
+		}
+	}
+}

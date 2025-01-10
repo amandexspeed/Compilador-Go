@@ -2,12 +2,74 @@ import ply.yacc as yacc
 import ply.lex as lex
 from analiseLexica import tokens
 from analiseLexica import lexer
+from analiseLexica import breakLine
 from analiseLexica import arquivos_go
+
+variaveis = {}
+
+def p_programa(p):
+    '''programa : pacote importacao funcoes_codigo'''
+    p[0] = (p[1], p[2], p[3])
+
+def p_funcoes_codigo(p):
+    '''funcoes_codigo : funcao funcoes_codigo
+                      | codigo funcoes_codigo
+                      | empty'''
+    p[0] = p[1]
+
+def p_empty(p):
+    'empty :'
+    pass
+
+def p_pacote(p):
+    '''pacote : PACKAGE ID'''
+    p[0] = p[1]
+
+def p_importacao(p):
+    '''importacao : IMPORT ID importacao
+                  | empty'''
+    p[0] = p[1]
+
+def p_funcao(p):
+    '''funcao : FUNC ID BEG_PAREN lista_parametros END_PAREN tipo_retorno BEG_BRACE codigo END_BRACE'''
+    p[0] = p[7]
+    
+'''p[0] = (p[2], p[4], p[6], p[8])''' 
+
+def p_tipo_retorno(p):
+    '''tipo_retorno : ID
+                    | empty'''
+    p[0] = p[1]
+
+def p_codigo(p):
+    '''codigo : expressao_matematica_reduzida codigo
+              | atribuicao codigo
+              | declaracao codigo
+              | estrutura_if codigo
+              | estrutura_for codigo
+              | empty'''
+    if len(p) == 2:
+        p[0] = []
+    else:
+        if(p[1].__class__ == list):
+            p[0] = p[1] + [p[2]]
+        else:
+            if(p[2].__class__ == list and p[2] != None):
+                p[0] = [p[1]] + p[2]
+            else:
+                p[0] = p[1]
+
+def p_codigo_reduzido(p):
+    '''codigo_reduzido : expressao_matematica_reduzida
+                       | atribuicao
+                       | declaracao
+                       | estrutura_if
+                       | estrutura_for'''
+    p[0] = p[1]
 
 def p_expressao(p):
     '''expressao : expressao_matematica
-                 | expressao_logica
-                 | operando'''
+                 | expressao_logica'''
     p[0] = p[1]
     
 def p_expressao_matematica(p):
@@ -44,35 +106,67 @@ def p_div(p):
     '''div : p_expMatMaiorPresc DIVISION operando'''
     p[0] = p[1] / p[3]
 
+def p_incremento(p):
+    '''incremento : ID PLUS PLUS
+                  | ID PLUS PLUS SEMICOLON'''
+    p[0] = variaveis[p[1]] + 1
+
+def p_pre_incremento(p):
+    '''pre_incremento : PLUS PLUS ID 
+                  | PLUS PLUS ID SEMICOLON'''
+    p[0] = variaveis[p[1]] + 1
+
+def p_decremento(p):
+    '''decremento : ID MINUS MINUS
+                  | ID MINUS MINUS SEMICOLON'''
+    p[0] = variaveis[p[1]] - 1
+
+def p_pre_decremento(p):
+    '''pre_decremento : MINUS MINUS ID
+                  | MINUS MINUS ID SEMICOLON'''
+    p[0] = variaveis[p[1]] - 1
+
 def p_assign_plus(p):
     '''assign_plus : ID PLUS EQUALS NUMBER'''
-    p[0] = p[1] + p[4]
+    p[0] = variaveis[p[1]] + p[4]
 
 def p_assign_minus(p):
     '''assign_minus : ID MINUS EQUALS NUMBER'''
-    p[0] = p[1] - p[4]
+    p[0] = variaveis[p[1]] - p[4]
 
 def p_assign_mult(p):
     '''assign_mult : ID TIMES EQUALS NUMBER'''
-    p[0] = p[1] * p[4]
+    p[0] = variaveis[p[1]] * p[4]
 
 def p_assign_div(p):
     '''assign_div : ID DIVISION EQUALS NUMBER'''
-    p[0] = p[1] / p[4]
+    p[0] = variaveis[p[1]] / p[4]
 
 def p_expressao_matematica_reduzida(p):
     '''expressao_matematica_reduzida : assign_plus
                                      | assign_minus
                                      | assign_mult
-                                     | assign_div'''
+                                     | assign_div
+                                     | incremento
+                                     | pre_incremento
+                                     | decremento
+                                     | pre_decremento'''
     p[0] = p[1]
 
 def p_operando(p):
-    '''operando : ID
+    '''operando : identificador
                 | NUMBER 
                 | STRING 
                 | expParenteses'''
     p[0] = p[1]
+
+def p_identificador(p):
+    '''identificador : ID'''
+    if(variaveis.get(p[1]) == None):
+        p[0]=p[1]
+    else:
+        p[0] = variaveis[p[1]]
+    
 
 def p_expParenteses(p):
     '''expParenteses : BEG_PAREN expressao END_PAREN'''
@@ -88,8 +182,8 @@ def p_expressao_logica(p):
                         | greater_or_equal
                         | less_or_equal
                         | negation
-                        | true
-                        | false'''
+                        | TRUE
+                        | FALSE'''
     p[0] = p[1]
 
 def p_and (p):
@@ -135,30 +229,58 @@ def p_estrutura_for(p):
     p[0] = p[1]
 
 def p_for_CLIKE(p): 
-    '''for_CLIKE : for declaracao SEMICOLON expressao SEMICOLON expressao_matematica BEG_BRACE codigo END_BRACE'''
-    variaveis = p[2]
-    while (p[4]):
-        p[0] = p[8]
-        for i in range(len(variaveis)):
-            variaveis[i] = p[6]
+    '''for_CLIKE : FOR declaracao SEMICOLON expressao SEMICOLON expressao_matematica BEG_BRACE codigo END_BRACE'''
+    p[0] = (p[2],p[4],p[6],p[8])
 
 def p_for_infinito(p):
-    '''for_infinito : for BEG_BRACE codigo END_BRACE'''
-    while True:
-        p[0] = p[3]
-
-def p_for_while(p):
-    '''for_while : for expressao BEG_BRACE codigo END_BRACE'''
-    while p[2]:
-        p[0] = p[4]
-
-def p_atribuicao(p):
-    '''atribuicao : lista_identificadores EQUALS lista_valores'''
+    '''for_infinito : FOR BEG_BRACE codigo END_BRACE'''
     p[0] = p[3]
 
+def p_for_while(p):
+    '''for_while : FOR expressao BEG_BRACE codigo END_BRACE'''
+    p[0] = (p[2],p[4])
+
+def p_estrutura_if(p):
+    '''estrutura_if : IF expressao BEG_BRACE codigo END_BRACE estrutura_else'''
+    if(p[2]):
+        p[0] = p[4]
+    else:
+        p[0] = p[6]
+
+def p_estrutura_else(p):
+    '''estrutura_else : ELSE BEG_BRACE codigo END_BRACE
+                      | ELSE estrutura_if
+                      | empty'''
+    if(len(p) == 2):
+        p[0] = []
+    elif(p[4] == None):
+        p[0] = p[2]
+    else:
+        p[0] = p[3]
+        
+def p_atribuicao(p):
+    '''atribuicao : lista_identificadores EQUALS lista_valores
+                  | lista_identificadores EQUALS lista_valores SEMICOLON'''
+    
+    for i in range(len(p[1])):
+        variaveis[p[1][i]] = p[3][i]
+    p[0] = p[3]
+    
 def p_declaracao(p):
-    '''declaracao : lista_identificadores COLON EQUALS lista_valores'''
+    '''declaracao : lista_identificadores COLON EQUALS lista_valores
+                  | lista_identificadores COLON EQUALS lista_valores SEMICOLON'''
+    
+    for i in range(len(p[1])):
+        variaveis[p[1][i]] = p[4][i]
     p[0] = p[4]
+
+def p_lista_parametros(p):
+    '''lista_parametros : lista_identificadores
+                        | empty'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[3]]
 
 def p_lista_identificadores(p):
     '''lista_identificadores : lista_identificadores COMMA ID
@@ -177,23 +299,6 @@ def p_lista_valores(p):
    else:
         p[0] = p[1] + [p[3]]
 
-def p_empty(p):
-    'empty :'
-    pass
-
-def p_codigo(p):
-    '''codigo : codigo expressao_matematica_reduzida
-              | codigo atribuicao
-              | codigo declaracao
-              | codigo estrutura_for
-              | empty'''
-    if len(p) == 2:
-        p[0] = []
-    else:
-        p[0] = p[1] + [p[2]]
-
-
-
 def main():
 
     for arquivo in arquivos_go:
@@ -201,8 +306,8 @@ def main():
         f = open(arquivo, "r")
 
         lexer.input(f.read())
-        parser = yacc.yacc()
-        result = parser.parse(debug=False)
+        parser = yacc.yacc(start='programa')
+        result = parser.parse(debug=1)
         print(result)
 
 if __name__ == "__main__":

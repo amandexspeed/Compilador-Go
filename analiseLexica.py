@@ -8,41 +8,22 @@ arquivos_go = [arquivo for arquivo in arquivos if arquivo.endswith('.go')]
 
 import ply.lex as lex     #importa módulo ply.lex e o renomeia para lex
 
-#Lista com todas as palavras reservadas
+#Lista com as palavras reservadas
 reserved = {
-    'TRUE': 'true',
-    'FALSE': 'false',
-    'APPEND': 'append',
-    'CAP': 'cap',
-    'CLOSE': 'close',
-    'COMPLEX': 'complex',
-    'BREAK': 'break',
-    'CASE': 'case',
-    'CHAN': 'chan',
-    'CONST': 'const',
-    'CONTINUE': 'continue',
-    'DEFAULT': 'default',
-    'DEFER': 'defer',
-    'ELSE': 'else',
-    'FALLTHROUGH': 'fallthrough',
-    'FOR': 'for',
-    'FUNC': 'func',
-    'GO': 'go',
-    'GOTO': 'goto',
-    'IF': 'if',
-    'IMPORT': 'import',
-    'INTERFACE': 'interface',
-    'MAP': 'map',
-    'PACKAGE': 'package',
-    'RANGE': 'range',
-    'RETURN': 'return',
-    'SELECT': 'select',
-    'STRUCT': 'struct',
-    'SWITCH': 'switch',
-    'TYPE': 'type',
-    'VAR': 'var'
+    'true':'TRUE',
+    'false':'FALSE',
+    'break':'BREAK',
+    'const':'CONST',
+    'else':'ELSE',
+    'for':'FOR',
+    'func':'FUNC',
+    'if':'IF',
+    'import:':'IMPORT',
+    'package':'PACKAGE',
+    'return':'RETURN',   
 }
 
+breakLine = {1: 0}
 # Definindo Tokens e padroes
 tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","AMPERSAND","PIPE"] + list(reserved.values())
 
@@ -52,6 +33,7 @@ def t_COMMENT(t):
     pass
 
 def adjustLineComment(t):
+    global breakLine
     breakLine[t.lineno] = t.lexpos + 1
     t.lexer.lineno += len(t.value)
 
@@ -61,6 +43,7 @@ def t_MULTILINE_COMMENT(t):
     pass
 
 def adjustBlockComment(t):
+    global breakLine
     textParts = t.value.split("\n")
     for text in textParts:
         breakLine[t.lineno] = t.lexpos + 1
@@ -111,8 +94,8 @@ def t_error(t):
     isFine  = False
 
 def t_newline(t):
-    #r'\n+'
     r'\n'
+    global breakLine
     breakLine[t.lineno] = t.lexpos + 1
     breakLine[t.lineno + 1] = t.lexpos + 1
     t.lexer.lineno += len(t.value)
@@ -123,6 +106,7 @@ def main():
 
     global isFine
     global lexer
+    global breakLine
 
     # Criando Analisador Lexico, passando entrada
     if len(arquivos_go) == 0:
@@ -152,6 +136,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-"""else:
-    lexer = lex.lex()
-""" 
