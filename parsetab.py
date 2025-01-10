@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'BEG_BRACE BEG_PAREN COLON COMMA DIVISION END_BRACE END_PAREN EQUALS GREATER ID LESS MINUS MOD NUMBER PLUS POWER QUOTATION_MARKS SEMICOLON STRING TIMES break case chan const continue default defer else fallthrough for func go goto if import interface map package range return select struct switch type var exp : soma \n        | sub \n        | exp1 soma : exp PLUS exp1sub : exp MINUS exp1exp1 : mult \n       | div \n       | exp2mult : exp1 TIMES exp2div : exp1 DIVISION exp2exp2 : ID\n        | NUMBER \n        | STRING \n        | exp3 exp3 : BEG_PAREN exp END_PAREN'
+_lr_signature = 'AMPERSAND BEG_BRACE BEG_PAREN COLON COMMA DIVISION END_BRACE END_PAREN EQUALS EXCLAMATION GREATER ID LESS MINUS MOD NUMBER PIPE PLUS POWER QUOTATION_MARKS SEMICOLON STRING TIMES append break cap case chan close complex const continue default defer else fallthrough false for func go goto if import interface map package range return select struct switch true type varexpressao : expressao_matematica\n                 | expressao_logica\n                 | operando expressao_matematica : soma \n                             | sub \n                             | p_expMatMaiorPresc soma : expressao_matematica PLUS p_expMatMaiorPrescsub : expressao_matematica MINUS p_expMatMaiorPrescp_expMatMaiorPresc : mult \n                          | div\n                          | mod \n                          | operandomult : p_expMatMaiorPresc TIMES operandomod : p_expMatMaiorPresc MOD operandodiv : p_expMatMaiorPresc DIVISION operandoassign_plus : ID PLUS EQUALS NUMBERassign_minus : ID MINUS EQUALS NUMBERassign_mult : ID TIMES EQUALS NUMBERassign_div : ID DIVISION EQUALS NUMBERexpressao_matematica_reduzida : assign_plus\n                                     | assign_minus\n                                     | assign_mult\n                                     | assign_divoperando : ID\n                | NUMBER \n                | STRING \n                | expParentesesexpParenteses : BEG_PAREN expressao END_PARENexpressao_logica : and\n                        | or\n                        | equals\n                        | different\n                        | greater\n                        | less\n                        | greater_or_equal\n                        | less_or_equal\n                        | negation\n                        | true\n                        | falseand : expressao AMPERSAND AMPERSAND expressaoor : expressao PIPE PIPE expressaoequals : expressao EQUALS EQUALS expressaodifferent : expressao EXCLAMATION EQUALS expressaogreater : expressao GREATER expressaoless : expressao LESS expressaogreater_or_equal : expressao GREATER EQUALS expressaoless_or_equal : expressao LESS EQUALS expressaonegation : EXCLAMATION expressaoestrutura_for : for_CLIKE\n                     | for_infinito\n                     | for_whilefor_CLIKE : for declaracao SEMICOLON expressao SEMICOLON expressao_matematica BEG_BRACE codigo END_BRACEfor_infinito : for BEG_BRACE codigo END_BRACEfor_while : for expressao BEG_BRACE codigo END_BRACEatribuicao : lista_identificadores EQUALS lista_valoresdeclaracao : lista_identificadores COLON EQUALS lista_valoreslista_identificadores : lista_identificadores COMMA ID\n                             | IDlista_valores : lista_valores COMMA expressao\n                    | expressaoempty :codigo : codigo expressao_matematica_reduzida\n              | codigo atribuicao\n              | codigo declaracao\n              | codigo estrutura_for\n              | empty'
     
-_lr_action_items = {'ID':([0,12,13,14,15,16,],[8,8,8,8,8,8,]),'NUMBER':([0,12,13,14,15,16,],[9,9,9,9,9,9,]),'STRING':([0,12,13,14,15,16,],[10,10,10,10,10,10,]),'BEG_PAREN':([0,12,13,14,15,16,],[12,12,12,12,12,12,]),'$end':([1,2,3,4,5,6,7,8,9,10,11,18,19,20,21,22,],[0,-1,-2,-3,-6,-7,-8,-11,-12,-13,-14,-4,-5,-9,-10,-15,]),'PLUS':([1,2,3,4,5,6,7,8,9,10,11,17,18,19,20,21,22,],[13,-1,-2,-3,-6,-7,-8,-11,-12,-13,-14,13,-4,-5,-9,-10,-15,]),'MINUS':([1,2,3,4,5,6,7,8,9,10,11,17,18,19,20,21,22,],[14,-1,-2,-3,-6,-7,-8,-11,-12,-13,-14,14,-4,-5,-9,-10,-15,]),'END_PAREN':([2,3,4,5,6,7,8,9,10,11,17,18,19,20,21,22,],[-1,-2,-3,-6,-7,-8,-11,-12,-13,-14,22,-4,-5,-9,-10,-15,]),'TIMES':([4,5,6,7,8,9,10,11,18,19,20,21,22,],[15,-6,-7,-8,-11,-12,-13,-14,15,15,-9,-10,-15,]),'DIVISION':([4,5,6,7,8,9,10,11,18,19,20,21,22,],[16,-6,-7,-8,-11,-12,-13,-14,16,16,-9,-10,-15,]),}
+_lr_action_items = {'true':([0,26,27,32,33,41,42,43,44,46,48,],[17,17,17,17,17,17,17,17,17,17,17,]),'false':([0,26,27,32,33,41,42,43,44,46,48,],[18,18,18,18,18,18,18,18,18,18,18,]),'ID':([0,26,27,32,33,34,35,36,37,38,41,42,43,44,46,48,],[19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,]),'NUMBER':([0,26,27,32,33,34,35,36,37,38,41,42,43,44,46,48,],[20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,]),'STRING':([0,26,27,32,33,34,35,36,37,38,41,42,43,44,46,48,],[21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,]),'EXCLAMATION':([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,32,33,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,],[26,31,-1,-2,-3,-4,-5,-6,-29,-30,-31,-32,-33,-34,-35,-36,-37,-38,-39,-24,-25,-26,-27,-9,-10,-11,26,26,26,26,31,31,26,26,26,26,31,26,31,26,-7,-12,-8,-13,-15,-14,-28,31,31,31,31,31,31,]),'BEG_PAREN':([0,26,27,32,33,34,35,36,37,38,41,42,43,44,46,48,],[27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,]),'$end':([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,39,45,47,49,50,51,52,53,54,55,56,57,58,59,60,61,],[0,-1,-2,-3,-4,-5,-6,-29,-30,-31,-32,-33,-34,-35,-36,-37,-38,-39,-24,-25,-26,-27,-9,-10,-11,-48,-44,-45,-7,-12,-8,-13,-15,-14,-28,-40,-41,-42,-43,-46,-47,]),'AMPERSAND':([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,28,39,40,45,47,49,50,51,52,53,54,55,56,57,58,59,60,61,],[28,-1,-2,-3,-4,-5,-6,-29,-30,-31,-32,-33,-34,-35,-36,-37,-38,-39,-24,-25,-26,-27,-9,-10,-11,41,28,28,28,28,-7,-12,-8,-13,-15,-14,-28,28,28,28,28,28,28,]),'PIPE':([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,29,39,40,45,47,49,50,51,52,53,54,55,56,57,58,59,60,61,],[29,-1,-2,-3,-4,-5,-6,-29,-30,-31,-32,-33,-34,-35,-36,-37,-38,-39,-24,-25,-26,-27,-9,-10,-11,42,29,29,29,29,-7,-12,-8,-13,-15,-14,-28,29,29,29,29,29,29,]),'EQUALS':([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,30,31,32,33,39,40,45,47,49,50,51,52,53,54,55,56,57,58,59,60,61,],[30,-1,-2,-3,-4,-5,-6,-29,-30,-31,-32,-33,-34,-35,-36,-37,-38,-39,-24,-25,-26,-27,-9,-10,-11,43,44,46,48,30,30,30,30,-7,-12,-8,-13,-15,-14,-28,30,30,30,30,30,30,]),'GREATER':([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,39,40,45,47,49,50,51,52,53,54,55,56,57,58,59,60,61,],[32,-1,-2,-3,-4,-5,-6,-29,-30,-31,-32,-33,-34,-35,-36,-37,-38,-39,-24,-25,-26,-27,-9,-10,-11,32,32,32,32,-7,-12,-8,-13,-15,-14,-28,32,32,32,32,32,32,]),'LESS':([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,39,40,45,47,49,50,51,52,53,54,55,56,57,58,59,60,61,],[33,-1,-2,-3,-4,-5,-6,-29,-30,-31,-32,-33,-34,-35,-36,-37,-38,-39,-24,-25,-26,-27,-9,-10,-11,33,33,33,33,-7,-12,-8,-13,-15,-14,-28,33,33,33,33,33,33,]),'END_PAREN':([2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,39,40,45,47,49,50,51,52,53,54,55,56,57,58,59,60,61,],[-1,-2,-3,-4,-5,-6,-29,-30,-31,-32,-33,-34,-35,-36,-37,-38,-39,-24,-25,-26,-27,-9,-10,-11,-48,55,-44,-45,-7,-12,-8,-13,-15,-14,-28,-40,-41,-42,-43,-46,-47,]),'PLUS':([2,4,5,6,7,19,20,21,22,23,24,25,49,50,51,52,53,54,55,],[34,-12,-4,-5,-6,-24,-25,-26,-27,-9,-10,-11,-7,-12,-8,-13,-15,-14,-28,]),'MINUS':([2,4,5,6,7,19,20,21,22,23,24,25,49,50,51,52,53,54,55,],[35,-12,-4,-5,-6,-24,-25,-26,-27,-9,-10,-11,-7,-12,-8,-13,-15,-14,-28,]),'TIMES':([4,7,19,20,21,22,23,24,25,49,50,51,52,53,54,55,],[-12,36,-24,-25,-26,-27,-9,-10,-11,36,-12,36,-13,-15,-14,-28,]),'DIVISION':([4,7,19,20,21,22,23,24,25,49,50,51,52,53,54,55,],[-12,37,-24,-25,-26,-27,-9,-10,-11,37,-12,37,-13,-15,-14,-28,]),'MOD':([4,7,19,20,21,22,23,24,25,49,50,51,52,53,54,55,],[-12,38,-24,-25,-26,-27,-9,-10,-11,38,-12,38,-13,-15,-14,-28,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'exp':([0,12,],[1,17,]),'soma':([0,12,],[2,2,]),'sub':([0,12,],[3,3,]),'exp1':([0,12,13,14,],[4,4,18,19,]),'mult':([0,12,13,14,],[5,5,5,5,]),'div':([0,12,13,14,],[6,6,6,6,]),'exp2':([0,12,13,14,15,16,],[7,7,7,7,20,21,]),'exp3':([0,12,13,14,15,16,],[11,11,11,11,11,11,]),}
+_lr_goto_items = {'expressao':([0,26,27,32,33,41,42,43,44,46,48,],[1,39,40,45,47,56,57,58,59,60,61,]),'expressao_matematica':([0,26,27,32,33,41,42,43,44,46,48,],[2,2,2,2,2,2,2,2,2,2,2,]),'expressao_logica':([0,26,27,32,33,41,42,43,44,46,48,],[3,3,3,3,3,3,3,3,3,3,3,]),'operando':([0,26,27,32,33,34,35,36,37,38,41,42,43,44,46,48,],[4,4,4,4,4,50,50,52,53,54,4,4,4,4,4,4,]),'soma':([0,26,27,32,33,41,42,43,44,46,48,],[5,5,5,5,5,5,5,5,5,5,5,]),'sub':([0,26,27,32,33,41,42,43,44,46,48,],[6,6,6,6,6,6,6,6,6,6,6,]),'p_expMatMaiorPresc':([0,26,27,32,33,34,35,41,42,43,44,46,48,],[7,7,7,7,7,49,51,7,7,7,7,7,7,]),'and':([0,26,27,32,33,41,42,43,44,46,48,],[8,8,8,8,8,8,8,8,8,8,8,]),'or':([0,26,27,32,33,41,42,43,44,46,48,],[9,9,9,9,9,9,9,9,9,9,9,]),'equals':([0,26,27,32,33,41,42,43,44,46,48,],[10,10,10,10,10,10,10,10,10,10,10,]),'different':([0,26,27,32,33,41,42,43,44,46,48,],[11,11,11,11,11,11,11,11,11,11,11,]),'greater':([0,26,27,32,33,41,42,43,44,46,48,],[12,12,12,12,12,12,12,12,12,12,12,]),'less':([0,26,27,32,33,41,42,43,44,46,48,],[13,13,13,13,13,13,13,13,13,13,13,]),'greater_or_equal':([0,26,27,32,33,41,42,43,44,46,48,],[14,14,14,14,14,14,14,14,14,14,14,]),'less_or_equal':([0,26,27,32,33,41,42,43,44,46,48,],[15,15,15,15,15,15,15,15,15,15,15,]),'negation':([0,26,27,32,33,41,42,43,44,46,48,],[16,16,16,16,16,16,16,16,16,16,16,]),'expParenteses':([0,26,27,32,33,34,35,36,37,38,41,42,43,44,46,48,],[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,]),'mult':([0,26,27,32,33,34,35,41,42,43,44,46,48,],[23,23,23,23,23,23,23,23,23,23,23,23,23,]),'div':([0,26,27,32,33,34,35,41,42,43,44,46,48,],[24,24,24,24,24,24,24,24,24,24,24,24,24,]),'mod':([0,26,27,32,33,34,35,41,42,43,44,46,48,],[25,25,25,25,25,25,25,25,25,25,25,25,25,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,20 +26,71 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> exp","S'",1,None,None,None),
-  ('exp -> soma','exp',1,'p_exp_exp','analiseSintatica.py',6),
-  ('exp -> sub','exp',1,'p_exp_exp','analiseSintatica.py',7),
-  ('exp -> exp1','exp',1,'p_exp_exp','analiseSintatica.py',8),
-  ('soma -> exp PLUS exp1','soma',3,'p_exp_soma','analiseSintatica.py',12),
-  ('sub -> exp MINUS exp1','sub',3,'p_exp_sub','analiseSintatica.py',16),
-  ('exp1 -> mult','exp1',1,'p_exp1','analiseSintatica.py',20),
-  ('exp1 -> div','exp1',1,'p_exp1','analiseSintatica.py',21),
-  ('exp1 -> exp2','exp1',1,'p_exp1','analiseSintatica.py',22),
-  ('mult -> exp1 TIMES exp2','mult',3,'p_exp_mult','analiseSintatica.py',26),
-  ('div -> exp1 DIVISION exp2','div',3,'p_exp_div','analiseSintatica.py',30),
-  ('exp2 -> ID','exp2',1,'p_exp_exp2','analiseSintatica.py',34),
-  ('exp2 -> NUMBER','exp2',1,'p_exp_exp2','analiseSintatica.py',35),
-  ('exp2 -> STRING','exp2',1,'p_exp_exp2','analiseSintatica.py',36),
-  ('exp2 -> exp3','exp2',1,'p_exp_exp2','analiseSintatica.py',37),
-  ('exp3 -> BEG_PAREN exp END_PAREN','exp3',3,'p_exp_exp3','analiseSintatica.py',40),
+  ("S' -> expressao","S'",1,None,None,None),
+  ('expressao -> expressao_matematica','expressao',1,'p_expressao','analiseSintatica.py',8),
+  ('expressao -> expressao_logica','expressao',1,'p_expressao','analiseSintatica.py',9),
+  ('expressao -> operando','expressao',1,'p_expressao','analiseSintatica.py',10),
+  ('expressao_matematica -> soma','expressao_matematica',1,'p_expressao_matematica','analiseSintatica.py',14),
+  ('expressao_matematica -> sub','expressao_matematica',1,'p_expressao_matematica','analiseSintatica.py',15),
+  ('expressao_matematica -> p_expMatMaiorPresc','expressao_matematica',1,'p_expressao_matematica','analiseSintatica.py',16),
+  ('soma -> expressao_matematica PLUS p_expMatMaiorPresc','soma',3,'p_soma','analiseSintatica.py',21),
+  ('sub -> expressao_matematica MINUS p_expMatMaiorPresc','sub',3,'p_sub','analiseSintatica.py',25),
+  ('p_expMatMaiorPresc -> mult','p_expMatMaiorPresc',1,'p_expMatMaiorPresc','analiseSintatica.py',29),
+  ('p_expMatMaiorPresc -> div','p_expMatMaiorPresc',1,'p_expMatMaiorPresc','analiseSintatica.py',30),
+  ('p_expMatMaiorPresc -> mod','p_expMatMaiorPresc',1,'p_expMatMaiorPresc','analiseSintatica.py',31),
+  ('p_expMatMaiorPresc -> operando','p_expMatMaiorPresc',1,'p_expMatMaiorPresc','analiseSintatica.py',32),
+  ('mult -> p_expMatMaiorPresc TIMES operando','mult',3,'p_mult','analiseSintatica.py',36),
+  ('mod -> p_expMatMaiorPresc MOD operando','mod',3,'p_mod','analiseSintatica.py',40),
+  ('div -> p_expMatMaiorPresc DIVISION operando','div',3,'p_div','analiseSintatica.py',44),
+  ('assign_plus -> ID PLUS EQUALS NUMBER','assign_plus',4,'p_assign_plus','analiseSintatica.py',48),
+  ('assign_minus -> ID MINUS EQUALS NUMBER','assign_minus',4,'p_assign_minus','analiseSintatica.py',52),
+  ('assign_mult -> ID TIMES EQUALS NUMBER','assign_mult',4,'p_assign_mult','analiseSintatica.py',56),
+  ('assign_div -> ID DIVISION EQUALS NUMBER','assign_div',4,'p_assign_div','analiseSintatica.py',60),
+  ('expressao_matematica_reduzida -> assign_plus','expressao_matematica_reduzida',1,'p_expressao_matematica_reduzida','analiseSintatica.py',64),
+  ('expressao_matematica_reduzida -> assign_minus','expressao_matematica_reduzida',1,'p_expressao_matematica_reduzida','analiseSintatica.py',65),
+  ('expressao_matematica_reduzida -> assign_mult','expressao_matematica_reduzida',1,'p_expressao_matematica_reduzida','analiseSintatica.py',66),
+  ('expressao_matematica_reduzida -> assign_div','expressao_matematica_reduzida',1,'p_expressao_matematica_reduzida','analiseSintatica.py',67),
+  ('operando -> ID','operando',1,'p_operando','analiseSintatica.py',71),
+  ('operando -> NUMBER','operando',1,'p_operando','analiseSintatica.py',72),
+  ('operando -> STRING','operando',1,'p_operando','analiseSintatica.py',73),
+  ('operando -> expParenteses','operando',1,'p_operando','analiseSintatica.py',74),
+  ('expParenteses -> BEG_PAREN expressao END_PAREN','expParenteses',3,'p_expParenteses','analiseSintatica.py',78),
+  ('expressao_logica -> and','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',82),
+  ('expressao_logica -> or','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',83),
+  ('expressao_logica -> equals','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',84),
+  ('expressao_logica -> different','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',85),
+  ('expressao_logica -> greater','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',86),
+  ('expressao_logica -> less','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',87),
+  ('expressao_logica -> greater_or_equal','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',88),
+  ('expressao_logica -> less_or_equal','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',89),
+  ('expressao_logica -> negation','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',90),
+  ('expressao_logica -> true','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',91),
+  ('expressao_logica -> false','expressao_logica',1,'p_expressao_logica','analiseSintatica.py',92),
+  ('and -> expressao AMPERSAND AMPERSAND expressao','and',4,'p_and','analiseSintatica.py',96),
+  ('or -> expressao PIPE PIPE expressao','or',4,'p_or','analiseSintatica.py',100),
+  ('equals -> expressao EQUALS EQUALS expressao','equals',4,'p_equals','analiseSintatica.py',104),
+  ('different -> expressao EXCLAMATION EQUALS expressao','different',4,'p_different','analiseSintatica.py',108),
+  ('greater -> expressao GREATER expressao','greater',3,'p_greater','analiseSintatica.py',112),
+  ('less -> expressao LESS expressao','less',3,'p_less','analiseSintatica.py',116),
+  ('greater_or_equal -> expressao GREATER EQUALS expressao','greater_or_equal',4,'p_greater_or_equal','analiseSintatica.py',120),
+  ('less_or_equal -> expressao LESS EQUALS expressao','less_or_equal',4,'p_less_or_equal','analiseSintatica.py',124),
+  ('negation -> EXCLAMATION expressao','negation',2,'p_negation','analiseSintatica.py',128),
+  ('estrutura_for -> for_CLIKE','estrutura_for',1,'p_estrutura_for','analiseSintatica.py',132),
+  ('estrutura_for -> for_infinito','estrutura_for',1,'p_estrutura_for','analiseSintatica.py',133),
+  ('estrutura_for -> for_while','estrutura_for',1,'p_estrutura_for','analiseSintatica.py',134),
+  ('for_CLIKE -> for declaracao SEMICOLON expressao SEMICOLON expressao_matematica BEG_BRACE codigo END_BRACE','for_CLIKE',9,'p_for_CLIKE','analiseSintatica.py',138),
+  ('for_infinito -> for BEG_BRACE codigo END_BRACE','for_infinito',4,'p_for_infinito','analiseSintatica.py',146),
+  ('for_while -> for expressao BEG_BRACE codigo END_BRACE','for_while',5,'p_for_while','analiseSintatica.py',151),
+  ('atribuicao -> lista_identificadores EQUALS lista_valores','atribuicao',3,'p_atribuicao','analiseSintatica.py',156),
+  ('declaracao -> lista_identificadores COLON EQUALS lista_valores','declaracao',4,'p_declaracao','analiseSintatica.py',160),
+  ('lista_identificadores -> lista_identificadores COMMA ID','lista_identificadores',3,'p_lista_identificadores','analiseSintatica.py',164),
+  ('lista_identificadores -> ID','lista_identificadores',1,'p_lista_identificadores','analiseSintatica.py',165),
+  ('lista_valores -> lista_valores COMMA expressao','lista_valores',3,'p_lista_valores','analiseSintatica.py',172),
+  ('lista_valores -> expressao','lista_valores',1,'p_lista_valores','analiseSintatica.py',173),
+  ('empty -> <empty>','empty',0,'p_empty','analiseSintatica.py',181),
+  ('codigo -> codigo expressao_matematica_reduzida','codigo',2,'p_codigo','analiseSintatica.py',185),
+  ('codigo -> codigo atribuicao','codigo',2,'p_codigo','analiseSintatica.py',186),
+  ('codigo -> codigo declaracao','codigo',2,'p_codigo','analiseSintatica.py',187),
+  ('codigo -> codigo estrutura_for','codigo',2,'p_codigo','analiseSintatica.py',188),
+  ('codigo -> empty','codigo',1,'p_codigo','analiseSintatica.py',189),
 ]

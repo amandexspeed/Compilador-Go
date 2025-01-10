@@ -10,35 +10,41 @@ import ply.lex as lex     #importa módulo ply.lex e o renomeia para lex
 
 #Lista com todas as palavras reservadas
 reserved = {
-    'break': 'break',
-    'case': 'case',
-    'chan': 'chan',
-    'const': 'const',
-    'continue': 'continue',
-    'default': 'default',
-    'defer': 'defer',
-    'else': 'else',
-    'fallthrough': 'fallthrough',
-    'for': 'for',
-    'func': 'func',
-    'go': 'go',
-    'goto': 'goto',
-    'if': 'if',
-    'import': 'import',
-    'interface': 'interface',
-    'map': 'map',
-    'package': 'package',
-    'range': 'range',
-    'return': 'return',
-    'select': 'select',
-    'struct': 'struct',
-    'switch': 'switch',
-    'type': 'type',
-    'var': 'var'
+    'TRUE': 'true',
+    'FALSE': 'false',
+    'APPEND': 'append',
+    'CAP': 'cap',
+    'CLOSE': 'close',
+    'COMPLEX': 'complex',
+    'BREAK': 'break',
+    'CASE': 'case',
+    'CHAN': 'chan',
+    'CONST': 'const',
+    'CONTINUE': 'continue',
+    'DEFAULT': 'default',
+    'DEFER': 'defer',
+    'ELSE': 'else',
+    'FALLTHROUGH': 'fallthrough',
+    'FOR': 'for',
+    'FUNC': 'func',
+    'GO': 'go',
+    'GOTO': 'goto',
+    'IF': 'if',
+    'IMPORT': 'import',
+    'INTERFACE': 'interface',
+    'MAP': 'map',
+    'PACKAGE': 'package',
+    'RANGE': 'range',
+    'RETURN': 'return',
+    'SELECT': 'select',
+    'STRUCT': 'struct',
+    'SWITCH': 'switch',
+    'TYPE': 'type',
+    'VAR': 'var'
 }
 
 # Definindo Tokens e padroes
-tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING"] + list(reserved.values())
+tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","AMPERSAND","PIPE"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -79,7 +85,8 @@ t_COLON = r'\:'
 t_SEMICOLON = r'\;'
 t_COMMA = r'\,'
 t_EXCLAMATION = r'\!'
-
+t_AMPERSAND = r'\&'
+t_PIPE = r'\|'
 
 t_ignore = ' \t.'
 

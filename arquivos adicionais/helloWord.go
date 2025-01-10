@@ -1,6 +1,6 @@
 package main
 import "fmt" 
-func main() {
+func print() {
     fmt.Println("hello world")
     FuncIf()
 }

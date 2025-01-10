@@ -2,27 +2,21 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    BEG_BRACE
-    COLON
-    COMMA
-    END_BRACE
-    EQUALS
-    GREATER
-    LESS
-    MOD
     POWER
     QUOTATION_MARKS
-    SEMICOLON
+    append
     break
+    cap
     case
     chan
+    close
+    complex
     const
     continue
     default
     defer
     else
     fallthrough
-    for
     func
     go
     goto
@@ -41,48 +35,106 @@ Unused terminals:
 
 Grammar
 
-Rule 0     S' -> exp
-Rule 1     exp -> soma
-Rule 2     exp -> sub
-Rule 3     exp -> exp1
-Rule 4     soma -> exp PLUS exp1
-Rule 5     sub -> exp MINUS exp1
-Rule 6     exp1 -> mult
-Rule 7     exp1 -> div
-Rule 8     exp1 -> exp2
-Rule 9     mult -> exp1 TIMES exp2
-Rule 10    div -> exp1 DIVISION exp2
-Rule 11    exp2 -> ID
-Rule 12    exp2 -> NUMBER
-Rule 13    exp2 -> STRING
-Rule 14    exp2 -> exp3
-Rule 15    exp3 -> BEG_PAREN exp END_PAREN
+Rule 0     S' -> expressao
+Rule 1     expressao -> expressao_matematica
+Rule 2     expressao -> expressao_logica
+Rule 3     expressao -> operando
+Rule 4     expressao_matematica -> soma
+Rule 5     expressao_matematica -> sub
+Rule 6     expressao_matematica -> p_expMatMaiorPresc
+Rule 7     soma -> expressao_matematica PLUS p_expMatMaiorPresc
+Rule 8     sub -> expressao_matematica MINUS p_expMatMaiorPresc
+Rule 9     p_expMatMaiorPresc -> mult
+Rule 10    p_expMatMaiorPresc -> div
+Rule 11    p_expMatMaiorPresc -> mod
+Rule 12    p_expMatMaiorPresc -> operando
+Rule 13    mult -> p_expMatMaiorPresc TIMES operando
+Rule 14    mod -> p_expMatMaiorPresc MOD operando
+Rule 15    div -> p_expMatMaiorPresc DIVISION operando
+Rule 16    assign_plus -> ID PLUS EQUALS NUMBER
+Rule 17    assign_minus -> ID MINUS EQUALS NUMBER
+Rule 18    assign_mult -> ID TIMES EQUALS NUMBER
+Rule 19    assign_div -> ID DIVISION EQUALS NUMBER
+Rule 20    expressao_matematica_reduzida -> assign_plus
+Rule 21    expressao_matematica_reduzida -> assign_minus
+Rule 22    expressao_matematica_reduzida -> assign_mult
+Rule 23    expressao_matematica_reduzida -> assign_div
+Rule 24    operando -> ID
+Rule 25    operando -> NUMBER
+Rule 26    operando -> STRING
+Rule 27    operando -> expParenteses
+Rule 28    expParenteses -> BEG_PAREN expressao END_PAREN
+Rule 29    expressao_logica -> and
+Rule 30    expressao_logica -> or
+Rule 31    expressao_logica -> equals
+Rule 32    expressao_logica -> different
+Rule 33    expressao_logica -> greater
+Rule 34    expressao_logica -> less
+Rule 35    expressao_logica -> greater_or_equal
+Rule 36    expressao_logica -> less_or_equal
+Rule 37    expressao_logica -> negation
+Rule 38    expressao_logica -> true
+Rule 39    expressao_logica -> false
+Rule 40    and -> expressao AMPERSAND AMPERSAND expressao
+Rule 41    or -> expressao PIPE PIPE expressao
+Rule 42    equals -> expressao EQUALS EQUALS expressao
+Rule 43    different -> expressao EXCLAMATION EQUALS expressao
+Rule 44    greater -> expressao GREATER expressao
+Rule 45    less -> expressao LESS expressao
+Rule 46    greater_or_equal -> expressao GREATER EQUALS expressao
+Rule 47    less_or_equal -> expressao LESS EQUALS expressao
+Rule 48    negation -> EXCLAMATION expressao
+Rule 49    estrutura_for -> for_CLIKE
+Rule 50    estrutura_for -> for_infinito
+Rule 51    estrutura_for -> for_while
+Rule 52    for_CLIKE -> for declaracao SEMICOLON expressao SEMICOLON expressao_matematica BEG_BRACE codigo END_BRACE
+Rule 53    for_infinito -> for BEG_BRACE codigo END_BRACE
+Rule 54    for_while -> for expressao BEG_BRACE codigo END_BRACE
+Rule 55    atribuicao -> lista_identificadores EQUALS lista_valores
+Rule 56    declaracao -> lista_identificadores COLON EQUALS lista_valores
+Rule 57    lista_identificadores -> lista_identificadores COMMA ID
+Rule 58    lista_identificadores -> ID
+Rule 59    lista_valores -> lista_valores COMMA expressao
+Rule 60    lista_valores -> expressao
+Rule 61    empty -> <empty>
+Rule 62    codigo -> codigo expressao_matematica_reduzida
+Rule 63    codigo -> codigo atribuicao
+Rule 64    codigo -> codigo declaracao
+Rule 65    codigo -> codigo estrutura_for
+Rule 66    codigo -> empty
 
 Terminals, with rules where they appear
 
-BEG_BRACE            : 
-BEG_PAREN            : 15
-COLON                : 
-COMMA                : 
-DIVISION             : 10
-END_BRACE            : 
-END_PAREN            : 15
-EQUALS               : 
-GREATER              : 
-ID                   : 11
-LESS                 : 
-MINUS                : 5
-MOD                  : 
-NUMBER               : 12
-PLUS                 : 4
+AMPERSAND            : 40 40
+BEG_BRACE            : 52 53 54
+BEG_PAREN            : 28
+COLON                : 56
+COMMA                : 57 59
+DIVISION             : 15 19
+END_BRACE            : 52 53 54
+END_PAREN            : 28
+EQUALS               : 16 17 18 19 42 42 43 46 47 55 56
+EXCLAMATION          : 43 48
+GREATER              : 44 46
+ID                   : 16 17 18 19 24 57 58
+LESS                 : 45 47
+MINUS                : 8 17
+MOD                  : 14
+NUMBER               : 16 17 18 19 25
+PIPE                 : 41 41
+PLUS                 : 7 16
 POWER                : 
 QUOTATION_MARKS      : 
-SEMICOLON            : 
-STRING               : 13
-TIMES                : 9
+SEMICOLON            : 52 52
+STRING               : 26
+TIMES                : 13 18
+append               : 
 break                : 
+cap                  : 
 case                 : 
 chan                 : 
+close                : 
+complex              : 
 const                : 
 continue             : 
 default              : 
@@ -90,7 +142,8 @@ defer                :
 else                 : 
 error                : 
 fallthrough          : 
-for                  : 
+false                : 39
+for                  : 52 53 54
 func                 : 
 go                   : 
 goto                 : 
@@ -104,371 +157,1952 @@ return               :
 select               : 
 struct               : 
 switch               : 
+true                 : 38
 type                 : 
 var                  : 
 
 Nonterminals, with rules where they appear
 
-div                  : 7
-exp                  : 4 5 15 0
-exp1                 : 3 4 5 9 10
-exp2                 : 8 9 10
-exp3                 : 14
-mult                 : 6
-soma                 : 1
-sub                  : 2
+and                  : 29
+assign_div           : 23
+assign_minus         : 21
+assign_mult          : 22
+assign_plus          : 20
+atribuicao           : 63
+codigo               : 52 53 54 62 63 64 65
+declaracao           : 52 64
+different            : 32
+div                  : 10
+empty                : 66
+equals               : 31
+estrutura_for        : 65
+expParenteses        : 27
+expressao            : 28 40 40 41 41 42 42 43 43 44 44 45 45 46 46 47 47 48 52 54 59 60 0
+expressao_logica     : 2
+expressao_matematica : 1 7 8 52
+expressao_matematica_reduzida : 62
+for_CLIKE            : 49
+for_infinito         : 50
+for_while            : 51
+greater              : 33
+greater_or_equal     : 35
+less                 : 34
+less_or_equal        : 36
+lista_identificadores : 55 56 57
+lista_valores        : 55 56 59
+mod                  : 11
+mult                 : 9
+negation             : 37
+operando             : 3 12 13 14 15
+or                   : 30
+p_expMatMaiorPresc   : 6 7 8 13 14 15
+soma                 : 4
+sub                  : 5
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . exp
-    (1) exp -> . soma
-    (2) exp -> . sub
-    (3) exp -> . exp1
-    (4) soma -> . exp PLUS exp1
-    (5) sub -> . exp MINUS exp1
-    (6) exp1 -> . mult
-    (7) exp1 -> . div
-    (8) exp1 -> . exp2
-    (9) mult -> . exp1 TIMES exp2
-    (10) div -> . exp1 DIVISION exp2
-    (11) exp2 -> . ID
-    (12) exp2 -> . NUMBER
-    (13) exp2 -> . STRING
-    (14) exp2 -> . exp3
-    (15) exp3 -> . BEG_PAREN exp END_PAREN
+    (0) S' -> . expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
 
-    ID              shift and go to state 8
-    NUMBER          shift and go to state 9
-    STRING          shift and go to state 10
-    BEG_PAREN       shift and go to state 12
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
 
-    exp                            shift and go to state 1
-    soma                           shift and go to state 2
-    sub                            shift and go to state 3
-    exp1                           shift and go to state 4
-    mult                           shift and go to state 5
-    div                            shift and go to state 6
-    exp2                           shift and go to state 7
-    exp3                           shift and go to state 11
+    expressao                      shift and go to state 1
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
 
 state 1
 
-    (0) S' -> exp .
-    (4) soma -> exp . PLUS exp1
-    (5) sub -> exp . MINUS exp1
+    (0) S' -> expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
 
-    PLUS            shift and go to state 13
-    MINUS           shift and go to state 14
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
 
 
 state 2
 
-    (1) exp -> soma .
+    (1) expressao -> expressao_matematica .
+    (7) soma -> expressao_matematica . PLUS p_expMatMaiorPresc
+    (8) sub -> expressao_matematica . MINUS p_expMatMaiorPresc
 
-    PLUS            reduce using rule 1 (exp -> soma .)
-    MINUS           reduce using rule 1 (exp -> soma .)
-    $end            reduce using rule 1 (exp -> soma .)
-    END_PAREN       reduce using rule 1 (exp -> soma .)
+    AMPERSAND       reduce using rule 1 (expressao -> expressao_matematica .)
+    PIPE            reduce using rule 1 (expressao -> expressao_matematica .)
+    EQUALS          reduce using rule 1 (expressao -> expressao_matematica .)
+    EXCLAMATION     reduce using rule 1 (expressao -> expressao_matematica .)
+    GREATER         reduce using rule 1 (expressao -> expressao_matematica .)
+    LESS            reduce using rule 1 (expressao -> expressao_matematica .)
+    $end            reduce using rule 1 (expressao -> expressao_matematica .)
+    END_PAREN       reduce using rule 1 (expressao -> expressao_matematica .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
 
 
 state 3
 
-    (2) exp -> sub .
+    (2) expressao -> expressao_logica .
 
-    PLUS            reduce using rule 2 (exp -> sub .)
-    MINUS           reduce using rule 2 (exp -> sub .)
-    $end            reduce using rule 2 (exp -> sub .)
-    END_PAREN       reduce using rule 2 (exp -> sub .)
+    AMPERSAND       reduce using rule 2 (expressao -> expressao_logica .)
+    PIPE            reduce using rule 2 (expressao -> expressao_logica .)
+    EQUALS          reduce using rule 2 (expressao -> expressao_logica .)
+    EXCLAMATION     reduce using rule 2 (expressao -> expressao_logica .)
+    GREATER         reduce using rule 2 (expressao -> expressao_logica .)
+    LESS            reduce using rule 2 (expressao -> expressao_logica .)
+    $end            reduce using rule 2 (expressao -> expressao_logica .)
+    END_PAREN       reduce using rule 2 (expressao -> expressao_logica .)
 
 
 state 4
 
-    (3) exp -> exp1 .
-    (9) mult -> exp1 . TIMES exp2
-    (10) div -> exp1 . DIVISION exp2
+    (3) expressao -> operando .
+    (12) p_expMatMaiorPresc -> operando .
 
-    PLUS            reduce using rule 3 (exp -> exp1 .)
-    MINUS           reduce using rule 3 (exp -> exp1 .)
-    $end            reduce using rule 3 (exp -> exp1 .)
-    END_PAREN       reduce using rule 3 (exp -> exp1 .)
-    TIMES           shift and go to state 15
-    DIVISION        shift and go to state 16
+  ! reduce/reduce conflict for AMPERSAND resolved using rule 3 (expressao -> operando .)
+  ! reduce/reduce conflict for PIPE resolved using rule 3 (expressao -> operando .)
+  ! reduce/reduce conflict for EQUALS resolved using rule 3 (expressao -> operando .)
+  ! reduce/reduce conflict for EXCLAMATION resolved using rule 3 (expressao -> operando .)
+  ! reduce/reduce conflict for GREATER resolved using rule 3 (expressao -> operando .)
+  ! reduce/reduce conflict for LESS resolved using rule 3 (expressao -> operando .)
+  ! reduce/reduce conflict for $end resolved using rule 3 (expressao -> operando .)
+  ! reduce/reduce conflict for END_PAREN resolved using rule 3 (expressao -> operando .)
+    AMPERSAND       reduce using rule 3 (expressao -> operando .)
+    PIPE            reduce using rule 3 (expressao -> operando .)
+    EQUALS          reduce using rule 3 (expressao -> operando .)
+    EXCLAMATION     reduce using rule 3 (expressao -> operando .)
+    GREATER         reduce using rule 3 (expressao -> operando .)
+    LESS            reduce using rule 3 (expressao -> operando .)
+    $end            reduce using rule 3 (expressao -> operando .)
+    END_PAREN       reduce using rule 3 (expressao -> operando .)
+    TIMES           reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    DIVISION        reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    MOD             reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    PLUS            reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    MINUS           reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+
+  ! AMPERSAND       [ reduce using rule 12 (p_expMatMaiorPresc -> operando .) ]
+  ! PIPE            [ reduce using rule 12 (p_expMatMaiorPresc -> operando .) ]
+  ! EQUALS          [ reduce using rule 12 (p_expMatMaiorPresc -> operando .) ]
+  ! EXCLAMATION     [ reduce using rule 12 (p_expMatMaiorPresc -> operando .) ]
+  ! GREATER         [ reduce using rule 12 (p_expMatMaiorPresc -> operando .) ]
+  ! LESS            [ reduce using rule 12 (p_expMatMaiorPresc -> operando .) ]
+  ! $end            [ reduce using rule 12 (p_expMatMaiorPresc -> operando .) ]
+  ! END_PAREN       [ reduce using rule 12 (p_expMatMaiorPresc -> operando .) ]
 
 
 state 5
 
-    (6) exp1 -> mult .
+    (4) expressao_matematica -> soma .
 
-    TIMES           reduce using rule 6 (exp1 -> mult .)
-    DIVISION        reduce using rule 6 (exp1 -> mult .)
-    PLUS            reduce using rule 6 (exp1 -> mult .)
-    MINUS           reduce using rule 6 (exp1 -> mult .)
-    $end            reduce using rule 6 (exp1 -> mult .)
-    END_PAREN       reduce using rule 6 (exp1 -> mult .)
+    PLUS            reduce using rule 4 (expressao_matematica -> soma .)
+    MINUS           reduce using rule 4 (expressao_matematica -> soma .)
+    AMPERSAND       reduce using rule 4 (expressao_matematica -> soma .)
+    PIPE            reduce using rule 4 (expressao_matematica -> soma .)
+    EQUALS          reduce using rule 4 (expressao_matematica -> soma .)
+    EXCLAMATION     reduce using rule 4 (expressao_matematica -> soma .)
+    GREATER         reduce using rule 4 (expressao_matematica -> soma .)
+    LESS            reduce using rule 4 (expressao_matematica -> soma .)
+    $end            reduce using rule 4 (expressao_matematica -> soma .)
+    END_PAREN       reduce using rule 4 (expressao_matematica -> soma .)
 
 
 state 6
 
-    (7) exp1 -> div .
+    (5) expressao_matematica -> sub .
 
-    TIMES           reduce using rule 7 (exp1 -> div .)
-    DIVISION        reduce using rule 7 (exp1 -> div .)
-    PLUS            reduce using rule 7 (exp1 -> div .)
-    MINUS           reduce using rule 7 (exp1 -> div .)
-    $end            reduce using rule 7 (exp1 -> div .)
-    END_PAREN       reduce using rule 7 (exp1 -> div .)
+    PLUS            reduce using rule 5 (expressao_matematica -> sub .)
+    MINUS           reduce using rule 5 (expressao_matematica -> sub .)
+    AMPERSAND       reduce using rule 5 (expressao_matematica -> sub .)
+    PIPE            reduce using rule 5 (expressao_matematica -> sub .)
+    EQUALS          reduce using rule 5 (expressao_matematica -> sub .)
+    EXCLAMATION     reduce using rule 5 (expressao_matematica -> sub .)
+    GREATER         reduce using rule 5 (expressao_matematica -> sub .)
+    LESS            reduce using rule 5 (expressao_matematica -> sub .)
+    $end            reduce using rule 5 (expressao_matematica -> sub .)
+    END_PAREN       reduce using rule 5 (expressao_matematica -> sub .)
 
 
 state 7
 
-    (8) exp1 -> exp2 .
+    (6) expressao_matematica -> p_expMatMaiorPresc .
+    (13) mult -> p_expMatMaiorPresc . TIMES operando
+    (15) div -> p_expMatMaiorPresc . DIVISION operando
+    (14) mod -> p_expMatMaiorPresc . MOD operando
 
-    TIMES           reduce using rule 8 (exp1 -> exp2 .)
-    DIVISION        reduce using rule 8 (exp1 -> exp2 .)
-    PLUS            reduce using rule 8 (exp1 -> exp2 .)
-    MINUS           reduce using rule 8 (exp1 -> exp2 .)
-    $end            reduce using rule 8 (exp1 -> exp2 .)
-    END_PAREN       reduce using rule 8 (exp1 -> exp2 .)
+    PLUS            reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    MINUS           reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    AMPERSAND       reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    PIPE            reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    EQUALS          reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    EXCLAMATION     reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    GREATER         reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    LESS            reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    $end            reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    END_PAREN       reduce using rule 6 (expressao_matematica -> p_expMatMaiorPresc .)
+    TIMES           shift and go to state 36
+    DIVISION        shift and go to state 37
+    MOD             shift and go to state 38
 
 
 state 8
 
-    (11) exp2 -> ID .
+    (29) expressao_logica -> and .
 
-    TIMES           reduce using rule 11 (exp2 -> ID .)
-    DIVISION        reduce using rule 11 (exp2 -> ID .)
-    PLUS            reduce using rule 11 (exp2 -> ID .)
-    MINUS           reduce using rule 11 (exp2 -> ID .)
-    $end            reduce using rule 11 (exp2 -> ID .)
-    END_PAREN       reduce using rule 11 (exp2 -> ID .)
+    AMPERSAND       reduce using rule 29 (expressao_logica -> and .)
+    PIPE            reduce using rule 29 (expressao_logica -> and .)
+    EQUALS          reduce using rule 29 (expressao_logica -> and .)
+    EXCLAMATION     reduce using rule 29 (expressao_logica -> and .)
+    GREATER         reduce using rule 29 (expressao_logica -> and .)
+    LESS            reduce using rule 29 (expressao_logica -> and .)
+    $end            reduce using rule 29 (expressao_logica -> and .)
+    END_PAREN       reduce using rule 29 (expressao_logica -> and .)
 
 
 state 9
 
-    (12) exp2 -> NUMBER .
+    (30) expressao_logica -> or .
 
-    TIMES           reduce using rule 12 (exp2 -> NUMBER .)
-    DIVISION        reduce using rule 12 (exp2 -> NUMBER .)
-    PLUS            reduce using rule 12 (exp2 -> NUMBER .)
-    MINUS           reduce using rule 12 (exp2 -> NUMBER .)
-    $end            reduce using rule 12 (exp2 -> NUMBER .)
-    END_PAREN       reduce using rule 12 (exp2 -> NUMBER .)
+    AMPERSAND       reduce using rule 30 (expressao_logica -> or .)
+    PIPE            reduce using rule 30 (expressao_logica -> or .)
+    EQUALS          reduce using rule 30 (expressao_logica -> or .)
+    EXCLAMATION     reduce using rule 30 (expressao_logica -> or .)
+    GREATER         reduce using rule 30 (expressao_logica -> or .)
+    LESS            reduce using rule 30 (expressao_logica -> or .)
+    $end            reduce using rule 30 (expressao_logica -> or .)
+    END_PAREN       reduce using rule 30 (expressao_logica -> or .)
 
 
 state 10
 
-    (13) exp2 -> STRING .
+    (31) expressao_logica -> equals .
 
-    TIMES           reduce using rule 13 (exp2 -> STRING .)
-    DIVISION        reduce using rule 13 (exp2 -> STRING .)
-    PLUS            reduce using rule 13 (exp2 -> STRING .)
-    MINUS           reduce using rule 13 (exp2 -> STRING .)
-    $end            reduce using rule 13 (exp2 -> STRING .)
-    END_PAREN       reduce using rule 13 (exp2 -> STRING .)
+    AMPERSAND       reduce using rule 31 (expressao_logica -> equals .)
+    PIPE            reduce using rule 31 (expressao_logica -> equals .)
+    EQUALS          reduce using rule 31 (expressao_logica -> equals .)
+    EXCLAMATION     reduce using rule 31 (expressao_logica -> equals .)
+    GREATER         reduce using rule 31 (expressao_logica -> equals .)
+    LESS            reduce using rule 31 (expressao_logica -> equals .)
+    $end            reduce using rule 31 (expressao_logica -> equals .)
+    END_PAREN       reduce using rule 31 (expressao_logica -> equals .)
 
 
 state 11
 
-    (14) exp2 -> exp3 .
+    (32) expressao_logica -> different .
 
-    TIMES           reduce using rule 14 (exp2 -> exp3 .)
-    DIVISION        reduce using rule 14 (exp2 -> exp3 .)
-    PLUS            reduce using rule 14 (exp2 -> exp3 .)
-    MINUS           reduce using rule 14 (exp2 -> exp3 .)
-    $end            reduce using rule 14 (exp2 -> exp3 .)
-    END_PAREN       reduce using rule 14 (exp2 -> exp3 .)
+    AMPERSAND       reduce using rule 32 (expressao_logica -> different .)
+    PIPE            reduce using rule 32 (expressao_logica -> different .)
+    EQUALS          reduce using rule 32 (expressao_logica -> different .)
+    EXCLAMATION     reduce using rule 32 (expressao_logica -> different .)
+    GREATER         reduce using rule 32 (expressao_logica -> different .)
+    LESS            reduce using rule 32 (expressao_logica -> different .)
+    $end            reduce using rule 32 (expressao_logica -> different .)
+    END_PAREN       reduce using rule 32 (expressao_logica -> different .)
 
 
 state 12
 
-    (15) exp3 -> BEG_PAREN . exp END_PAREN
-    (1) exp -> . soma
-    (2) exp -> . sub
-    (3) exp -> . exp1
-    (4) soma -> . exp PLUS exp1
-    (5) sub -> . exp MINUS exp1
-    (6) exp1 -> . mult
-    (7) exp1 -> . div
-    (8) exp1 -> . exp2
-    (9) mult -> . exp1 TIMES exp2
-    (10) div -> . exp1 DIVISION exp2
-    (11) exp2 -> . ID
-    (12) exp2 -> . NUMBER
-    (13) exp2 -> . STRING
-    (14) exp2 -> . exp3
-    (15) exp3 -> . BEG_PAREN exp END_PAREN
+    (33) expressao_logica -> greater .
 
-    ID              shift and go to state 8
-    NUMBER          shift and go to state 9
-    STRING          shift and go to state 10
-    BEG_PAREN       shift and go to state 12
+    AMPERSAND       reduce using rule 33 (expressao_logica -> greater .)
+    PIPE            reduce using rule 33 (expressao_logica -> greater .)
+    EQUALS          reduce using rule 33 (expressao_logica -> greater .)
+    EXCLAMATION     reduce using rule 33 (expressao_logica -> greater .)
+    GREATER         reduce using rule 33 (expressao_logica -> greater .)
+    LESS            reduce using rule 33 (expressao_logica -> greater .)
+    $end            reduce using rule 33 (expressao_logica -> greater .)
+    END_PAREN       reduce using rule 33 (expressao_logica -> greater .)
 
-    exp                            shift and go to state 17
-    soma                           shift and go to state 2
-    sub                            shift and go to state 3
-    exp1                           shift and go to state 4
-    mult                           shift and go to state 5
-    div                            shift and go to state 6
-    exp2                           shift and go to state 7
-    exp3                           shift and go to state 11
 
 state 13
 
-    (4) soma -> exp PLUS . exp1
-    (6) exp1 -> . mult
-    (7) exp1 -> . div
-    (8) exp1 -> . exp2
-    (9) mult -> . exp1 TIMES exp2
-    (10) div -> . exp1 DIVISION exp2
-    (11) exp2 -> . ID
-    (12) exp2 -> . NUMBER
-    (13) exp2 -> . STRING
-    (14) exp2 -> . exp3
-    (15) exp3 -> . BEG_PAREN exp END_PAREN
+    (34) expressao_logica -> less .
 
-    ID              shift and go to state 8
-    NUMBER          shift and go to state 9
-    STRING          shift and go to state 10
-    BEG_PAREN       shift and go to state 12
+    AMPERSAND       reduce using rule 34 (expressao_logica -> less .)
+    PIPE            reduce using rule 34 (expressao_logica -> less .)
+    EQUALS          reduce using rule 34 (expressao_logica -> less .)
+    EXCLAMATION     reduce using rule 34 (expressao_logica -> less .)
+    GREATER         reduce using rule 34 (expressao_logica -> less .)
+    LESS            reduce using rule 34 (expressao_logica -> less .)
+    $end            reduce using rule 34 (expressao_logica -> less .)
+    END_PAREN       reduce using rule 34 (expressao_logica -> less .)
 
-    exp1                           shift and go to state 18
-    mult                           shift and go to state 5
-    div                            shift and go to state 6
-    exp2                           shift and go to state 7
-    exp3                           shift and go to state 11
 
 state 14
 
-    (5) sub -> exp MINUS . exp1
-    (6) exp1 -> . mult
-    (7) exp1 -> . div
-    (8) exp1 -> . exp2
-    (9) mult -> . exp1 TIMES exp2
-    (10) div -> . exp1 DIVISION exp2
-    (11) exp2 -> . ID
-    (12) exp2 -> . NUMBER
-    (13) exp2 -> . STRING
-    (14) exp2 -> . exp3
-    (15) exp3 -> . BEG_PAREN exp END_PAREN
+    (35) expressao_logica -> greater_or_equal .
 
-    ID              shift and go to state 8
-    NUMBER          shift and go to state 9
-    STRING          shift and go to state 10
-    BEG_PAREN       shift and go to state 12
+    AMPERSAND       reduce using rule 35 (expressao_logica -> greater_or_equal .)
+    PIPE            reduce using rule 35 (expressao_logica -> greater_or_equal .)
+    EQUALS          reduce using rule 35 (expressao_logica -> greater_or_equal .)
+    EXCLAMATION     reduce using rule 35 (expressao_logica -> greater_or_equal .)
+    GREATER         reduce using rule 35 (expressao_logica -> greater_or_equal .)
+    LESS            reduce using rule 35 (expressao_logica -> greater_or_equal .)
+    $end            reduce using rule 35 (expressao_logica -> greater_or_equal .)
+    END_PAREN       reduce using rule 35 (expressao_logica -> greater_or_equal .)
 
-    exp1                           shift and go to state 19
-    mult                           shift and go to state 5
-    div                            shift and go to state 6
-    exp2                           shift and go to state 7
-    exp3                           shift and go to state 11
 
 state 15
 
-    (9) mult -> exp1 TIMES . exp2
-    (11) exp2 -> . ID
-    (12) exp2 -> . NUMBER
-    (13) exp2 -> . STRING
-    (14) exp2 -> . exp3
-    (15) exp3 -> . BEG_PAREN exp END_PAREN
+    (36) expressao_logica -> less_or_equal .
 
-    ID              shift and go to state 8
-    NUMBER          shift and go to state 9
-    STRING          shift and go to state 10
-    BEG_PAREN       shift and go to state 12
+    AMPERSAND       reduce using rule 36 (expressao_logica -> less_or_equal .)
+    PIPE            reduce using rule 36 (expressao_logica -> less_or_equal .)
+    EQUALS          reduce using rule 36 (expressao_logica -> less_or_equal .)
+    EXCLAMATION     reduce using rule 36 (expressao_logica -> less_or_equal .)
+    GREATER         reduce using rule 36 (expressao_logica -> less_or_equal .)
+    LESS            reduce using rule 36 (expressao_logica -> less_or_equal .)
+    $end            reduce using rule 36 (expressao_logica -> less_or_equal .)
+    END_PAREN       reduce using rule 36 (expressao_logica -> less_or_equal .)
 
-    exp2                           shift and go to state 20
-    exp3                           shift and go to state 11
 
 state 16
 
-    (10) div -> exp1 DIVISION . exp2
-    (11) exp2 -> . ID
-    (12) exp2 -> . NUMBER
-    (13) exp2 -> . STRING
-    (14) exp2 -> . exp3
-    (15) exp3 -> . BEG_PAREN exp END_PAREN
+    (37) expressao_logica -> negation .
 
-    ID              shift and go to state 8
-    NUMBER          shift and go to state 9
-    STRING          shift and go to state 10
-    BEG_PAREN       shift and go to state 12
+    AMPERSAND       reduce using rule 37 (expressao_logica -> negation .)
+    PIPE            reduce using rule 37 (expressao_logica -> negation .)
+    EQUALS          reduce using rule 37 (expressao_logica -> negation .)
+    EXCLAMATION     reduce using rule 37 (expressao_logica -> negation .)
+    GREATER         reduce using rule 37 (expressao_logica -> negation .)
+    LESS            reduce using rule 37 (expressao_logica -> negation .)
+    $end            reduce using rule 37 (expressao_logica -> negation .)
+    END_PAREN       reduce using rule 37 (expressao_logica -> negation .)
 
-    exp2                           shift and go to state 21
-    exp3                           shift and go to state 11
 
 state 17
 
-    (15) exp3 -> BEG_PAREN exp . END_PAREN
-    (4) soma -> exp . PLUS exp1
-    (5) sub -> exp . MINUS exp1
+    (38) expressao_logica -> true .
 
-    END_PAREN       shift and go to state 22
-    PLUS            shift and go to state 13
-    MINUS           shift and go to state 14
+    AMPERSAND       reduce using rule 38 (expressao_logica -> true .)
+    PIPE            reduce using rule 38 (expressao_logica -> true .)
+    EQUALS          reduce using rule 38 (expressao_logica -> true .)
+    EXCLAMATION     reduce using rule 38 (expressao_logica -> true .)
+    GREATER         reduce using rule 38 (expressao_logica -> true .)
+    LESS            reduce using rule 38 (expressao_logica -> true .)
+    $end            reduce using rule 38 (expressao_logica -> true .)
+    END_PAREN       reduce using rule 38 (expressao_logica -> true .)
 
 
 state 18
 
-    (4) soma -> exp PLUS exp1 .
-    (9) mult -> exp1 . TIMES exp2
-    (10) div -> exp1 . DIVISION exp2
+    (39) expressao_logica -> false .
 
-    PLUS            reduce using rule 4 (soma -> exp PLUS exp1 .)
-    MINUS           reduce using rule 4 (soma -> exp PLUS exp1 .)
-    $end            reduce using rule 4 (soma -> exp PLUS exp1 .)
-    END_PAREN       reduce using rule 4 (soma -> exp PLUS exp1 .)
-    TIMES           shift and go to state 15
-    DIVISION        shift and go to state 16
+    AMPERSAND       reduce using rule 39 (expressao_logica -> false .)
+    PIPE            reduce using rule 39 (expressao_logica -> false .)
+    EQUALS          reduce using rule 39 (expressao_logica -> false .)
+    EXCLAMATION     reduce using rule 39 (expressao_logica -> false .)
+    GREATER         reduce using rule 39 (expressao_logica -> false .)
+    LESS            reduce using rule 39 (expressao_logica -> false .)
+    $end            reduce using rule 39 (expressao_logica -> false .)
+    END_PAREN       reduce using rule 39 (expressao_logica -> false .)
 
 
 state 19
 
-    (5) sub -> exp MINUS exp1 .
-    (9) mult -> exp1 . TIMES exp2
-    (10) div -> exp1 . DIVISION exp2
+    (24) operando -> ID .
 
-    PLUS            reduce using rule 5 (sub -> exp MINUS exp1 .)
-    MINUS           reduce using rule 5 (sub -> exp MINUS exp1 .)
-    $end            reduce using rule 5 (sub -> exp MINUS exp1 .)
-    END_PAREN       reduce using rule 5 (sub -> exp MINUS exp1 .)
-    TIMES           shift and go to state 15
-    DIVISION        shift and go to state 16
+    AMPERSAND       reduce using rule 24 (operando -> ID .)
+    PIPE            reduce using rule 24 (operando -> ID .)
+    EQUALS          reduce using rule 24 (operando -> ID .)
+    EXCLAMATION     reduce using rule 24 (operando -> ID .)
+    GREATER         reduce using rule 24 (operando -> ID .)
+    LESS            reduce using rule 24 (operando -> ID .)
+    $end            reduce using rule 24 (operando -> ID .)
+    TIMES           reduce using rule 24 (operando -> ID .)
+    DIVISION        reduce using rule 24 (operando -> ID .)
+    MOD             reduce using rule 24 (operando -> ID .)
+    PLUS            reduce using rule 24 (operando -> ID .)
+    MINUS           reduce using rule 24 (operando -> ID .)
+    END_PAREN       reduce using rule 24 (operando -> ID .)
 
 
 state 20
 
-    (9) mult -> exp1 TIMES exp2 .
+    (25) operando -> NUMBER .
 
-    TIMES           reduce using rule 9 (mult -> exp1 TIMES exp2 .)
-    DIVISION        reduce using rule 9 (mult -> exp1 TIMES exp2 .)
-    PLUS            reduce using rule 9 (mult -> exp1 TIMES exp2 .)
-    MINUS           reduce using rule 9 (mult -> exp1 TIMES exp2 .)
-    $end            reduce using rule 9 (mult -> exp1 TIMES exp2 .)
-    END_PAREN       reduce using rule 9 (mult -> exp1 TIMES exp2 .)
+    AMPERSAND       reduce using rule 25 (operando -> NUMBER .)
+    PIPE            reduce using rule 25 (operando -> NUMBER .)
+    EQUALS          reduce using rule 25 (operando -> NUMBER .)
+    EXCLAMATION     reduce using rule 25 (operando -> NUMBER .)
+    GREATER         reduce using rule 25 (operando -> NUMBER .)
+    LESS            reduce using rule 25 (operando -> NUMBER .)
+    $end            reduce using rule 25 (operando -> NUMBER .)
+    TIMES           reduce using rule 25 (operando -> NUMBER .)
+    DIVISION        reduce using rule 25 (operando -> NUMBER .)
+    MOD             reduce using rule 25 (operando -> NUMBER .)
+    PLUS            reduce using rule 25 (operando -> NUMBER .)
+    MINUS           reduce using rule 25 (operando -> NUMBER .)
+    END_PAREN       reduce using rule 25 (operando -> NUMBER .)
 
 
 state 21
 
-    (10) div -> exp1 DIVISION exp2 .
+    (26) operando -> STRING .
 
-    TIMES           reduce using rule 10 (div -> exp1 DIVISION exp2 .)
-    DIVISION        reduce using rule 10 (div -> exp1 DIVISION exp2 .)
-    PLUS            reduce using rule 10 (div -> exp1 DIVISION exp2 .)
-    MINUS           reduce using rule 10 (div -> exp1 DIVISION exp2 .)
-    $end            reduce using rule 10 (div -> exp1 DIVISION exp2 .)
-    END_PAREN       reduce using rule 10 (div -> exp1 DIVISION exp2 .)
+    AMPERSAND       reduce using rule 26 (operando -> STRING .)
+    PIPE            reduce using rule 26 (operando -> STRING .)
+    EQUALS          reduce using rule 26 (operando -> STRING .)
+    EXCLAMATION     reduce using rule 26 (operando -> STRING .)
+    GREATER         reduce using rule 26 (operando -> STRING .)
+    LESS            reduce using rule 26 (operando -> STRING .)
+    $end            reduce using rule 26 (operando -> STRING .)
+    TIMES           reduce using rule 26 (operando -> STRING .)
+    DIVISION        reduce using rule 26 (operando -> STRING .)
+    MOD             reduce using rule 26 (operando -> STRING .)
+    PLUS            reduce using rule 26 (operando -> STRING .)
+    MINUS           reduce using rule 26 (operando -> STRING .)
+    END_PAREN       reduce using rule 26 (operando -> STRING .)
 
 
 state 22
 
-    (15) exp3 -> BEG_PAREN exp END_PAREN .
+    (27) operando -> expParenteses .
 
-    TIMES           reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
-    DIVISION        reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
-    PLUS            reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
-    MINUS           reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
-    $end            reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
-    END_PAREN       reduce using rule 15 (exp3 -> BEG_PAREN exp END_PAREN .)
+    AMPERSAND       reduce using rule 27 (operando -> expParenteses .)
+    PIPE            reduce using rule 27 (operando -> expParenteses .)
+    EQUALS          reduce using rule 27 (operando -> expParenteses .)
+    EXCLAMATION     reduce using rule 27 (operando -> expParenteses .)
+    GREATER         reduce using rule 27 (operando -> expParenteses .)
+    LESS            reduce using rule 27 (operando -> expParenteses .)
+    $end            reduce using rule 27 (operando -> expParenteses .)
+    TIMES           reduce using rule 27 (operando -> expParenteses .)
+    DIVISION        reduce using rule 27 (operando -> expParenteses .)
+    MOD             reduce using rule 27 (operando -> expParenteses .)
+    PLUS            reduce using rule 27 (operando -> expParenteses .)
+    MINUS           reduce using rule 27 (operando -> expParenteses .)
+    END_PAREN       reduce using rule 27 (operando -> expParenteses .)
 
+
+state 23
+
+    (9) p_expMatMaiorPresc -> mult .
+
+    TIMES           reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    DIVISION        reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    MOD             reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    PLUS            reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    MINUS           reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    AMPERSAND       reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    PIPE            reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    EQUALS          reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    EXCLAMATION     reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    GREATER         reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    LESS            reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    $end            reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+    END_PAREN       reduce using rule 9 (p_expMatMaiorPresc -> mult .)
+
+
+state 24
+
+    (10) p_expMatMaiorPresc -> div .
+
+    TIMES           reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    DIVISION        reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    MOD             reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    PLUS            reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    MINUS           reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    AMPERSAND       reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    PIPE            reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    EQUALS          reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    EXCLAMATION     reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    GREATER         reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    LESS            reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    $end            reduce using rule 10 (p_expMatMaiorPresc -> div .)
+    END_PAREN       reduce using rule 10 (p_expMatMaiorPresc -> div .)
+
+
+state 25
+
+    (11) p_expMatMaiorPresc -> mod .
+
+    TIMES           reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    DIVISION        reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    MOD             reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    PLUS            reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    MINUS           reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    AMPERSAND       reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    PIPE            reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    EQUALS          reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    EXCLAMATION     reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    GREATER         reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    LESS            reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    $end            reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+    END_PAREN       reduce using rule 11 (p_expMatMaiorPresc -> mod .)
+
+
+state 26
+
+    (48) negation -> EXCLAMATION . expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 39
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 27
+
+    (28) expParenteses -> BEG_PAREN . expressao END_PAREN
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 40
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 28
+
+    (40) and -> expressao AMPERSAND . AMPERSAND expressao
+
+    AMPERSAND       shift and go to state 41
+
+
+state 29
+
+    (41) or -> expressao PIPE . PIPE expressao
+
+    PIPE            shift and go to state 42
+
+
+state 30
+
+    (42) equals -> expressao EQUALS . EQUALS expressao
+
+    EQUALS          shift and go to state 43
+
+
+state 31
+
+    (43) different -> expressao EXCLAMATION . EQUALS expressao
+
+    EQUALS          shift and go to state 44
+
+
+state 32
+
+    (44) greater -> expressao GREATER . expressao
+    (46) greater_or_equal -> expressao GREATER . EQUALS expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    EQUALS          shift and go to state 46
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 45
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 33
+
+    (45) less -> expressao LESS . expressao
+    (47) less_or_equal -> expressao LESS . EQUALS expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    EQUALS          shift and go to state 48
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 47
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 34
+
+    (7) soma -> expressao_matematica PLUS . p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    BEG_PAREN       shift and go to state 27
+
+    p_expMatMaiorPresc             shift and go to state 49
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+    operando                       shift and go to state 50
+    expParenteses                  shift and go to state 22
+
+state 35
+
+    (8) sub -> expressao_matematica MINUS . p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    BEG_PAREN       shift and go to state 27
+
+    p_expMatMaiorPresc             shift and go to state 51
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+    operando                       shift and go to state 50
+    expParenteses                  shift and go to state 22
+
+state 36
+
+    (13) mult -> p_expMatMaiorPresc TIMES . operando
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    BEG_PAREN       shift and go to state 27
+
+    operando                       shift and go to state 52
+    expParenteses                  shift and go to state 22
+
+state 37
+
+    (15) div -> p_expMatMaiorPresc DIVISION . operando
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    BEG_PAREN       shift and go to state 27
+
+    operando                       shift and go to state 53
+    expParenteses                  shift and go to state 22
+
+state 38
+
+    (14) mod -> p_expMatMaiorPresc MOD . operando
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    BEG_PAREN       shift and go to state 27
+
+    operando                       shift and go to state 54
+    expParenteses                  shift and go to state 22
+
+state 39
+
+    (48) negation -> EXCLAMATION expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 48 (negation -> EXCLAMATION expressao .)
+    END_PAREN       reduce using rule 48 (negation -> EXCLAMATION expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 48 (negation -> EXCLAMATION expressao .) ]
+  ! PIPE            [ reduce using rule 48 (negation -> EXCLAMATION expressao .) ]
+  ! EQUALS          [ reduce using rule 48 (negation -> EXCLAMATION expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 48 (negation -> EXCLAMATION expressao .) ]
+  ! GREATER         [ reduce using rule 48 (negation -> EXCLAMATION expressao .) ]
+  ! LESS            [ reduce using rule 48 (negation -> EXCLAMATION expressao .) ]
+
+
+state 40
+
+    (28) expParenteses -> BEG_PAREN expressao . END_PAREN
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+    END_PAREN       shift and go to state 55
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+
+state 41
+
+    (40) and -> expressao AMPERSAND AMPERSAND . expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 56
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 42
+
+    (41) or -> expressao PIPE PIPE . expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 57
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 43
+
+    (42) equals -> expressao EQUALS EQUALS . expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 58
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 44
+
+    (43) different -> expressao EXCLAMATION EQUALS . expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 59
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 45
+
+    (44) greater -> expressao GREATER expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 44 (greater -> expressao GREATER expressao .)
+    END_PAREN       reduce using rule 44 (greater -> expressao GREATER expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 44 (greater -> expressao GREATER expressao .) ]
+  ! PIPE            [ reduce using rule 44 (greater -> expressao GREATER expressao .) ]
+  ! EQUALS          [ reduce using rule 44 (greater -> expressao GREATER expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 44 (greater -> expressao GREATER expressao .) ]
+  ! GREATER         [ reduce using rule 44 (greater -> expressao GREATER expressao .) ]
+  ! LESS            [ reduce using rule 44 (greater -> expressao GREATER expressao .) ]
+
+
+state 46
+
+    (46) greater_or_equal -> expressao GREATER EQUALS . expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 60
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 47
+
+    (45) less -> expressao LESS expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 45 (less -> expressao LESS expressao .)
+    END_PAREN       reduce using rule 45 (less -> expressao LESS expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 45 (less -> expressao LESS expressao .) ]
+  ! PIPE            [ reduce using rule 45 (less -> expressao LESS expressao .) ]
+  ! EQUALS          [ reduce using rule 45 (less -> expressao LESS expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 45 (less -> expressao LESS expressao .) ]
+  ! GREATER         [ reduce using rule 45 (less -> expressao LESS expressao .) ]
+  ! LESS            [ reduce using rule 45 (less -> expressao LESS expressao .) ]
+
+
+state 48
+
+    (47) less_or_equal -> expressao LESS EQUALS . expressao
+    (1) expressao -> . expressao_matematica
+    (2) expressao -> . expressao_logica
+    (3) expressao -> . operando
+    (4) expressao_matematica -> . soma
+    (5) expressao_matematica -> . sub
+    (6) expressao_matematica -> . p_expMatMaiorPresc
+    (29) expressao_logica -> . and
+    (30) expressao_logica -> . or
+    (31) expressao_logica -> . equals
+    (32) expressao_logica -> . different
+    (33) expressao_logica -> . greater
+    (34) expressao_logica -> . less
+    (35) expressao_logica -> . greater_or_equal
+    (36) expressao_logica -> . less_or_equal
+    (37) expressao_logica -> . negation
+    (38) expressao_logica -> . true
+    (39) expressao_logica -> . false
+    (24) operando -> . ID
+    (25) operando -> . NUMBER
+    (26) operando -> . STRING
+    (27) operando -> . expParenteses
+    (7) soma -> . expressao_matematica PLUS p_expMatMaiorPresc
+    (8) sub -> . expressao_matematica MINUS p_expMatMaiorPresc
+    (9) p_expMatMaiorPresc -> . mult
+    (10) p_expMatMaiorPresc -> . div
+    (11) p_expMatMaiorPresc -> . mod
+    (12) p_expMatMaiorPresc -> . operando
+    (40) and -> . expressao AMPERSAND AMPERSAND expressao
+    (41) or -> . expressao PIPE PIPE expressao
+    (42) equals -> . expressao EQUALS EQUALS expressao
+    (43) different -> . expressao EXCLAMATION EQUALS expressao
+    (44) greater -> . expressao GREATER expressao
+    (45) less -> . expressao LESS expressao
+    (46) greater_or_equal -> . expressao GREATER EQUALS expressao
+    (47) less_or_equal -> . expressao LESS EQUALS expressao
+    (48) negation -> . EXCLAMATION expressao
+    (28) expParenteses -> . BEG_PAREN expressao END_PAREN
+    (13) mult -> . p_expMatMaiorPresc TIMES operando
+    (15) div -> . p_expMatMaiorPresc DIVISION operando
+    (14) mod -> . p_expMatMaiorPresc MOD operando
+
+    true            shift and go to state 17
+    false           shift and go to state 18
+    ID              shift and go to state 19
+    NUMBER          shift and go to state 20
+    STRING          shift and go to state 21
+    EXCLAMATION     shift and go to state 26
+    BEG_PAREN       shift and go to state 27
+
+    expressao                      shift and go to state 61
+    expressao_matematica           shift and go to state 2
+    expressao_logica               shift and go to state 3
+    operando                       shift and go to state 4
+    soma                           shift and go to state 5
+    sub                            shift and go to state 6
+    p_expMatMaiorPresc             shift and go to state 7
+    and                            shift and go to state 8
+    or                             shift and go to state 9
+    equals                         shift and go to state 10
+    different                      shift and go to state 11
+    greater                        shift and go to state 12
+    less                           shift and go to state 13
+    greater_or_equal               shift and go to state 14
+    less_or_equal                  shift and go to state 15
+    negation                       shift and go to state 16
+    expParenteses                  shift and go to state 22
+    mult                           shift and go to state 23
+    div                            shift and go to state 24
+    mod                            shift and go to state 25
+
+state 49
+
+    (7) soma -> expressao_matematica PLUS p_expMatMaiorPresc .
+    (13) mult -> p_expMatMaiorPresc . TIMES operando
+    (15) div -> p_expMatMaiorPresc . DIVISION operando
+    (14) mod -> p_expMatMaiorPresc . MOD operando
+
+    PLUS            reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    MINUS           reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    AMPERSAND       reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    PIPE            reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    EQUALS          reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    EXCLAMATION     reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    GREATER         reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    LESS            reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    $end            reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    END_PAREN       reduce using rule 7 (soma -> expressao_matematica PLUS p_expMatMaiorPresc .)
+    TIMES           shift and go to state 36
+    DIVISION        shift and go to state 37
+    MOD             shift and go to state 38
+
+
+state 50
+
+    (12) p_expMatMaiorPresc -> operando .
+
+    TIMES           reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    DIVISION        reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    MOD             reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    PLUS            reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    MINUS           reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    AMPERSAND       reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    PIPE            reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    EQUALS          reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    EXCLAMATION     reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    GREATER         reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    LESS            reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    $end            reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+    END_PAREN       reduce using rule 12 (p_expMatMaiorPresc -> operando .)
+
+
+state 51
+
+    (8) sub -> expressao_matematica MINUS p_expMatMaiorPresc .
+    (13) mult -> p_expMatMaiorPresc . TIMES operando
+    (15) div -> p_expMatMaiorPresc . DIVISION operando
+    (14) mod -> p_expMatMaiorPresc . MOD operando
+
+    PLUS            reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    MINUS           reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    AMPERSAND       reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    PIPE            reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    EQUALS          reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    EXCLAMATION     reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    GREATER         reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    LESS            reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    $end            reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    END_PAREN       reduce using rule 8 (sub -> expressao_matematica MINUS p_expMatMaiorPresc .)
+    TIMES           shift and go to state 36
+    DIVISION        shift and go to state 37
+    MOD             shift and go to state 38
+
+
+state 52
+
+    (13) mult -> p_expMatMaiorPresc TIMES operando .
+
+    TIMES           reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    DIVISION        reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    MOD             reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    PLUS            reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    MINUS           reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    AMPERSAND       reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    PIPE            reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    EQUALS          reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    EXCLAMATION     reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    GREATER         reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    LESS            reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    $end            reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+    END_PAREN       reduce using rule 13 (mult -> p_expMatMaiorPresc TIMES operando .)
+
+
+state 53
+
+    (15) div -> p_expMatMaiorPresc DIVISION operando .
+
+    TIMES           reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    DIVISION        reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    MOD             reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    PLUS            reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    MINUS           reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    AMPERSAND       reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    PIPE            reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    EQUALS          reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    EXCLAMATION     reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    GREATER         reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    LESS            reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    $end            reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+    END_PAREN       reduce using rule 15 (div -> p_expMatMaiorPresc DIVISION operando .)
+
+
+state 54
+
+    (14) mod -> p_expMatMaiorPresc MOD operando .
+
+    TIMES           reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    DIVISION        reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    MOD             reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    PLUS            reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    MINUS           reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    AMPERSAND       reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    PIPE            reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    EQUALS          reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    EXCLAMATION     reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    GREATER         reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    LESS            reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    $end            reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+    END_PAREN       reduce using rule 14 (mod -> p_expMatMaiorPresc MOD operando .)
+
+
+state 55
+
+    (28) expParenteses -> BEG_PAREN expressao END_PAREN .
+
+    AMPERSAND       reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    PIPE            reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    EQUALS          reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    EXCLAMATION     reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    GREATER         reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    LESS            reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    $end            reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    TIMES           reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    DIVISION        reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    MOD             reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    PLUS            reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    MINUS           reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+    END_PAREN       reduce using rule 28 (expParenteses -> BEG_PAREN expressao END_PAREN .)
+
+
+state 56
+
+    (40) and -> expressao AMPERSAND AMPERSAND expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 40 (and -> expressao AMPERSAND AMPERSAND expressao .)
+    END_PAREN       reduce using rule 40 (and -> expressao AMPERSAND AMPERSAND expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 40 (and -> expressao AMPERSAND AMPERSAND expressao .) ]
+  ! PIPE            [ reduce using rule 40 (and -> expressao AMPERSAND AMPERSAND expressao .) ]
+  ! EQUALS          [ reduce using rule 40 (and -> expressao AMPERSAND AMPERSAND expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 40 (and -> expressao AMPERSAND AMPERSAND expressao .) ]
+  ! GREATER         [ reduce using rule 40 (and -> expressao AMPERSAND AMPERSAND expressao .) ]
+  ! LESS            [ reduce using rule 40 (and -> expressao AMPERSAND AMPERSAND expressao .) ]
+
+
+state 57
+
+    (41) or -> expressao PIPE PIPE expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 41 (or -> expressao PIPE PIPE expressao .)
+    END_PAREN       reduce using rule 41 (or -> expressao PIPE PIPE expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 41 (or -> expressao PIPE PIPE expressao .) ]
+  ! PIPE            [ reduce using rule 41 (or -> expressao PIPE PIPE expressao .) ]
+  ! EQUALS          [ reduce using rule 41 (or -> expressao PIPE PIPE expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 41 (or -> expressao PIPE PIPE expressao .) ]
+  ! GREATER         [ reduce using rule 41 (or -> expressao PIPE PIPE expressao .) ]
+  ! LESS            [ reduce using rule 41 (or -> expressao PIPE PIPE expressao .) ]
+
+
+state 58
+
+    (42) equals -> expressao EQUALS EQUALS expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 42 (equals -> expressao EQUALS EQUALS expressao .)
+    END_PAREN       reduce using rule 42 (equals -> expressao EQUALS EQUALS expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 42 (equals -> expressao EQUALS EQUALS expressao .) ]
+  ! PIPE            [ reduce using rule 42 (equals -> expressao EQUALS EQUALS expressao .) ]
+  ! EQUALS          [ reduce using rule 42 (equals -> expressao EQUALS EQUALS expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 42 (equals -> expressao EQUALS EQUALS expressao .) ]
+  ! GREATER         [ reduce using rule 42 (equals -> expressao EQUALS EQUALS expressao .) ]
+  ! LESS            [ reduce using rule 42 (equals -> expressao EQUALS EQUALS expressao .) ]
+
+
+state 59
+
+    (43) different -> expressao EXCLAMATION EQUALS expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 43 (different -> expressao EXCLAMATION EQUALS expressao .)
+    END_PAREN       reduce using rule 43 (different -> expressao EXCLAMATION EQUALS expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 43 (different -> expressao EXCLAMATION EQUALS expressao .) ]
+  ! PIPE            [ reduce using rule 43 (different -> expressao EXCLAMATION EQUALS expressao .) ]
+  ! EQUALS          [ reduce using rule 43 (different -> expressao EXCLAMATION EQUALS expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 43 (different -> expressao EXCLAMATION EQUALS expressao .) ]
+  ! GREATER         [ reduce using rule 43 (different -> expressao EXCLAMATION EQUALS expressao .) ]
+  ! LESS            [ reduce using rule 43 (different -> expressao EXCLAMATION EQUALS expressao .) ]
+
+
+state 60
+
+    (46) greater_or_equal -> expressao GREATER EQUALS expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 46 (greater_or_equal -> expressao GREATER EQUALS expressao .)
+    END_PAREN       reduce using rule 46 (greater_or_equal -> expressao GREATER EQUALS expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 46 (greater_or_equal -> expressao GREATER EQUALS expressao .) ]
+  ! PIPE            [ reduce using rule 46 (greater_or_equal -> expressao GREATER EQUALS expressao .) ]
+  ! EQUALS          [ reduce using rule 46 (greater_or_equal -> expressao GREATER EQUALS expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 46 (greater_or_equal -> expressao GREATER EQUALS expressao .) ]
+  ! GREATER         [ reduce using rule 46 (greater_or_equal -> expressao GREATER EQUALS expressao .) ]
+  ! LESS            [ reduce using rule 46 (greater_or_equal -> expressao GREATER EQUALS expressao .) ]
+
+
+state 61
+
+    (47) less_or_equal -> expressao LESS EQUALS expressao .
+    (40) and -> expressao . AMPERSAND AMPERSAND expressao
+    (41) or -> expressao . PIPE PIPE expressao
+    (42) equals -> expressao . EQUALS EQUALS expressao
+    (43) different -> expressao . EXCLAMATION EQUALS expressao
+    (44) greater -> expressao . GREATER expressao
+    (45) less -> expressao . LESS expressao
+    (46) greater_or_equal -> expressao . GREATER EQUALS expressao
+    (47) less_or_equal -> expressao . LESS EQUALS expressao
+
+  ! shift/reduce conflict for AMPERSAND resolved as shift
+  ! shift/reduce conflict for PIPE resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for EXCLAMATION resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+    $end            reduce using rule 47 (less_or_equal -> expressao LESS EQUALS expressao .)
+    END_PAREN       reduce using rule 47 (less_or_equal -> expressao LESS EQUALS expressao .)
+    AMPERSAND       shift and go to state 28
+    PIPE            shift and go to state 29
+    EQUALS          shift and go to state 30
+    EXCLAMATION     shift and go to state 31
+    GREATER         shift and go to state 32
+    LESS            shift and go to state 33
+
+  ! AMPERSAND       [ reduce using rule 47 (less_or_equal -> expressao LESS EQUALS expressao .) ]
+  ! PIPE            [ reduce using rule 47 (less_or_equal -> expressao LESS EQUALS expressao .) ]
+  ! EQUALS          [ reduce using rule 47 (less_or_equal -> expressao LESS EQUALS expressao .) ]
+  ! EXCLAMATION     [ reduce using rule 47 (less_or_equal -> expressao LESS EQUALS expressao .) ]
+  ! GREATER         [ reduce using rule 47 (less_or_equal -> expressao LESS EQUALS expressao .) ]
+  ! LESS            [ reduce using rule 47 (less_or_equal -> expressao LESS EQUALS expressao .) ]
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for AMPERSAND in state 39 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 39 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 39 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 39 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 39 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 39 resolved as shift
+WARNING: shift/reduce conflict for AMPERSAND in state 45 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 45 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 45 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 45 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 45 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 45 resolved as shift
+WARNING: shift/reduce conflict for AMPERSAND in state 47 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 47 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 47 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 47 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 47 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 47 resolved as shift
+WARNING: shift/reduce conflict for AMPERSAND in state 56 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 56 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 56 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 56 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 56 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 56 resolved as shift
+WARNING: shift/reduce conflict for AMPERSAND in state 57 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 57 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 57 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 57 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 57 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 57 resolved as shift
+WARNING: shift/reduce conflict for AMPERSAND in state 58 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 58 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 58 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 58 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 58 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 58 resolved as shift
+WARNING: shift/reduce conflict for AMPERSAND in state 59 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 59 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 59 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 59 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 59 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 59 resolved as shift
+WARNING: shift/reduce conflict for AMPERSAND in state 60 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 60 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 60 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 60 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 60 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 60 resolved as shift
+WARNING: shift/reduce conflict for AMPERSAND in state 61 resolved as shift
+WARNING: shift/reduce conflict for PIPE in state 61 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 61 resolved as shift
+WARNING: shift/reduce conflict for EXCLAMATION in state 61 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 61 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 61 resolved as shift
+WARNING: reduce/reduce conflict in state 4 resolved using rule (expressao -> operando)
+WARNING: rejected rule (p_expMatMaiorPresc -> operando) in state 4
