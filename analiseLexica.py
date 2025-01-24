@@ -25,7 +25,7 @@ reserved = {
 
 breakLine = {1: 0}
 # Definindo Tokens e padroes
-tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","AMPERSAND","PIPE"] + list(reserved.values())
+tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -93,12 +93,13 @@ def t_error(t):
     global isFine 
     isFine  = False
 
-def t_newline(t):
+def t_NEWLINE(t):
     r'\n'
     global breakLine
-    breakLine[t.lineno] = t.lexpos + 1
-    breakLine[t.lineno + 1] = t.lexpos + 1
+    breakLine[t.lineno] = t.lexpos
+    breakLine[t.lineno + 1] = t.lexpos + 2
     t.lexer.lineno += len(t.value)
+    return t
 
 lexer = lex.lex()
 
