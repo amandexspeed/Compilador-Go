@@ -58,18 +58,6 @@ def p_codigo(p):
             if(p[2].__class__ == list ):
                 p[0] = [p[1]] + p[2]
 
-def p_del_est(p):
-    '''del_est : delimitador estruturas'''
-    p[0] = p[2]
-
-def p_est_del(p):
-    '''est_del : estruturas delimitador'''
-    p[0] = p[1]
-
-def p_del_est_del(p):
-    '''del_est_del : delimitador estruturas delimitador'''
-    p[0] = p[2]
-
 def p_delimitador(p):
     '''delimitador : SEMICOLON delimitador 
                    | SEMICOLON
