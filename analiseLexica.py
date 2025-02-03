@@ -25,7 +25,7 @@ reserved = {
 
 breakLine = {1: 0}
 # Definindo Tokens e padroes
-tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
+tokens = ["INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -51,8 +51,11 @@ def adjustBlockComment(t):
     t.lexer.lineno -= 1
 
 t_PLUS    = r'\+'
+t_INCREMENT = r'\+\+'
 t_MINUS   = r'-'
+t_DECREMENT = r'--'
 t_EQUALS  = r'='
+t_DIFFERENT = r'!='
 t_TIMES   = r'\*'
 t_DIVISION = r'/'
 t_MOD = r'%'

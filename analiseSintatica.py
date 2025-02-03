@@ -44,7 +44,7 @@ def p_tipo_retorno(p):
 
 
 def p_codigo(p):
-    '''codigo : estruturas codigo
+    '''codigo : estruturas delimitador codigo
               | estruturas
               | delimitador codigo
               | delimitador'''
@@ -59,10 +59,13 @@ def p_codigo(p):
                 p[0] = [p[1]] + p[2]
 
 def p_delimitador(p):
-    '''delimitador : SEMICOLON delimitador 
-                   | SEMICOLON
-                   | NEWLINE delimitador
-                   | NEWLINE'''
+    '''delimitador : caracteresQuebras delimitador 
+                   | caracteresQuebras'''
+    p[0] = p[1]
+
+def p_caracteresQuebras(p):
+    '''caracteresQuebras : NEWLINE
+                         | SEMICOLON'''
     p[0] = p[1]
 
 def p_estruturas(p):
@@ -102,7 +105,7 @@ def p_equals (p):
     p[0] = p[1] == p[4]
 
 def p_different (p):
-    '''different : expressao_n2 EXCLAMATION EQUALS expressao_n3'''
+    '''different : expressao_n3 DIFFERENT expressao_n3'''
     p[0] = p[1] != p[4]
 
 def p_greater (p):
@@ -165,30 +168,30 @@ def p_expressao_n5(p):
 
 def p_unario(p):
     ''' unario : negation
-                | incremento
-                | decremento
-                | pre_incremento
-                | pre_decremento'''
+               | incremento
+               | decremento
+               | pre_incremento
+               | pre_decremento'''
     p[0] = p[1]
 
 def p_negation (p):
-    '''negation : EXCLAMATION expressao_n5'''
+    '''negation : EXCLAMATION operando'''
     p[0] = not p[2]
 
 def p_incremento(p):
-    '''incremento : ID PLUS PLUS'''
+    '''incremento : ID INCREMENT'''
     p[0] = variaveis[p[1]] + 1
 
 def p_pre_incremento(p):
-    '''pre_incremento : PLUS PLUS ID'''
+    '''pre_incremento : INCREMENT ID'''
     p[0] = variaveis[p[1]] + 1
 
 def p_decremento(p):
-    '''decremento : ID MINUS MINUS'''
+    '''decremento : ID DECREMENT'''
     p[0] = variaveis[p[1]] - 1
 
 def p_pre_decremento(p):
-    '''pre_decremento : MINUS MINUS ID''' 
+    '''pre_decremento : DECREMENT ID''' 
     p[0] = variaveis[p[1]] - 1
 
 
