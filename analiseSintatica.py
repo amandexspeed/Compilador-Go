@@ -288,8 +288,7 @@ def p_assign_div(p):
     p[0] = variaveis[p[1]] / p[4]
     
 def p_declaracao(p):
-    '''declaracao : lista_identificadores COLON EQUALS lista_valores
-                  | lista_identificadores COLON EQUALS lista_valores SEMICOLON'''
+    '''declaracao : lista_identificadores COLON EQUALS lista_valores'''
     
     for i in range(len(p[1])):
         variaveis[p[1][i]] = p[4][i]
