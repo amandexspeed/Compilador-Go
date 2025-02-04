@@ -23,7 +23,7 @@ def p_empty(p):
     pass
 
 def p_pacote(p):
-    '''pacote : PACKAGE ID NEWLINE'''
+    '''pacote : PACKAGE ID'''
     p[0] = p[1]
 
 def p_importacao(p):
@@ -44,29 +44,28 @@ def p_tipo_retorno(p):
 
 
 def p_codigo(p):
-    '''codigo : estruturas delimitador codigo
-              | estruturas
-              | delimitador codigo
-              | delimitador'''
+    '''codigo : lista_estruturas'''
 
-    if len(p) == 2:
-        p[0] = p[1]
+    p[0] = p[1]
+
+def p_lista_estruturas(p):
+    '''lista_estruturas : lista_estruturas estruturaBase
+                        | empty'''
+    if len(p) == 3:
+        p[0] = p[1] + [p[2]]
     else:
         if(p[1].__class__ == list):
-            p[0] = p[1] + [p[2]]
+            p[0] = p[1]
         else:
-            if(p[2].__class__ == list ):
-                p[0] = [p[1]] + p[2]
+            p[0] = [p[1]]
 
-def p_delimitador(p):
-    '''delimitador : caracteresQuebras delimitador 
-                   | caracteresQuebras'''
-    p[0] = p[1]
-
-def p_caracteresQuebras(p):
-    '''caracteresQuebras : NEWLINE
-                         | SEMICOLON'''
-    p[0] = p[1]
+def p_estruturaBase(p):
+    '''estruturaBase : estruturas delimitador
+                     | NEWLINE estruturas delimitador'''
+    if(len(p) == 4):
+        p[0] = p[2]
+    else:
+        p[0] = p[1]
 
 def p_estruturas(p):
     """estruturas : atribuicao
@@ -75,6 +74,12 @@ def p_estruturas(p):
                   | estrutura_for
                   | unario"""
     p[0] = p[1]
+ 
+
+def p_delimitador(p):
+    '''delimitador : NEWLINE
+                   | SEMICOLON
+                   | SEMICOLON NEWLINE'''
 
 def p_expressao(p):
     '''expressao : and

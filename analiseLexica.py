@@ -97,10 +97,10 @@ def t_error(t):
     isFine  = False
 
 def t_NEWLINE(t):
-    r'\n'
+    r'\n+'
     global breakLine
-    breakLine[t.lineno] = t.lexpos
-    breakLine[t.lineno + 1] = t.lexpos + 2
+    for i in range(t.value.count("\n")):
+        breakLine[(t.lineno + i)+1] = t.lexpos + i
     t.lexer.lineno += len(t.value)
     return t
 
