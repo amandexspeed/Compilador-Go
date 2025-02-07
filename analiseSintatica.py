@@ -8,22 +8,50 @@ from analiseLexica import arquivos_go
 variaveis = {}
 
 def p_programa(p):
-    '''programa : pacote NEWLINE importacao funcoes_codigo'''
+    '''programa : pacote NEWLINE importacao declaracaoGlobal NEWLINE funcoes_codigo'''
     p[0] = (p[1], p[2], p[3])
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
                       | funcao
-                      | codigo delimitador funcoes_codigo
-                      | codigo'''
+                      | empty'''
     p[0] = p[1]
 
 def p_empty(p):
     'empty :'
     pass
 
+def p_listaGlobal(p):
+    '''listaGlobal : ID ID EQUALS constante NEWLINE listaGlobal 
+                   | ID ID NEWLINE listaGlobal
+                   | ID ID EQUALS constante
+                   | ID ID
+                   | empty'''
+    
+    if(len(p) == 6):
+        p[0] = (p[1], p[2], p[3], p[4], p[5])
+        variaveis[p[3]] = p[4]
+    elif(len(p) == 4):
+        variaveis[p[3]] = None
+        p[0] = (p[1], p[2], p[3], p[4])
+
+def p_declaracaoGlobal(p):
+    '''declaracaoGlobal : VAR ID ID EQUALS constante
+                        | VAR ID ID
+                        | VAR BEG_PAREN listaGlobal END_PAREN
+                        | VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+                        | empty'''
+    if(len(p) == 6):
+        p[0] = (p[1], p[2], p[3], p[4], p[5])
+        variaveis[p[3]] = p[4]
+    elif(len(p) == 4):
+        variaveis[p[3]] = None
+        p[0] = (p[1], p[2], p[3], p[4])
+
+
+
 def p_pacote(p):
-    '''pacote : PACKAGE ID NEWLINE'''
+    '''pacote : PACKAGE ID'''
     p[0] = p[1]
 
 def p_importacao(p):
@@ -44,37 +72,25 @@ def p_tipo_retorno(p):
 
 
 def p_codigo(p):
-    '''codigo : estruturas codigo
-              | estruturas
-              | delimitador codigo
-              | delimitador'''
+    '''codigo : lista_estruturas'''
 
-    if len(p) == 2:
-        p[0] = p[1]
-    else:
-        if(p[1].__class__ == list):
-            p[0] = p[1] + [p[2]]
-        else:
-            if(p[2].__class__ == list ):
-                p[0] = [p[1]] + p[2]
-
-def p_del_est(p):
-    '''del_est : delimitador estruturas'''
-    p[0] = p[2]
-
-def p_est_del(p):
-    '''est_del : estruturas delimitador'''
     p[0] = p[1]
 
-def p_del_est_del(p):
-    '''del_est_del : delimitador estruturas delimitador'''
-    p[0] = p[2]
+def p_lista_estruturas(p):
+    '''lista_estruturas : lista_estruturas estruturasBase
+                        | empty'''
+    if len(p) == 3:
+        p[0] = p[1] + [p[2]]
+    else:
+        if(p[1].__class__ == list):
+            p[0] = p[1]
+        else:
+            p[0] = [p[1]]
 
-def p_delimitador(p):
-    '''delimitador : SEMICOLON delimitador 
-                   | SEMICOLON
-                   | NEWLINE delimitador
-                   | NEWLINE'''
+def p_estruturasBase(p):
+    '''estruturasBase : estruturas delimitador
+                      | NEWLINE'''
+                      
     p[0] = p[1]
 
 def p_estruturas(p):
@@ -84,6 +100,11 @@ def p_estruturas(p):
                   | estrutura_for
                   | unario"""
     p[0] = p[1]
+ 
+
+def p_delimitador(p):
+    '''delimitador : NEWLINE
+                   | SEMICOLON'''
 
 def p_expressao(p):
     '''expressao : and
@@ -114,7 +135,7 @@ def p_equals (p):
     p[0] = p[1] == p[4]
 
 def p_different (p):
-    '''different : expressao_n2 EXCLAMATION EQUALS expressao_n3'''
+    '''different : expressao_n3 DIFFERENT expressao_n3'''
     p[0] = p[1] != p[4]
 
 def p_greater (p):
@@ -177,40 +198,43 @@ def p_expressao_n5(p):
 
 def p_unario(p):
     ''' unario : negation
-                | incremento
-                | decremento
-                | pre_incremento
-                | pre_decremento'''
+               | incremento
+               | decremento
+               | pre_incremento
+               | pre_decremento'''
     p[0] = p[1]
 
 def p_negation (p):
-    '''negation : EXCLAMATION expressao_n5'''
+    '''negation : EXCLAMATION operando'''
     p[0] = not p[2]
 
 def p_incremento(p):
-    '''incremento : ID PLUS PLUS'''
+    '''incremento : ID INCREMENT'''
     p[0] = variaveis[p[1]] + 1
 
 def p_pre_incremento(p):
-    '''pre_incremento : PLUS PLUS ID'''
+    '''pre_incremento : INCREMENT ID'''
     p[0] = variaveis[p[1]] + 1
 
 def p_decremento(p):
-    '''decremento : ID MINUS MINUS'''
+    '''decremento : ID DECREMENT'''
     p[0] = variaveis[p[1]] - 1
 
 def p_pre_decremento(p):
-    '''pre_decremento : MINUS MINUS ID''' 
+    '''pre_decremento : DECREMENT ID''' 
     p[0] = variaveis[p[1]] - 1
-
 
 def p_operando(p):
     '''operando : identificador
-                | NUMBER 
-                | STRING 
-                | TRUE
-                | FALSE
+                | constante
                 | expParenteses'''
+    p[0] = p[1]
+
+def p_constante(p):
+    '''constante : NUMBER
+                 | STRING
+                 | TRUE
+                 | FALSE'''
     p[0] = p[1]
 
 def p_identificador(p):
@@ -297,8 +321,7 @@ def p_assign_div(p):
     p[0] = variaveis[p[1]] / p[4]
     
 def p_declaracao(p):
-    '''declaracao : lista_identificadores COLON EQUALS lista_valores
-                  | lista_identificadores COLON EQUALS lista_valores SEMICOLON'''
+    '''declaracao : lista_identificadores COLON EQUALS lista_valores'''
     
     for i in range(len(p[1])):
         variaveis[p[1][i]] = p[4][i]
