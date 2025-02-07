@@ -8,37 +8,25 @@ arquivos_go = [arquivo for arquivo in arquivos if arquivo.endswith('.go')]
 
 import ply.lex as lex     #importa módulo ply.lex e o renomeia para lex
 
-#Lista com todas as palavras reservadas
+#Lista com as palavras reservadas
 reserved = {
-    'break': 'break',
-    'case': 'case',
-    'chan': 'chan',
-    'const': 'const',
-    'continue': 'continue',
-    'default': 'default',
-    'defer': 'defer',
-    'else': 'else',
-    'fallthrough': 'fallthrough',
-    'for': 'for',
-    'func': 'func',
-    'go': 'go',
-    'goto': 'goto',
-    'if': 'if',
-    'import': 'import',
-    'interface': 'interface',
-    'map': 'map',
-    'package': 'package',
-    'range': 'range',
-    'return': 'return',
-    'select': 'select',
-    'struct': 'struct',
-    'switch': 'switch',
-    'type': 'type',
-    'var': 'var'
+    'true':'TRUE',
+    'false':'FALSE',
+    'break':'BREAK',
+    'const':'CONST',
+    'else':'ELSE',
+    'for':'FOR',
+    'func':'FUNC',
+    'if':'IF',
+    'import:':'IMPORT',
+    'package':'PACKAGE',
+    'return':'RETURN', 
+    'var':'VAR'  
 }
 
+breakLine = {1: 0}
 # Definindo Tokens e padroes
-tokens = ["PLUS", "MINUS","TIMES","DIVISION","MOD","POWER","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING"] + list(reserved.values())
+tokens = ["INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -46,6 +34,7 @@ def t_COMMENT(t):
     pass
 
 def adjustLineComment(t):
+    global breakLine
     breakLine[t.lineno] = t.lexpos + 1
     t.lexer.lineno += len(t.value)
 
@@ -55,6 +44,7 @@ def t_MULTILINE_COMMENT(t):
     pass
 
 def adjustBlockComment(t):
+    global breakLine
     textParts = t.value.split("\n")
     for text in textParts:
         breakLine[t.lineno] = t.lexpos + 1
@@ -62,8 +52,11 @@ def adjustBlockComment(t):
     t.lexer.lineno -= 1
 
 t_PLUS    = r'\+'
+t_INCREMENT = r'\+\+'
 t_MINUS   = r'-'
+t_DECREMENT = r'--'
 t_EQUALS  = r'='
+t_DIFFERENT = r'!='
 t_TIMES   = r'\*'
 t_DIVISION = r'/'
 t_MOD = r'%'
@@ -79,7 +72,8 @@ t_COLON = r'\:'
 t_SEMICOLON = r'\;'
 t_COMMA = r'\,'
 t_EXCLAMATION = r'\!'
-
+t_AMPERSAND = r'\&'
+t_PIPE = r'\|'
 
 t_ignore = ' \t.'
 
@@ -103,12 +97,13 @@ def t_error(t):
     global isFine 
     isFine  = False
 
-def t_newline(t):
-    #r'\n+'
-    r'\n'
-    breakLine[t.lineno] = t.lexpos + 1
-    breakLine[t.lineno + 1] = t.lexpos + 1
+def t_NEWLINE(t):
+    r'\n+'
+    global breakLine
+    for i in range(t.value.count("\n")):
+        breakLine[(t.lineno + i)+1] = t.lexpos + i
     t.lexer.lineno += len(t.value)
+    return t
 
 lexer = lex.lex()
 
@@ -116,6 +111,7 @@ def main():
 
     global isFine
     global lexer
+    global breakLine
 
     # Criando Analisador Lexico, passando entrada
     if len(arquivos_go) == 0:
@@ -145,6 +141,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-"""else:
-    lexer = lex.lex()
-""" 
