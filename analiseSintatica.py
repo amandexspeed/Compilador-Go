@@ -8,19 +8,47 @@ from analiseLexica import arquivos_go
 variaveis = {}
 
 def p_programa(p):
-    '''programa : pacote NEWLINE importacao funcoes_codigo'''
+    '''programa : pacote NEWLINE importacao declaracaoGlobal NEWLINE funcoes_codigo'''
     p[0] = (p[1], p[2], p[3])
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
                       | funcao
-                      | codigo delimitador funcoes_codigo
-                      | codigo'''
+                      | empty'''
     p[0] = p[1]
 
 def p_empty(p):
     'empty :'
     pass
+
+def p_listaGlobal(p):
+    '''listaGlobal : ID ID EQUALS constante NEWLINE listaGlobal 
+                   | ID ID NEWLINE listaGlobal
+                   | ID ID EQUALS constante
+                   | ID ID
+                   | empty'''
+    
+    if(len(p) == 6):
+        p[0] = (p[1], p[2], p[3], p[4], p[5])
+        variaveis[p[3]] = p[4]
+    elif(len(p) == 4):
+        variaveis[p[3]] = None
+        p[0] = (p[1], p[2], p[3], p[4])
+
+def p_declaracaoGlobal(p):
+    '''declaracaoGlobal : VAR ID ID EQUALS constante
+                        | VAR ID ID
+                        | VAR BEG_PAREN listaGlobal END_PAREN
+                        | VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+                        | empty'''
+    if(len(p) == 6):
+        p[0] = (p[1], p[2], p[3], p[4], p[5])
+        variaveis[p[3]] = p[4]
+    elif(len(p) == 4):
+        variaveis[p[3]] = None
+        p[0] = (p[1], p[2], p[3], p[4])
+
+
 
 def p_pacote(p):
     '''pacote : PACKAGE ID'''
@@ -49,7 +77,7 @@ def p_codigo(p):
     p[0] = p[1]
 
 def p_lista_estruturas(p):
-    '''lista_estruturas : lista_estruturas estruturaBase
+    '''lista_estruturas : lista_estruturas estruturasBase
                         | empty'''
     if len(p) == 3:
         p[0] = p[1] + [p[2]]
@@ -59,13 +87,11 @@ def p_lista_estruturas(p):
         else:
             p[0] = [p[1]]
 
-def p_estruturaBase(p):
-    '''estruturaBase : estruturas delimitador
-                     | NEWLINE estruturas delimitador'''
-    if(len(p) == 4):
-        p[0] = p[2]
-    else:
-        p[0] = p[1]
+def p_estruturasBase(p):
+    '''estruturasBase : estruturas delimitador
+                      | NEWLINE'''
+                      
+    p[0] = p[1]
 
 def p_estruturas(p):
     """estruturas : atribuicao
@@ -78,8 +104,7 @@ def p_estruturas(p):
 
 def p_delimitador(p):
     '''delimitador : NEWLINE
-                   | SEMICOLON
-                   | SEMICOLON NEWLINE'''
+                   | SEMICOLON'''
 
 def p_expressao(p):
     '''expressao : and
@@ -199,14 +224,17 @@ def p_pre_decremento(p):
     '''pre_decremento : DECREMENT ID''' 
     p[0] = variaveis[p[1]] - 1
 
-
 def p_operando(p):
     '''operando : identificador
-                | NUMBER 
-                | STRING 
-                | TRUE
-                | FALSE
+                | constante
                 | expParenteses'''
+    p[0] = p[1]
+
+def p_constante(p):
+    '''constante : NUMBER
+                 | STRING
+                 | TRUE
+                 | FALSE'''
     p[0] = p[1]
 
 def p_identificador(p):
