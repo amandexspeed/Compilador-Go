@@ -4,6 +4,7 @@ from analiseLexica import tokens
 from analiseLexica import lexer
 from analiseLexica import breakLine
 from analiseLexica import arquivos_go
+import sintaxeAbstrata as sa
 
 variaveis = {}
 
@@ -52,15 +53,21 @@ def p_declaracaoGlobal(p):
         variaveis[p[3]] = None
         p[0] = (p[1], p[2], p[3], p[4])
 
-
-
 def p_pacote(p):
     '''pacote : PACKAGE ID'''
-    p[0] = p[1]
+    p[0] = sa.PacoteConcrete(p[2])
 
 def p_importacao(p):
     '''importacao : IMPORT ID NEWLINE importacao
                   | empty'''
+    #| IMPORT ID NEWLINE importacao
+    if(len(p) == 5):
+        if(p[4] == None):
+            p[0] = sa.ImportacaoSimplesConcrete(p[2])
+        else:
+            p[0] = sa.ImportacaoCompostaConcrete(p[2], p[4])
+    else:
+        p[0] = p[1]
     p[0] = p[1]
 
 def p_funcao(p):
@@ -102,13 +109,15 @@ def p_estruturas(p):
                   | declaracao
                   | estrutura_if
                   | estrutura_for
-                  | unario"""
+                  | unario
+                  | chamadaFuncao"""
     p[0] = p[1]
  
 
 def p_delimitador(p):
     '''delimitador : NEWLINE
                    | SEMICOLON'''
+    p[0] = p[1]
 
 def p_expressao(p):
     '''expressao : and
@@ -231,6 +240,7 @@ def p_pre_decremento(p):
 def p_operando(p):
     '''operando : identificador
                 | constante
+                | chamadaFuncao
                 | expParenteses'''
     p[0] = p[1]
 
@@ -330,6 +340,10 @@ def p_declaracao(p):
     for i in range(len(p[1])):
         variaveis[p[1][i]] = p[4][i]
     p[0] = p[4]
+
+def p_chamadaFuncao(p):
+    '''chamadaFuncao : ID BEG_PAREN lista_parametros END_PAREN'''
+    p[0] = (p[1], p[3])
 
 def p_lista_parametros(p):
     '''lista_parametros : lista_identificadores

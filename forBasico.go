@@ -11,6 +11,7 @@ func main() {
 	for i<10 {
 		i++
 	}	
+	funcif()
 
 }
 
