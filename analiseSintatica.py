@@ -26,14 +26,18 @@ def p_listaGlobal(p):
                    | ID ID NEWLINE listaGlobal
                    | ID ID EQUALS constante
                    | ID ID
-                   | empty'''
+                   | ID ID EQUALS constante NEWLINE
+                   | ID ID NEWLINE'''
     
     if(len(p) == 6):
         p[0] = (p[1], p[2], p[3], p[4], p[5])
         variaveis[p[3]] = p[4]
     elif(len(p) == 4):
         variaveis[p[3]] = None
-        p[0] = (p[1], p[2], p[3], p[4])
+        p[0] = (p[1], p[2], p[3])
+    else:
+        p[0] = (p[1], p[2])
+        variaveis[p[2]] = None
 
 def p_declaracaoGlobal(p):
     '''declaracaoGlobal : VAR ID ID EQUALS constante
