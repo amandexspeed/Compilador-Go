@@ -10,7 +10,7 @@ variaveis = {}
 
 def p_programa(p):
     '''programa : pacote NEWLINE importacao declaracaoGlobal NEWLINE funcoes_codigo'''
-    p[0] = (p[1], p[2], p[3])
+    p[0] = sa.ProgramaConcrete(p[1], p[2], p[3])
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
