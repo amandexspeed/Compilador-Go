@@ -24,21 +24,28 @@ def p_empty(p):
 
 def p_listaGlobal(p):
     '''listaGlobal : ID ID EQUALS constante NEWLINE listaGlobal 
+                   | ID ID EQUALS constante NEWLINE
                    | ID ID NEWLINE listaGlobal
                    | ID ID EQUALS constante
-                   | ID ID
-                   | ID ID EQUALS constante NEWLINE
-                   | ID ID NEWLINE'''
+                   | ID ID NEWLINE
+                   | ID ID'''
     
-    if(len(p) == 6):
-        p[0] = (p[1], p[2], p[3], p[4], p[5])
-        variaveis[p[3]] = p[4]
-    elif(len(p) == 4):
-        variaveis[p[3]] = None
-        p[0] = (p[1], p[2], p[3])
+    if(len(p) == 7):
+        variaveis[p[1]] = p[4]
+        p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])] + p[6]
+    elif(len(p) == 6):
+        variaveis[p[1]] = p[4]
+        p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])]
+    elif(len(p) == 5):
+        if(p[4].__class__ == list):
+            variaveis[p[1]] = None
+            p[0] = [sa.DeclaracaoGlobalSimplesConcrete(p[1],p[2])] + p[4]
+        else:
+            variaveis[p[1]] = p[4]
+            p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])]
     else:
-        p[0] = (p[1], p[2])
-        variaveis[p[2]] = None
+        p[0] = [sa.DeclaracaoGlobalSimplesConcrete(p[1], p[2])]
+        variaveis[p[1]] = None
 
 def p_declaracaoGlobal(p):
     '''declaracaoGlobal : VAR ID ID EQUALS constante
@@ -47,11 +54,14 @@ def p_declaracaoGlobal(p):
                         | VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
                         | empty'''
     if(len(p) == 6):
-        p[0] = (p[1], p[2], p[3], p[4], p[5])
-        variaveis[p[3]] = p[4]
+        if(p[5].__class__ == list):
+            p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[5])
+            variaveis += p[5]
+        else:
+            p[0] = sa.DeclaracaoGlobalSimplesComValorConcrete(p[3], p[5])
     elif(len(p) == 4):
+        p[0] = sa.DeclaracaoGlobalSimplesConcrete(p[3])
         variaveis[p[3]] = None
-        p[0] = (p[1], p[2], p[3], p[4])
 
 def p_pacote(p):
     '''pacote : PACKAGE ID'''
@@ -60,7 +70,7 @@ def p_pacote(p):
 def p_importacao(p):
     '''importacao : IMPORT ID NEWLINE importacao
                   | empty'''
-    #| IMPORT ID NEWLINE importacao
+    
     if(len(p) == 5):
         if(p[4] == None):
             p[0] = sa.ImportacaoSimplesConcrete(p[2])
@@ -68,7 +78,6 @@ def p_importacao(p):
             p[0] = sa.ImportacaoCompostaConcrete(p[2], p[4])
     else:
         p[0] = p[1]
-    p[0] = p[1]
 
 def p_funcao(p):
     '''funcao : FUNC ID BEG_PAREN lista_parametros END_PAREN tipo_retorno BEG_BRACE codigo END_BRACE'''

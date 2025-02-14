@@ -23,3 +23,18 @@ class Visitor(AbstractVisitor):
         print("Importacao: ", importacao.getNome())
         importacao.nome.accept(self)
         importacao.importacoes.accept(self)
+
+    def visitDeclaracaoGlobalSimples(self, declaracao):
+        print("Declaracao: Nome da Variavel ", declaracao.nomeVariavel + " Tipo: " + declaracao.tipo)
+        declaracao.nome.accept(self)
+        declaracao.tipo.accept(self)
+
+    def visitDeclaracaoGlobalSimplesComValor(self, declaracao):
+        print("Declaracao: Nome da Variavel ", declaracao.nomeVariavel + " Tipo: " + declaracao.tipo + " Valor: " + declaracao.valor)
+        declaracao.nome.accept(self)
+        declaracao.tipo.accept(self)
+        declaracao.valor.accept(self)
+
+    def visitDeclaracaoGlobalComposta(self, declaracao):
+        for variavel in declaracao.listaVariaveis:
+            variavel.accept(self)

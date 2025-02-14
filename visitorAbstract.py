@@ -14,4 +14,15 @@ class abstratVisitor(metaclass = ABCMeta):
     def visitImportacaoComposta(self, importacao):
         pass
 
+    @abstractmethod
+    def visitDeclaracaoGlobalSimples(self, declaracao):
+        pass
+
+    @abstractmethod
+    def visitDeclaracaoGlobalSimplesComValor(self, declaracao):
+        pass
+
+    @abstractmethod
+    def visitDeclaracaoGlobalComposta(self, declaracao):
+        pass
    

@@ -47,3 +47,43 @@ class ImportacaoCompostaConcrete(Importacao):
     
     def getNome(self):
         return self.nome + self.importacoes.toList()
+    
+class DeclaracaoGlobal(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class DeclaracaoGlobalSimples(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class DeclaracaoGlobalSimplesConcrete(DeclaracaoGlobalSimples):
+    def __init__(self, nomeVariavel,tipo):
+        self.nomeVariavel = nomeVariavel
+        self.tipo = tipo
+        self.valor = None
+
+    def accept(self, visitor):
+        return visitor.visitDeclaracaoGlobalSimples(self)
+
+class DeclaracaoGlobalSimplesComValorConcrete(DeclaracaoGlobalSimples):
+    def __init__(self, nomeVariavel,tipo,valor):
+        self.nomeVariavel = nomeVariavel
+        self.tipo = tipo
+        self.valor = valor
+
+    def accept(self, visitor):
+        return visitor.visitDeclaracaoGlobalSimplesComValor(self)
+
+class DeclaracaoGlobalComposta(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class DeclaracaoGlobalCompostaConcrete(DeclaracaoGlobalComposta):
+    def _init__(self, listaVariaveis):
+        self.listaVariaveis = listaVariaveis
+
+    def accept(self, visitor):
+        return visitor.visitDeclaracaoGlobalComposta(self)
