@@ -84,7 +84,7 @@ class DeclaracaoGlobal(metaclass = ABCMeta):
     def accept(self, visitor):
         pass
 
-class DeclaracaoGlobalSimples(metaclass = ABCMeta):
+class DeclaracaoGlobalSimples(DeclaracaoGlobal,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -112,7 +112,7 @@ class DeclaracaoGlobalComposta(metaclass = ABCMeta):
     def accept(self, visitor):
         pass
 
-class DeclaracaoGlobalCompostaConcrete(DeclaracaoGlobalComposta):
+class DeclaracaoGlobalCompostaConcrete(DeclaracaoGlobal):
     def _init__(self, listaVariaveis):
         self.listaVariaveis = listaVariaveis
 
