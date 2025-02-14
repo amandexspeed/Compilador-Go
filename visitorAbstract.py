@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-class abstratVisitor(metaclass = ABCMeta):
+class AbstractVisitor(metaclass = ABCMeta):
 
     @abstractmethod
     def visitPacote(self, pacote):

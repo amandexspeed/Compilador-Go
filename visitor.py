@@ -38,3 +38,18 @@ class Visitor(AbstractVisitor):
     def visitDeclaracaoGlobalComposta(self, declaracao):
         for variavel in declaracao.listaVariaveis:
             variavel.accept(self)
+
+
+def main():
+    for arquivo in arquivos_go:
+        print("-----------Visitor no arquivo: ", arquivo,"-----------")
+        f = open(arquivo, "r")
+
+        lexer.input(f.read())
+        parser = yacc.yacc(start='programa')
+        result = parser.parse(debug=False)
+        visitor = Visitor()
+        result.accept(visitor)
+
+if __name__ == "__main__":
+    main()
