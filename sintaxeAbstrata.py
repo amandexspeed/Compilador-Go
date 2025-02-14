@@ -47,6 +47,37 @@ class ImportacaoCompostaConcrete(Importacao):
     
     def getNome(self):
         return self.nome + self.importacoes.toList()
+
+class Programa(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class ProgramaConcrete(Programa):
+    def __init__(self, pacote, importacao, declaracaoGlobal, funcoes_codigo):
+        self.pacote = pacote
+        self.importacao = importacao
+        self.declaracaoGlobal = declaracaoGlobal
+        self.funcoes_codigo = funcoes_codigo
+
+    def accept(self, visitor):
+        return visitor.visitPrograma(self)
+
+class Funcao(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class FuncaoConcrete(Funcao):
+    def __init__(self, id, lista_parametros, tipo_retorno, codigo):
+        self.id = id
+        self.lista_parametros = lista_parametros
+        self.tipo_retorno = tipo_retorno
+        self.codigo = codigo
+
+    def accept(self, visitor):
+        return visitor.visitFuncao(self)
+
     
 class DeclaracaoGlobal(metaclass = ABCMeta):
     @abstractmethod

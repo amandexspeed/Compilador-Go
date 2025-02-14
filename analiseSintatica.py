@@ -10,7 +10,7 @@ variaveis = {}
 
 def p_programa(p):
     '''programa : pacote NEWLINE importacao declaracaoGlobal NEWLINE funcoes_codigo'''
-    p[0] = (p[1], p[2], p[3])
+    p[0] = sa.ProgramaConcrete(p[1], p[3], p[4], p[6])
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
@@ -81,9 +81,7 @@ def p_importacao(p):
 
 def p_funcao(p):
     '''funcao : FUNC ID BEG_PAREN lista_parametros END_PAREN tipo_retorno BEG_BRACE codigo END_BRACE'''
-    p[0] = p[7]
-    
-'''p[0] = (p[2], p[4], p[6], p[8])''' 
+    p[0] = sa.(p[2], p[4], p[6], p[8]) 
 
 def p_tipo_retorno(p):
     '''tipo_retorno : ID
