@@ -94,10 +94,8 @@ def p_tipo_retorno(p):
                     | empty'''
     p[0] = p[1]
 
-
 def p_codigo(p):
     '''codigo : lista_estruturas'''
-
     p[0] = p[1]
 
 def p_lista_estruturas(p):
