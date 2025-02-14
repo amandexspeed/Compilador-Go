@@ -48,17 +48,23 @@ def p_listaGlobal(p):
         variaveis[p[1]] = None
 
 def p_declaracaoGlobal(p):
-    '''declaracaoGlobal : VAR ID ID EQUALS constante
-                        | VAR ID ID
+    '''declaracaoGlobal : VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+                        | VAR ID ID EQUALS constante
                         | VAR BEG_PAREN listaGlobal END_PAREN
-                        | VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+                        | VAR ID ID
                         | empty'''
     if(len(p) == 6):
-        if(p[5].__class__ == list):
-            p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[5])
-            variaveis += p[5]
+        if(p[4].__class__ == list):
+            p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[4])
+            for vars in p[4]:
+                variaveis[vars.getNomeVariavel] = vars.valor
         else:
-            p[0] = sa.DeclaracaoGlobalSimplesComValorConcrete(p[3], p[5])
+            p[0] = sa.DeclaracaoGlobalSimplesComValorConcrete(p[2],p[3], p[5])
+            variaveis[p[2]] = p[5]
+    elif(len(p) == 5):
+        p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[3])
+        for vars in p[3]:
+            variaveis[vars.getNomeVariavel] = vars.valor
     elif(len(p) == 4):
         p[0] = sa.DeclaracaoGlobalSimplesConcrete(p[3])
         variaveis[p[3]] = None
@@ -81,7 +87,7 @@ def p_importacao(p):
 
 def p_funcao(p):
     '''funcao : FUNC ID BEG_PAREN lista_parametros END_PAREN tipo_retorno BEG_BRACE codigo END_BRACE'''
-    p[0] = sa.Funcao(p[2], p[4], p[6], p[8]) 
+    p[0] = sa.FuncaoConcrete(p[2], p[4], p[6], p[8]) 
 
 def p_tipo_retorno(p):
     '''tipo_retorno : ID

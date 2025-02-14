@@ -88,6 +88,8 @@ class DeclaracaoGlobalSimples(DeclaracaoGlobal,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
+    def getNomeVariavel(self):
+        pass
 
 class DeclaracaoGlobalSimplesConcrete(DeclaracaoGlobalSimples):
     def __init__(self, nomeVariavel,tipo):
@@ -97,6 +99,9 @@ class DeclaracaoGlobalSimplesConcrete(DeclaracaoGlobalSimples):
 
     def accept(self, visitor):
         return visitor.visitDeclaracaoGlobalSimples(self)
+    
+    def getNomeVariavel(self):
+        return self.nomeVariavel
 
 class DeclaracaoGlobalSimplesComValorConcrete(DeclaracaoGlobalSimples):
     def __init__(self, nomeVariavel,tipo,valor):
@@ -107,13 +112,16 @@ class DeclaracaoGlobalSimplesComValorConcrete(DeclaracaoGlobalSimples):
     def accept(self, visitor):
         return visitor.visitDeclaracaoGlobalSimplesComValor(self)
 
+    def getNomeVariavel(self):
+        return self.nomeVariavel
+
 class DeclaracaoGlobalComposta(metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
 
 class DeclaracaoGlobalCompostaConcrete(DeclaracaoGlobal):
-    def _init__(self, listaVariaveis):
+    def __init__(self, listaVariaveis):
         self.listaVariaveis = listaVariaveis
 
     def accept(self, visitor):

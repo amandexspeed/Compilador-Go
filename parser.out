@@ -17,15 +17,15 @@ Rule 3     funcoes_codigo -> funcao
 Rule 4     funcoes_codigo -> empty
 Rule 5     empty -> <empty>
 Rule 6     listaGlobal -> ID ID EQUALS constante NEWLINE listaGlobal
-Rule 7     listaGlobal -> ID ID NEWLINE listaGlobal
-Rule 8     listaGlobal -> ID ID EQUALS constante
-Rule 9     listaGlobal -> ID ID
-Rule 10    listaGlobal -> ID ID EQUALS constante NEWLINE
-Rule 11    listaGlobal -> ID ID NEWLINE
-Rule 12    declaracaoGlobal -> VAR ID ID EQUALS constante
-Rule 13    declaracaoGlobal -> VAR ID ID
+Rule 7     listaGlobal -> ID ID EQUALS constante NEWLINE
+Rule 8     listaGlobal -> ID ID NEWLINE listaGlobal
+Rule 9     listaGlobal -> ID ID EQUALS constante
+Rule 10    listaGlobal -> ID ID NEWLINE
+Rule 11    listaGlobal -> ID ID
+Rule 12    declaracaoGlobal -> VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+Rule 13    declaracaoGlobal -> VAR ID ID EQUALS constante
 Rule 14    declaracaoGlobal -> VAR BEG_PAREN listaGlobal END_PAREN
-Rule 15    declaracaoGlobal -> VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+Rule 15    declaracaoGlobal -> VAR ID ID
 Rule 16    declaracaoGlobal -> empty
 Rule 17    pacote -> PACKAGE ID
 Rule 18    importacao -> IMPORT ID NEWLINE importacao
@@ -131,7 +131,7 @@ Terminals, with rules where they appear
 
 AMPERSAND            : 39 39
 BEG_BRACE            : 20 91 92 93 94 95 96
-BEG_PAREN            : 14 15 20 87 109
+BEG_PAREN            : 12 14 20 87 109
 BREAK                : 
 COLON                : 108
 COMMA                : 112 114
@@ -141,21 +141,21 @@ DIFFERENT            : 49
 DIVISION             : 65 107
 ELSE                 : 96 97
 END_BRACE            : 20 91 92 93 94 95 96
-END_PAREN            : 14 15 20 87 109
-EQUALS               : 6 8 10 12 48 48 52 53 98 104 105 106 107 108
+END_PAREN            : 12 14 20 87 109
+EQUALS               : 6 7 9 13 48 48 52 53 98 104 105 106 107 108
 EXCLAMATION          : 73
 FALSE                : 85
 FOR                  : 91 92 93
 FUNC                 : 20
 GREATER              : 50 52
-ID                   : 6 6 7 7 8 8 9 9 10 10 11 11 12 12 13 13 17 18 20 21 74 75 76 77 86 104 105 106 107 109 112 113
+ID                   : 6 6 7 7 8 8 9 9 10 10 11 11 13 13 15 15 17 18 20 21 74 75 76 77 86 104 105 106 107 109 112 113
 IF                   : 94 95
 IMPORT               : 18
 INCREMENT            : 74 75
 LESS                 : 51 53
 MINUS                : 58 105
 MOD                  : 64
-NEWLINE              : 1 1 6 7 10 11 15 18 27 34
+NEWLINE              : 1 1 6 7 8 10 12 18 27 34
 NUMBER               : 82
 PACKAGE              : 17
 PIPE                 : 40 40
@@ -180,7 +180,7 @@ assign_plus          : 100
 atribuicao           : 28
 chamadaFuncao        : 33 80
 codigo               : 20 91 92 93 94 95 96
-constante            : 6 8 10 12 79
+constante            : 6 7 9 13 79
 declaracao           : 29 91
 declaracaoGlobal     : 1
 decremento           : 70
@@ -213,7 +213,7 @@ importacao           : 1 18
 incremento           : 69
 less                 : 44
 less_or_equal        : 46
-listaGlobal          : 6 7 14 15
+listaGlobal          : 6 8 12 14
 lista_estruturas     : 23 24
 lista_identificadores : 98 108 110 112
 lista_parametros     : 20 109
@@ -289,10 +289,10 @@ state 5
 state 6
 
     (1) programa -> pacote NEWLINE importacao . declaracaoGlobal NEWLINE funcoes_codigo
-    (12) declaracaoGlobal -> . VAR ID ID EQUALS constante
-    (13) declaracaoGlobal -> . VAR ID ID
+    (12) declaracaoGlobal -> . VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+    (13) declaracaoGlobal -> . VAR ID ID EQUALS constante
     (14) declaracaoGlobal -> . VAR BEG_PAREN listaGlobal END_PAREN
-    (15) declaracaoGlobal -> . VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+    (15) declaracaoGlobal -> . VAR ID ID
     (16) declaracaoGlobal -> . empty
     (5) empty -> .
 
@@ -326,13 +326,13 @@ state 9
 
 state 10
 
-    (12) declaracaoGlobal -> VAR . ID ID EQUALS constante
-    (13) declaracaoGlobal -> VAR . ID ID
+    (12) declaracaoGlobal -> VAR . BEG_PAREN NEWLINE listaGlobal END_PAREN
+    (13) declaracaoGlobal -> VAR . ID ID EQUALS constante
     (14) declaracaoGlobal -> VAR . BEG_PAREN listaGlobal END_PAREN
-    (15) declaracaoGlobal -> VAR . BEG_PAREN NEWLINE listaGlobal END_PAREN
+    (15) declaracaoGlobal -> VAR . ID ID
 
-    ID              shift and go to state 14
-    BEG_PAREN       shift and go to state 15
+    BEG_PAREN       shift and go to state 14
+    ID              shift and go to state 15
 
 
 state 11
@@ -367,27 +367,27 @@ state 13
 
 state 14
 
-    (12) declaracaoGlobal -> VAR ID . ID EQUALS constante
-    (13) declaracaoGlobal -> VAR ID . ID
+    (12) declaracaoGlobal -> VAR BEG_PAREN . NEWLINE listaGlobal END_PAREN
+    (14) declaracaoGlobal -> VAR BEG_PAREN . listaGlobal END_PAREN
+    (6) listaGlobal -> . ID ID EQUALS constante NEWLINE listaGlobal
+    (7) listaGlobal -> . ID ID EQUALS constante NEWLINE
+    (8) listaGlobal -> . ID ID NEWLINE listaGlobal
+    (9) listaGlobal -> . ID ID EQUALS constante
+    (10) listaGlobal -> . ID ID NEWLINE
+    (11) listaGlobal -> . ID ID
 
-    ID              shift and go to state 21
+    NEWLINE         shift and go to state 21
+    ID              shift and go to state 23
 
+    listaGlobal                    shift and go to state 22
 
 state 15
 
-    (14) declaracaoGlobal -> VAR BEG_PAREN . listaGlobal END_PAREN
-    (15) declaracaoGlobal -> VAR BEG_PAREN . NEWLINE listaGlobal END_PAREN
-    (6) listaGlobal -> . ID ID EQUALS constante NEWLINE listaGlobal
-    (7) listaGlobal -> . ID ID NEWLINE listaGlobal
-    (8) listaGlobal -> . ID ID EQUALS constante
-    (9) listaGlobal -> . ID ID
-    (10) listaGlobal -> . ID ID EQUALS constante NEWLINE
-    (11) listaGlobal -> . ID ID NEWLINE
+    (13) declaracaoGlobal -> VAR ID . ID EQUALS constante
+    (15) declaracaoGlobal -> VAR ID . ID
 
-    NEWLINE         shift and go to state 23
     ID              shift and go to state 24
 
-    listaGlobal                    shift and go to state 22
 
 state 16
 
@@ -439,12 +439,17 @@ state 20
 
 state 21
 
-    (12) declaracaoGlobal -> VAR ID ID . EQUALS constante
-    (13) declaracaoGlobal -> VAR ID ID .
+    (12) declaracaoGlobal -> VAR BEG_PAREN NEWLINE . listaGlobal END_PAREN
+    (6) listaGlobal -> . ID ID EQUALS constante NEWLINE listaGlobal
+    (7) listaGlobal -> . ID ID EQUALS constante NEWLINE
+    (8) listaGlobal -> . ID ID NEWLINE listaGlobal
+    (9) listaGlobal -> . ID ID EQUALS constante
+    (10) listaGlobal -> . ID ID NEWLINE
+    (11) listaGlobal -> . ID ID
 
-    EQUALS          shift and go to state 30
-    NEWLINE         reduce using rule 13 (declaracaoGlobal -> VAR ID ID .)
+    ID              shift and go to state 23
 
+    listaGlobal                    shift and go to state 30
 
 state 22
 
@@ -455,28 +460,23 @@ state 22
 
 state 23
 
-    (15) declaracaoGlobal -> VAR BEG_PAREN NEWLINE . listaGlobal END_PAREN
-    (6) listaGlobal -> . ID ID EQUALS constante NEWLINE listaGlobal
-    (7) listaGlobal -> . ID ID NEWLINE listaGlobal
-    (8) listaGlobal -> . ID ID EQUALS constante
-    (9) listaGlobal -> . ID ID
-    (10) listaGlobal -> . ID ID EQUALS constante NEWLINE
-    (11) listaGlobal -> . ID ID NEWLINE
+    (6) listaGlobal -> ID . ID EQUALS constante NEWLINE listaGlobal
+    (7) listaGlobal -> ID . ID EQUALS constante NEWLINE
+    (8) listaGlobal -> ID . ID NEWLINE listaGlobal
+    (9) listaGlobal -> ID . ID EQUALS constante
+    (10) listaGlobal -> ID . ID NEWLINE
+    (11) listaGlobal -> ID . ID
 
-    ID              shift and go to state 24
+    ID              shift and go to state 32
 
-    listaGlobal                    shift and go to state 32
 
 state 24
 
-    (6) listaGlobal -> ID . ID EQUALS constante NEWLINE listaGlobal
-    (7) listaGlobal -> ID . ID NEWLINE listaGlobal
-    (8) listaGlobal -> ID . ID EQUALS constante
-    (9) listaGlobal -> ID . ID
-    (10) listaGlobal -> ID . ID EQUALS constante NEWLINE
-    (11) listaGlobal -> ID . ID NEWLINE
+    (13) declaracaoGlobal -> VAR ID ID . EQUALS constante
+    (15) declaracaoGlobal -> VAR ID ID .
 
-    ID              shift and go to state 33
+    EQUALS          shift and go to state 33
+    NEWLINE         reduce using rule 15 (declaracaoGlobal -> VAR ID ID .)
 
 
 state 25
@@ -544,18 +544,10 @@ state 29
 
 state 30
 
-    (12) declaracaoGlobal -> VAR ID ID EQUALS . constante
-    (82) constante -> . NUMBER
-    (83) constante -> . STRING
-    (84) constante -> . TRUE
-    (85) constante -> . FALSE
+    (12) declaracaoGlobal -> VAR BEG_PAREN NEWLINE listaGlobal . END_PAREN
 
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    END_PAREN       shift and go to state 36
 
-    constante                      shift and go to state 36
 
 state 31
 
@@ -566,24 +558,32 @@ state 31
 
 state 32
 
-    (15) declaracaoGlobal -> VAR BEG_PAREN NEWLINE listaGlobal . END_PAREN
+    (6) listaGlobal -> ID ID . EQUALS constante NEWLINE listaGlobal
+    (7) listaGlobal -> ID ID . EQUALS constante NEWLINE
+    (8) listaGlobal -> ID ID . NEWLINE listaGlobal
+    (9) listaGlobal -> ID ID . EQUALS constante
+    (10) listaGlobal -> ID ID . NEWLINE
+    (11) listaGlobal -> ID ID .
 
-    END_PAREN       shift and go to state 41
+    EQUALS          shift and go to state 37
+    NEWLINE         shift and go to state 38
+    END_PAREN       reduce using rule 11 (listaGlobal -> ID ID .)
 
 
 state 33
 
-    (6) listaGlobal -> ID ID . EQUALS constante NEWLINE listaGlobal
-    (7) listaGlobal -> ID ID . NEWLINE listaGlobal
-    (8) listaGlobal -> ID ID . EQUALS constante
-    (9) listaGlobal -> ID ID .
-    (10) listaGlobal -> ID ID . EQUALS constante NEWLINE
-    (11) listaGlobal -> ID ID . NEWLINE
+    (13) declaracaoGlobal -> VAR ID ID EQUALS . constante
+    (82) constante -> . NUMBER
+    (83) constante -> . STRING
+    (84) constante -> . TRUE
+    (85) constante -> . FALSE
 
-    EQUALS          shift and go to state 42
-    NEWLINE         shift and go to state 43
-    END_PAREN       reduce using rule 9 (listaGlobal -> ID ID .)
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
 
+    constante                      shift and go to state 39
 
 state 34
 
@@ -610,12 +610,52 @@ state 35
 
 state 36
 
-    (12) declaracaoGlobal -> VAR ID ID EQUALS constante .
+    (12) declaracaoGlobal -> VAR BEG_PAREN NEWLINE listaGlobal END_PAREN .
 
-    NEWLINE         reduce using rule 12 (declaracaoGlobal -> VAR ID ID EQUALS constante .)
+    NEWLINE         reduce using rule 12 (declaracaoGlobal -> VAR BEG_PAREN NEWLINE listaGlobal END_PAREN .)
 
 
 state 37
+
+    (6) listaGlobal -> ID ID EQUALS . constante NEWLINE listaGlobal
+    (7) listaGlobal -> ID ID EQUALS . constante NEWLINE
+    (9) listaGlobal -> ID ID EQUALS . constante
+    (82) constante -> . NUMBER
+    (83) constante -> . STRING
+    (84) constante -> . TRUE
+    (85) constante -> . FALSE
+
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
+
+    constante                      shift and go to state 48
+
+state 38
+
+    (8) listaGlobal -> ID ID NEWLINE . listaGlobal
+    (10) listaGlobal -> ID ID NEWLINE .
+    (6) listaGlobal -> . ID ID EQUALS constante NEWLINE listaGlobal
+    (7) listaGlobal -> . ID ID EQUALS constante NEWLINE
+    (8) listaGlobal -> . ID ID NEWLINE listaGlobal
+    (9) listaGlobal -> . ID ID EQUALS constante
+    (10) listaGlobal -> . ID ID NEWLINE
+    (11) listaGlobal -> . ID ID
+
+    END_PAREN       reduce using rule 10 (listaGlobal -> ID ID NEWLINE .)
+    ID              shift and go to state 23
+
+    listaGlobal                    shift and go to state 49
+
+state 39
+
+    (13) declaracaoGlobal -> VAR ID ID EQUALS constante .
+
+    NEWLINE         reduce using rule 13 (declaracaoGlobal -> VAR ID ID EQUALS constante .)
+
+
+state 40
 
     (82) constante -> NUMBER .
 
@@ -637,7 +677,7 @@ state 37
     COMMA           reduce using rule 82 (constante -> NUMBER .)
 
 
-state 38
+state 41
 
     (83) constante -> STRING .
 
@@ -659,7 +699,7 @@ state 38
     COMMA           reduce using rule 83 (constante -> STRING .)
 
 
-state 39
+state 42
 
     (84) constante -> TRUE .
 
@@ -681,7 +721,7 @@ state 39
     COMMA           reduce using rule 84 (constante -> TRUE .)
 
 
-state 40
+state 43
 
     (85) constante -> FALSE .
 
@@ -702,46 +742,6 @@ state 40
     SEMICOLON       reduce using rule 85 (constante -> FALSE .)
     COMMA           reduce using rule 85 (constante -> FALSE .)
 
-
-state 41
-
-    (15) declaracaoGlobal -> VAR BEG_PAREN NEWLINE listaGlobal END_PAREN .
-
-    NEWLINE         reduce using rule 15 (declaracaoGlobal -> VAR BEG_PAREN NEWLINE listaGlobal END_PAREN .)
-
-
-state 42
-
-    (6) listaGlobal -> ID ID EQUALS . constante NEWLINE listaGlobal
-    (8) listaGlobal -> ID ID EQUALS . constante
-    (10) listaGlobal -> ID ID EQUALS . constante NEWLINE
-    (82) constante -> . NUMBER
-    (83) constante -> . STRING
-    (84) constante -> . TRUE
-    (85) constante -> . FALSE
-
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
-
-    constante                      shift and go to state 48
-
-state 43
-
-    (7) listaGlobal -> ID ID NEWLINE . listaGlobal
-    (11) listaGlobal -> ID ID NEWLINE .
-    (6) listaGlobal -> . ID ID EQUALS constante NEWLINE listaGlobal
-    (7) listaGlobal -> . ID ID NEWLINE listaGlobal
-    (8) listaGlobal -> . ID ID EQUALS constante
-    (9) listaGlobal -> . ID ID
-    (10) listaGlobal -> . ID ID EQUALS constante NEWLINE
-    (11) listaGlobal -> . ID ID NEWLINE
-
-    END_PAREN       reduce using rule 11 (listaGlobal -> ID ID NEWLINE .)
-    ID              shift and go to state 24
-
-    listaGlobal                    shift and go to state 49
 
 state 44
 
@@ -777,18 +777,18 @@ state 47
 state 48
 
     (6) listaGlobal -> ID ID EQUALS constante . NEWLINE listaGlobal
-    (8) listaGlobal -> ID ID EQUALS constante .
-    (10) listaGlobal -> ID ID EQUALS constante . NEWLINE
+    (7) listaGlobal -> ID ID EQUALS constante . NEWLINE
+    (9) listaGlobal -> ID ID EQUALS constante .
 
     NEWLINE         shift and go to state 52
-    END_PAREN       reduce using rule 8 (listaGlobal -> ID ID EQUALS constante .)
+    END_PAREN       reduce using rule 9 (listaGlobal -> ID ID EQUALS constante .)
 
 
 state 49
 
-    (7) listaGlobal -> ID ID NEWLINE listaGlobal .
+    (8) listaGlobal -> ID ID NEWLINE listaGlobal .
 
-    END_PAREN       reduce using rule 7 (listaGlobal -> ID ID NEWLINE listaGlobal .)
+    END_PAREN       reduce using rule 8 (listaGlobal -> ID ID NEWLINE listaGlobal .)
 
 
 state 50
@@ -814,16 +814,16 @@ state 51
 state 52
 
     (6) listaGlobal -> ID ID EQUALS constante NEWLINE . listaGlobal
-    (10) listaGlobal -> ID ID EQUALS constante NEWLINE .
+    (7) listaGlobal -> ID ID EQUALS constante NEWLINE .
     (6) listaGlobal -> . ID ID EQUALS constante NEWLINE listaGlobal
-    (7) listaGlobal -> . ID ID NEWLINE listaGlobal
-    (8) listaGlobal -> . ID ID EQUALS constante
-    (9) listaGlobal -> . ID ID
-    (10) listaGlobal -> . ID ID EQUALS constante NEWLINE
-    (11) listaGlobal -> . ID ID NEWLINE
+    (7) listaGlobal -> . ID ID EQUALS constante NEWLINE
+    (8) listaGlobal -> . ID ID NEWLINE listaGlobal
+    (9) listaGlobal -> . ID ID EQUALS constante
+    (10) listaGlobal -> . ID ID NEWLINE
+    (11) listaGlobal -> . ID ID
 
-    END_PAREN       reduce using rule 10 (listaGlobal -> ID ID EQUALS constante NEWLINE .)
-    ID              shift and go to state 24
+    END_PAREN       reduce using rule 7 (listaGlobal -> ID ID EQUALS constante NEWLINE .)
+    ID              shift and go to state 23
 
     listaGlobal                    shift and go to state 57
 
@@ -1161,10 +1161,10 @@ state 74
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 95
@@ -1453,10 +1453,10 @@ state 88
     EXCLAMATION     shift and go to state 89
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     declaracao                     shift and go to state 128
@@ -1507,10 +1507,10 @@ state 89
     (87) expParenteses -> . BEG_PAREN expressao END_PAREN
 
     ID              shift and go to state 134
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     operando                       shift and go to state 133
@@ -1610,10 +1610,10 @@ state 93
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     lista_valores                  shift and go to state 137
@@ -2203,10 +2203,10 @@ state 120
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 152
@@ -2578,10 +2578,10 @@ state 139
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     lista_valores                  shift and go to state 162
@@ -2703,10 +2703,10 @@ state 144
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n3                   shift and go to state 167
@@ -2774,10 +2774,10 @@ state 145
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n3                   shift and go to state 169
@@ -2843,10 +2843,10 @@ state 146
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n3                   shift and go to state 171
@@ -2907,10 +2907,10 @@ state 147
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n4                   shift and go to state 172
@@ -2968,10 +2968,10 @@ state 148
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n4                   shift and go to state 173
@@ -3022,10 +3022,10 @@ state 149
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n5                   shift and go to state 174
@@ -3072,10 +3072,10 @@ state 150
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n5                   shift and go to state 175
@@ -3122,10 +3122,10 @@ state 151
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n5                   shift and go to state 176
@@ -3220,10 +3220,10 @@ state 154
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 179
@@ -3317,10 +3317,10 @@ state 155
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 180
@@ -3414,10 +3414,10 @@ state 156
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 181
@@ -3511,10 +3511,10 @@ state 157
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 182
@@ -3608,10 +3608,10 @@ state 158
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 183
@@ -3733,10 +3733,10 @@ state 161
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 186
@@ -3843,10 +3843,10 @@ state 164
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n2                   shift and go to state 188
@@ -3932,10 +3932,10 @@ state 165
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n2                   shift and go to state 189
@@ -4008,10 +4008,10 @@ state 166
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n3                   shift and go to state 190
@@ -4097,10 +4097,10 @@ state 168
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n3                   shift and go to state 191
@@ -4186,10 +4186,10 @@ state 170
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao_n3                   shift and go to state 192
@@ -4655,10 +4655,10 @@ state 193
     ID              shift and go to state 119
     INCREMENT       shift and go to state 90
     DECREMENT       shift and go to state 91
-    NUMBER          shift and go to state 37
-    STRING          shift and go to state 38
-    TRUE            shift and go to state 39
-    FALSE           shift and go to state 40
+    NUMBER          shift and go to state 40
+    STRING          shift and go to state 41
+    TRUE            shift and go to state 42
+    FALSE           shift and go to state 43
     BEG_PAREN       shift and go to state 120
 
     expressao                      shift and go to state 197
