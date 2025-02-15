@@ -20,7 +20,8 @@ reserved = {
     'if':'IF',
     'import:':'IMPORT',
     'package':'PACKAGE',
-    'return':'RETURN',   
+    'return':'RETURN', 
+    'var':'VAR'  
 }
 
 breakLine = {1: 0}

@@ -4,52 +4,102 @@ from analiseLexica import tokens
 from analiseLexica import lexer
 from analiseLexica import breakLine
 from analiseLexica import arquivos_go
+import sintaxeAbstrata as sa
 
 variaveis = {}
 
 def p_programa(p):
-    '''programa : pacote NEWLINE importacao funcoes_codigo'''
-    p[0] = (p[1], p[2], p[3])
+    '''programa : pacote NEWLINE importacao declaracaoGlobal NEWLINE funcoes_codigo'''
+    p[0] = sa.ProgramaConcrete(p[1], p[3], p[4], p[6])
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
                       | funcao
-                      | codigo delimitador funcoes_codigo
-                      | codigo'''
+                      | empty'''
     p[0] = p[1]
 
 def p_empty(p):
     'empty :'
     pass
 
+def p_listaGlobal(p):
+    '''listaGlobal : ID ID EQUALS constante NEWLINE listaGlobal 
+                   | ID ID EQUALS constante NEWLINE
+                   | ID ID NEWLINE listaGlobal
+                   | ID ID EQUALS constante
+                   | ID ID NEWLINE
+                   | ID ID'''
+    
+    if(len(p) == 7):
+        variaveis[p[1]] = p[4]
+        p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])] + p[6]
+    elif(len(p) == 6):
+        variaveis[p[1]] = p[4]
+        p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])]
+    elif(len(p) == 5):
+        if(p[4].__class__ == list):
+            variaveis[p[1]] = None
+            p[0] = [sa.DeclaracaoGlobalSimplesConcrete(p[1],p[2])] + p[4]
+        else:
+            variaveis[p[1]] = p[4]
+            p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])]
+    else:
+        p[0] = [sa.DeclaracaoGlobalSimplesConcrete(p[1], p[2])]
+        variaveis[p[1]] = None
+
+def p_declaracaoGlobal(p):
+    '''declaracaoGlobal : VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
+                        | VAR ID ID EQUALS constante
+                        | VAR BEG_PAREN listaGlobal END_PAREN
+                        | VAR ID ID
+                        | empty'''
+    if(len(p) == 6):
+        if(p[4].__class__ == list):
+            p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[4])
+            for vars in p[4]:
+                variaveis[vars.getNomeVariavel] = vars.valor
+        else:
+            p[0] = sa.DeclaracaoGlobalSimplesComValorConcrete(p[2],p[3], p[5])
+            variaveis[p[2]] = p[5]
+    elif(len(p) == 5):
+        p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[3])
+        for vars in p[3]:
+            variaveis[vars.getNomeVariavel] = vars.valor
+    elif(len(p) == 4):
+        p[0] = sa.DeclaracaoGlobalSimplesConcrete(p[3])
+        variaveis[p[3]] = None
+
 def p_pacote(p):
     '''pacote : PACKAGE ID'''
-    p[0] = p[1]
+    p[0] = sa.PacoteConcrete(p[2])
 
 def p_importacao(p):
     '''importacao : IMPORT ID NEWLINE importacao
                   | empty'''
-    p[0] = p[1]
+    
+    if(len(p) == 5):
+        if(p[4] == None):
+            p[0] = sa.ImportacaoSimplesConcrete(p[2])
+        else:
+            p[0] = sa.ImportacaoCompostaConcrete(p[2], p[4])
+    else:
+        p[0] = p[1]
 
 def p_funcao(p):
     '''funcao : FUNC ID BEG_PAREN lista_parametros END_PAREN tipo_retorno BEG_BRACE codigo END_BRACE'''
-    p[0] = p[7]
-    
-'''p[0] = (p[2], p[4], p[6], p[8])''' 
+    p[0] = sa.FuncaoConcrete(p[2], p[4], p[6], p[8]) 
 
 def p_tipo_retorno(p):
     '''tipo_retorno : ID
                     | empty'''
     p[0] = p[1]
 
-
 def p_codigo(p):
     '''codigo : lista_estruturas'''
-
     p[0] = p[1]
 
 def p_lista_estruturas(p):
-    '''lista_estruturas : lista_estruturas estruturaBase
+    '''lista_estruturas : lista_estruturas estruturasBase
                         | empty'''
     if len(p) == 3:
         p[0] = p[1] + [p[2]]
@@ -59,20 +109,25 @@ def p_lista_estruturas(p):
         else:
             p[0] = [p[1]]
 
-def p_estruturaBase(p):
-    '''estruturaBase : estruturas delimitador
-                     | NEWLINE estruturas delimitador'''
-    if(len(p) == 4):
-        p[0] = p[2]
-    else:
-        p[0] = p[1]
+def p_estruturasBase(p):
+    '''estruturasBase : estruturas delimitador
+                      | NEWLINE'''
+                      
+    p[0] = p[1]
 
 def p_estruturas(p):
     """estruturas : atribuicao
                   | declaracao
                   | estrutura_if
                   | estrutura_for
-                  | unario"""
+                  | unario
+                  | chamadaFuncao"""
+    p[0] = p[1]
+ 
+
+def p_delimitador(p):
+    '''delimitador : NEWLINE
+                   | SEMICOLON'''
     p[0] = p[1]
  
 
@@ -199,14 +254,18 @@ def p_pre_decremento(p):
     '''pre_decremento : DECREMENT ID''' 
     p[0] = variaveis[p[1]] - 1
 
-
 def p_operando(p):
     '''operando : identificador
-                | NUMBER 
-                | STRING 
-                | TRUE
-                | FALSE
+                | constante
+                | chamadaFuncao
                 | expParenteses'''
+    p[0] = p[1]
+
+def p_constante(p):
+    '''constante : NUMBER
+                 | STRING
+                 | TRUE
+                 | FALSE'''
     p[0] = p[1]
 
 def p_identificador(p):
@@ -298,6 +357,10 @@ def p_declaracao(p):
     for i in range(len(p[1])):
         variaveis[p[1][i]] = p[4][i]
     p[0] = p[4]
+
+def p_chamadaFuncao(p):
+    '''chamadaFuncao : ID BEG_PAREN lista_parametros END_PAREN'''
+    p[0] = (p[1], p[3])
 
 def p_lista_parametros(p):
     '''lista_parametros : lista_identificadores

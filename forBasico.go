@@ -1,10 +1,17 @@
 package testeCompilador
 
+var (
+    a int
+    b string
+    c bool
+)
+
 func main() {
-	i := 0;
+	i := 0
 	for i<10 {
-		i++;
+		i++
 	}	
+	funcif()
 
 }
 
