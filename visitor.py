@@ -10,6 +10,12 @@ def blank():
     return p
 
 class Visitor(AbstractVisitor):
+    
+    def visitPrograma(self, programa):
+        print("Programa: ", programa.getNome())
+
+    def visitFuncao(self, funcao):
+        print("Funcao: ", programa.getNome())
 
     def visitPacote(self, pacote):
         print("Pacote: ", pacote.getNome())
