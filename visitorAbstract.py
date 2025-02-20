@@ -28,6 +28,14 @@ class AbstractVisitor(metaclass = ABCMeta):
 
     #Começando a parte de expressões...
     @abstractmethod
+    def visitExpressao(self, exp):
+        pass
+
+    @abstractmethod
+    def visitExpLogica(self, expLogica):
+        pass
+
+    @abstractmethod
     def vistAnd(self, e):
         pass
 
@@ -35,6 +43,10 @@ class AbstractVisitor(metaclass = ABCMeta):
     def visitOr(self, ou):
         pass
     
+    @abstractmethod
+    def visitOpBinaria(self, expBi):
+        pass
+
     @abstractmethod
     def visitEquals(self, igual):
         pass
@@ -79,4 +91,4 @@ class AbstractVisitor(metaclass = ABCMeta):
     def visitMod(self, mod):
         pass
 
-    #Como fazer para o unário????
+ 

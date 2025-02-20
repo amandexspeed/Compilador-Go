@@ -126,3 +126,34 @@ class DeclaracaoGlobalCompostaConcrete(DeclaracaoGlobal):
 
     def accept(self, visitor):
         return visitor.visitDeclaracaoGlobalComposta(self)
+    
+# Parte de expressões
+class Exp():
+    def __init__(self, nome):
+        self.nome = nome
+    def accept(self, visitor):
+        return visitor.vistExpressao(self)
+
+class ExpLogica(Exp):
+    def __init__ (self, expLog):
+        self.expLog = expLog
+    def accept(self, visitor):
+        return visitor.visitExplogica
+    
+class ExpAnd(ExpLogica):
+    def __init__(self, e):
+        self.e = e
+    def accept(self, visitor):
+        return visitor.visitAnd
+    
+class ExpOr(ExpLogica):
+    def __init__(self, ou):
+        self.ou = ou
+    def accept(self, visitor):
+        return visitor.vistOr
+
+class ExpBinaria(Exp):
+    def __init__(self, expOpBi):
+        self.expOpBi = expOpBi
+    def accept(self, visitor):
+        return visitor.visitOpBinaria
