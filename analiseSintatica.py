@@ -9,68 +9,15 @@ import sintaxeAbstrata as sa
 variaveis = {}
 
 def p_programa(p):
-    '''programa : pacote NEWLINE importacao declaracaoGlobal NEWLINE funcoes_codigo'''
-    p[0] = sa.ProgramaConcrete(p[1], p[3], p[4], p[6])
-
-def p_funcoes_codigo(p):
-    '''funcoes_codigo : funcao delimitador funcoes_codigo
-                      | funcao
-                      | empty'''
-    p[0] = p[1]
+    '''programa : pacote importacao declaracaoGlobal funcoes_codigo'''
+    p[0] = sa.ProgramaConcrete(p[1], p[2], p[3], p[4])
 
 def p_empty(p):
     'empty :'
     pass
 
-def p_listaGlobal(p):
-    '''listaGlobal : ID ID EQUALS constante NEWLINE listaGlobal 
-                   | ID ID EQUALS constante NEWLINE
-                   | ID ID NEWLINE listaGlobal
-                   | ID ID EQUALS constante
-                   | ID ID NEWLINE
-                   | ID ID'''
-    
-    if(len(p) == 7):
-        variaveis[p[1]] = p[4]
-        p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])] + p[6]
-    elif(len(p) == 6):
-        variaveis[p[1]] = p[4]
-        p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])]
-    elif(len(p) == 5):
-        if(p[4].__class__ == list):
-            variaveis[p[1]] = None
-            p[0] = [sa.DeclaracaoGlobalSimplesConcrete(p[1],p[2])] + p[4]
-        else:
-            variaveis[p[1]] = p[4]
-            p[0] = [sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2],p[4])]
-    else:
-        p[0] = [sa.DeclaracaoGlobalSimplesConcrete(p[1], p[2])]
-        variaveis[p[1]] = None
-
-def p_declaracaoGlobal(p):
-    '''declaracaoGlobal : VAR BEG_PAREN NEWLINE listaGlobal END_PAREN
-                        | VAR ID ID EQUALS constante
-                        | VAR BEG_PAREN listaGlobal END_PAREN
-                        | VAR ID ID
-                        | empty'''
-    if(len(p) == 6):
-        if(p[4].__class__ == list):
-            p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[4])
-            for vars in p[4]:
-                variaveis[vars.getNomeVariavel] = vars.valor
-        else:
-            p[0] = sa.DeclaracaoGlobalSimplesComValorConcrete(p[2],p[3], p[5])
-            variaveis[p[2]] = p[5]
-    elif(len(p) == 5):
-        p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[3])
-        for vars in p[3]:
-            variaveis[vars.getNomeVariavel] = vars.valor
-    elif(len(p) == 4):
-        p[0] = sa.DeclaracaoGlobalSimplesConcrete(p[3])
-        variaveis[p[3]] = None
-
 def p_pacote(p):
-    '''pacote : PACKAGE ID'''
+    '''pacote : PACKAGE ID NEWLINE '''
     p[0] = sa.PacoteConcrete(p[2])
 
 def p_importacao(p):
@@ -84,6 +31,62 @@ def p_importacao(p):
             p[0] = sa.ImportacaoCompostaConcrete(p[2], p[4])
     else:
         p[0] = p[1]
+
+def p_declaracaoGlobal(p):
+    '''declaracaoGlobal : regrasDeclaracaoGlobal
+                        | regrasDeclaracaoGlobal NEWLINE
+                        | empty'''
+    p[0] = p[1]
+
+def p_regrasDeclaracaoGlobal(p):
+    '''regrasDeclaracaoGlobal : declaracaoGlobalSimples
+                              | declaracaoEmLista
+                              | declaracaoEmListaEspacada'''
+    p[0] = p[1]
+
+def p_declaracaoGlobalSimples(p):
+    '''declaracaoGlobalSimples : VAR tiposDeclaracoesGlobais'''
+    p[0] = p[2]
+
+def p_tiposDeclaracoesGlobais(p):
+    '''tiposDeclaracoesGlobais : declaracaoGlobalSemValor
+                               | declaracaoGlobalComValor'''  
+    p[0] = p[1]
+
+def p_declaracaoGlobalSemValor(p):
+    '''declaracaoGlobalSemValor : ID ID'''
+    p[0] = sa.DeclaracaoGlobalSimplesConcrete(p[1], p[2])
+
+def p_declaracaoGlobalComValor(p):
+    '''declaracaoGlobalComValor : ID ID EQUALS constante'''
+    p[0] = sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2], p[4])
+
+def p_declaracaoEmLista(p):
+    '''declaracaoEmLista : VAR BEG_PAREN listaGlobal END_PAREN'''
+    p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[3])
+
+def p_declaracaoEmListaEspacada(p):
+    '''declaracaoEmListaEspacada : VAR BEG_PAREN NEWLINE listaGlobal END_PAREN'''
+    p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[4])
+
+def p_listaGlobal(p):
+    '''listaGlobal : tiposDeclaracoesGlobais
+                   | listaGlobalRecursiva
+                   | tiposDeclaracoesGlobais NEWLINE'''
+    if(p[1].__class__ == list):
+        p[0] = p[1]
+    else:
+        p[0] = [p[1]]
+
+def p_listaGlobalRecursiva(p):
+    '''listaGlobalRecursiva : tiposDeclaracoesGlobais NEWLINE listaGlobal'''
+    p[0] = [p[1]] + p[3]
+
+def p_funcoes_codigo(p):
+    '''funcoes_codigo : funcao delimitador funcoes_codigo
+                      | funcao
+                      | empty'''
+    p[0] = p[1]
 
 def p_funcao(p):
     '''funcao : FUNC ID BEG_PAREN lista_parametros END_PAREN tipo_retorno BEG_BRACE codigo END_BRACE'''
@@ -217,12 +220,12 @@ def p_div(p):
 
 def p_expressao_n5(p):
     '''expressao_n5 : unario
-                    | operando'''
+                    | operando
+                    | negation'''
     p[0] = p[1]
 
 def p_unario(p):
-    ''' unario : negation
-               | incremento
+    ''' unario : incremento
                | decremento
                | pre_incremento
                | pre_decremento'''
