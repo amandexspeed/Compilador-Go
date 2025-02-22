@@ -17,20 +17,20 @@ def p_empty(p):
     pass
 
 def p_pacote(p):
-    '''pacote : PACKAGE ID NEWLINE '''
+    '''pacote : PACKAGE ID delimitador 
+              | PACKAGE ID NEWLINE'''
     p[0] = sa.PacoteConcrete(p[2])
 
 def p_importacao(p):
-    '''importacao : IMPORT ID NEWLINE importacao
+    '''importacao : IMPORT STRING NEWLINE importacao
+                  | IMPORT STRING delimitador importacao
                   | empty'''
     
     if(len(p) == 5):
         if(p[4] == None):
             p[0] = sa.ImportacaoSimplesConcrete(p[2])
         else:
-            p[0] = sa.ImportacaoCompostaConcrete(p[2], p[4])
-    else:
-        p[0] = p[1]
+            p[0] = sa.ImportacaoCompostaConcrete(p[2], p[3])
 
 def p_declaracaoGlobal(p):
     '''declaracaoGlobal : regrasDeclaracaoGlobal
@@ -84,6 +84,7 @@ def p_listaGlobalRecursiva(p):
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
+                      | funcao NEWLINE funcoes_codigo
                       | funcao
                       | empty'''
     p[0] = p[1]
@@ -113,7 +114,8 @@ def p_lista_estruturas(p):
             p[0] = [p[1]]
 
 def p_estruturasBase(p):
-    '''estruturasBase : estruturas delimitador
+    '''estruturasBase : estruturas SEMICOLON
+                      | estruturas NEWLINE
                       | NEWLINE'''
                       
     p[0] = p[1]
@@ -129,9 +131,8 @@ def p_estruturas(p):
  
 
 def p_delimitador(p):
-    '''delimitador : NEWLINE
-                   | SEMICOLON'''
-    p[0] = p[1]
+    '''delimitador  : SEMICOLON
+                    | SEMICOLON NEWLINE'''
 
 def p_expressao(p):
     '''expressao : and

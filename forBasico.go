@@ -14,7 +14,6 @@ func main() {
 	funcif()
 
 }
-
 func funcif(){
 
 	i:=0;
