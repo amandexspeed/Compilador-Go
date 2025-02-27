@@ -281,12 +281,7 @@ def p_estrutura_for(p):
     '''estrutura_for : for_CLIKE
                      | for_infinito
                      | for_while'''
-    if(isinstance(p[1], sa.For_CLIKEconcrete)):
-        p[0] = sa.EstruturaFOR_CLIKE(p[1])
-    elif(isinstance(p[1], sa.For_INFINITOconcrete)):
-        p[0] = sa.EstruturaFOR_INFINITO(p[1])
-    elif(isinstance(p[1], sa.For_WHILEconcrete)):
-        p[0] = sa.EstruturaFOR_WHILE(p[1])
+    p[0] = p[1]
 
 def p_for_CLIKE(p): 
     '''for_CLIKE : FOR declaracao SEMICOLON expressao SEMICOLON expressao BEG_BRACE codigo END_BRACE'''
@@ -304,7 +299,7 @@ def p_for_while(p):
 def p_estrutura_if(p):
     '''estrutura_if : IF expressao BEG_BRACE codigo END_BRACE estrutura_else
                     | IF expressao BEG_BRACE codigo END_BRACE'''
-   if(len(p) == 6):
+    if(len(p) == 6):
         p[0] = sa.EstruturaIF_ELSEconcrete(p[2], p[4], p[6])
     else:
         p[0] = sa.EstruturaIFconcrete(p[2], p[4])
