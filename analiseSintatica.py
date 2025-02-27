@@ -281,42 +281,41 @@ def p_estrutura_for(p):
     '''estrutura_for : for_CLIKE
                      | for_infinito
                      | for_while'''
-    p[0] = p[1]
+    if(isinstance(p[1], sa.For_CLIKEconcrete)):
+        p[0] = sa.EstruturaFOR_CLIKE(p[1])
+    elif(isinstance(p[1], sa.For_INFINITOconcrete)):
+        p[0] = sa.EstruturaFOR_INFINITO(p[1])
+    elif(isinstance(p[1], sa.For_WHILEconcrete)):
+        p[0] = sa.EstruturaFOR_WHILE(p[1])
 
 def p_for_CLIKE(p): 
     '''for_CLIKE : FOR declaracao SEMICOLON expressao SEMICOLON expressao BEG_BRACE codigo END_BRACE'''
-    p[0] = (p[2],p[4],p[6],p[8])
+    p[0] = sa.For_CLIKEconcrete(p[2],p[4],p[6],p[8])
 
 def p_for_infinito(p):
     '''for_infinito : FOR BEG_BRACE codigo END_BRACE'''
-    p[0] = p[3]
+    p[0] = sa.For_INFINITOconcrete(p[3])
 
 def p_for_while(p):
     '''for_while : FOR expressao BEG_BRACE codigo END_BRACE'''
-    p[0] = (p[2],p[4])
+    p[0] = sa.For_WHILEconcrete(p[2],p[4])
 
 
 def p_estrutura_if(p):
     '''estrutura_if : IF expressao BEG_BRACE codigo END_BRACE estrutura_else
                     | IF expressao BEG_BRACE codigo END_BRACE'''
-    if(p[2]):
-        p[0] = p[4]
+   if(len(p) == 6):
+        p[0] = sa.EstruturaIF_ELSEconcrete(p[2], p[4], p[6])
     else:
-        if(len(p) == 6):
-            p[0] = p[6]
-        else:
-            p[0] = []
+        p[0] = sa.EstruturaIFconcrete(p[2], p[4])
 
 def p_estrutura_else(p):
     '''estrutura_else : ELSE BEG_BRACE codigo END_BRACE
                       | ELSE estrutura_if'''
-    if(len(p) == 2):
-        p[0] = []
-    elif(p[4] == None):
-        p[0] = p[2]
-    else:
-        p[0] = p[3]
-
+    if(len(p) == 5):
+        p[0] = sa.EstruturaELSEconcrete(p[3])
+    elif(len(p) == 3):
+        p[0] = sa.EstruturaELSE_IFconcrete(p[2])
 
 def p_atribuicao(p):
     '''atribuicao : lista_identificadores EQUALS lista_valores
