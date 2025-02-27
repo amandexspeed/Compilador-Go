@@ -169,13 +169,12 @@ class EstruturaELSE_IFconcrete(EstruturaELSE):
     def accept(self, visitor):
         return visitor.visitEstruturaELSE_IFconcrete(self)
         
-
-class For_CLIKE(metaclass = ABCMeta):
+class EstruturaFOR(metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
 
-class For_CLIKEconcrete(For_CLIKE):
+class For_CLIKEconcrete(EstruturaFOR):
     def __init__(self, declaracao, expressao1, expressao2, codigo):
         self.declaracao = declaracao
         self.expressao1 = expressao1
@@ -185,53 +184,22 @@ class For_CLIKEconcrete(For_CLIKE):
     def accept(self,visitor):
         return visitor.visitFor_CLIKEconcrete(self)
 
-class For_INFINITO(metaclass = ABCMeta):
+class For_INFINITO(EstruturaFOR):
     @abstractmethod
     def accept(self, visitor):
         pass
 
 class For_INFINITOconcrete(For_INFINITO):
-    def __init__(codigo):
+    def __init__(self,codigo):
         self.codigo = codigo
 
     def accept(self,visitor):
         return visitor.visitFor_INFINITOconcrete(self)
 
-class For_WHILE(metaclass = ABCMeta):
-    @abstractmethod
-    def accept(self, visitor):
-        pass
-
-class For_WHILEconcrete(For_WHILE):
+class For_WHILEconcrete(EstruturaFOR):
     def __init__(self, expressao, codigo):
-        self.expressao = codigo
+        self.expressao = expressao
         self.codigo = codigo
 
     def accept(self, visitor):
         return visitor.visitFor_WHILEconcrete(self)
-
-class EstruturaFOR(metaclass = ABCMeta):
-    @abstractmethod
-    def accept(self, visitor):
-        pass
-
-class EstruturaFOR_CLIKE(EstruturaFOR):
-    def __init__(self, for_clike):
-        self.for_clike = for_clike
-
-    def accept(self, visitor):
-        return visitor.visitEstruturaFOR_CLIKE(self)
-
-class EstruturaFOR_INFINITO(EstruturaFOR):
-    def __init__(self, for_infinito):
-        self.for_infinito = for_infinito
-
-    def accept(self, visitor):
-        return visitor.visitEstruturaFOR_CLIKE(self)
-
-class EstruturaFOR_WHILE(EstruturaFOR):
-    def __init__(self, for_while):
-        self.for_while = for_while
-
-    def accept(self, visitor):
-        return visitor.visitEstruturaFOR_CLIKE(self)
