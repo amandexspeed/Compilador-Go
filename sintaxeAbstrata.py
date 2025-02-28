@@ -54,10 +54,10 @@ class Programa(metaclass = ABCMeta):
         pass
 
 class ProgramaConcrete(Programa):
-    def __init__(self, pacote, importacao, declaracaoGlobal, funcoes_codigo):
+    def __init__(self, pacote, importacao, declaracaoExplicita, funcoes_codigo):
         self.pacote = pacote
         self.importacao = importacao
-        self.declaracaoGlobal = declaracaoGlobal
+        self.declaracaoExplicita = declaracaoExplicita
         self.funcoes_codigo = funcoes_codigo
 
     def accept(self, visitor):
@@ -79,53 +79,53 @@ class FuncaoConcrete(Funcao):
         return visitor.visitFuncao(self)
 
     
-class DeclaracaoGlobal(metaclass = ABCMeta):
+class DeclaracaoExplicita(metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
 
-class DeclaracaoGlobalSimples(DeclaracaoGlobal,metaclass = ABCMeta):
+class DeclaracaoExplicitaSimples(DeclaracaoExplicita,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
     def getNomeVariavel(self):
         pass
 
-class DeclaracaoGlobalSimplesConcrete(DeclaracaoGlobalSimples):
+class DeclaracaoExplicitaSimplesConcrete(DeclaracaoExplicitaSimples):
     def __init__(self, nomeVariavel,tipo):
         self.nomeVariavel = nomeVariavel
         self.tipo = tipo
         self.valor = None
 
     def accept(self, visitor):
-        return visitor.visitDeclaracaoGlobalSimples(self)
+        return visitor.visitDeclaracaoExplicitaSimples(self)
     
     def getNomeVariavel(self):
         return self.nomeVariavel
 
-class DeclaracaoGlobalSimplesComValorConcrete(DeclaracaoGlobalSimples):
+class DeclaracaoExplicitaSimplesComValorConcrete(DeclaracaoExplicitaSimples):
     def __init__(self, nomeVariavel,tipo,valor):
         self.nomeVariavel = nomeVariavel
         self.tipo = tipo
         self.valor = valor
 
     def accept(self, visitor):
-        return visitor.visitDeclaracaoGlobalSimplesComValor(self)
+        return visitor.visitDeclaracaoExplicitaSimplesComValor(self)
 
     def getNomeVariavel(self):
         return self.nomeVariavel
 
-class DeclaracaoGlobalComposta(metaclass = ABCMeta):
+class DeclaracaoExplicitaComposta(metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
 
-class DeclaracaoGlobalCompostaConcrete(DeclaracaoGlobal):
+class DeclaracaoExplicitaCompostaConcrete(DeclaracaoExplicita):
     def __init__(self, listaVariaveis):
         self.listaVariaveis = listaVariaveis
 
     def accept(self, visitor):
-        return visitor.visitDeclaracaoGlobalComposta(self)
+        return visitor.visitDeclaracaoExplicitaComposta(self)
 
 class EstruturaIF(metaclass = ABCMeta):
     @abstractmethod
@@ -203,3 +203,172 @@ class For_WHILEconcrete(EstruturaFOR):
 
     def accept(self, visitor):
         return visitor.visitFor_WHILEconcrete(self)
+
+class Expressao(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class ExpressaoAND(Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+
+    def accept(self, visitor):
+        return visitor.visitExpressaoAND(self)
+
+class ExpressaoOR(Expressao):
+    def __init__(self,esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+
+    def accept(self, visitor):
+        return visitor.visitExpressaoOR(self)
+
+class ExpressaoAND(Expressao):
+    def __init__(self,esquerda,direita):
+        self.esquerda = esquerda
+        self.direita = direita
+
+    def accept(self, visitor):
+        return visitor.visitExpressaoAND(self)
+
+class ExpressoaIGUAL(Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoIGUAL(self)
+    
+class ExpressaoDIFFERENT(Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+
+    def accept(self, visitor):
+        return visitor.visitExpressaoDIFFERENT(self)
+
+class ExpressaoGREATER (Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoGREATER(self)
+
+class ExpressaoLESS (Expressao):
+    def __init__ (self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoLESS(self)
+
+class ExpressaoGREAT_OR_EQUAL(Expressao):
+    def __init__ (self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+
+    def accept(self, visitor):
+        return visitor.visitExpressaoGREAT_OR_EQUAL(self)
+    
+class ExpressaoLESS_OR_EQUAL(Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoLESS_OR_EQUAL(self)
+    
+class ExpressaoSOMA(Expressao):
+    def __init__(self,esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+    
+    def accept (self, visitor):
+        return visitor.visitExpressaoSOMA(self)
+
+class ExpressaoSUB(Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoSUB(self)
+    
+class ExpressaoMULT(Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoMULT(self)
+    
+class ExpressaoMOD(Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+
+    def accept(self, visitor):
+        return visitor.visitExpressaoMOD(self)
+    
+class ExpressaoDIV(Expressao):
+    def __init__(self, esquerda, direita):
+        self.esquerda = esquerda
+        self.direita = direita
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoDIV(self)
+    
+class ExpressaoNEGATION(Expressao):
+    def __init__(self, operando):
+        self.operando = operando
+        
+    def accept(self, visitor):
+        return visitor.visitExpressaoNEGATION(self)
+
+class Unario (Expressao):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class ExpressaoINCREMENTO(Unario):
+    def __init__(self, id):
+        self.id = id
+        
+    def accept(self, visitor):
+        return visitor.visitExpressaoINCREMENTO(self)
+
+class ExpressaoPRE_INCREMENTO(Unario):
+    def __init__(self,id):
+        self.id = id
+       
+    def accept(self, visitor):
+        return visitor.visitExpressaoPRE_INCREMENTO(self)
+
+class ExpressaoDECREMENTO(Unario):
+    def __init__(self,id):
+        self.id = id
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoDECREMENTO(self)
+
+class ExpressaoPRE_DECREMENTO(Unario):
+    def __init__(self,id):
+        self.id = id
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoPRE_DECREMENTO(self)
+
+class Constante (Expressao):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class ExpressaoPARENTESE(Constante):
+    def __init__(self, id):
+        self.id = id
+    
+    def accept(self, visitor):
+        return visitor.visitExpressaoPARENTESE(self)

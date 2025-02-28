@@ -15,7 +15,7 @@ class Visitor(AbstractVisitor):
         print("Programa: ", programa.getNome())
 
     def visitFuncao(self, funcao):
-        print("Funcao: ", programa.getNome())
+        print("Funcao: ", funcao.getNome())
 
     def visitPacote(self, pacote):
         print("Pacote: ", pacote.getNome())

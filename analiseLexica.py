@@ -8,6 +8,10 @@ arquivos_go = [arquivo for arquivo in arquivos if arquivo.endswith('.go')]
 
 import ply.lex as lex     #importa módulo ply.lex e o renomeia para lex
 
+#Tipos numéricos
+numberTypes = {
+             }
+
 #Lista com as palavras reservadas
 reserved = {
     'true':'TRUE',
@@ -21,12 +25,20 @@ reserved = {
     'import':'IMPORT',
     'package':'PACKAGE',
     'return':'RETURN', 
-    'var':'VAR'  
+    'var':'VAR',
+
+    'int':'INT', 
+    'int8':'INT8', 
+    'int16':'INT16', 
+    'int32':'INT32', 
+    'int64':'INT64', 
+    'float32':'FLOAT32', 
+    'float64':'FLOAT64'  
 }
 
 breakLine = {1: 0}
 # Definindo Tokens e padroes
-tokens = ["INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
+tokens = ["STR","INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -50,7 +62,7 @@ def adjustBlockComment(t):
         breakLine[t.lineno] = t.lexpos + 1
         t.lexer.lineno += 1
     t.lexer.lineno -= 1
-
+t_STR= r'string'
 t_PLUS    = r'\+'
 t_INCREMENT = r'\+\+'
 t_MINUS   = r'-'
