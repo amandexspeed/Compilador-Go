@@ -84,11 +84,11 @@ def p_tiposDeclaracoesExplicitas(p):
 
 def p_declaracaoExplicitaSemValor(p):
     '''declaracaoExplicitaSemValor : ID tipo '''
-    p[0] = sa.DeclaracaoExplicitaSimplesConcrete(p[1], p[2])
+    p[0] = sa.DeclaracaoExplicitaSimplesConcrete(p[1], p[2], None)
 
 def p_declaracaoExplicitaComValor(p):
     '''declaracaoExplicitaComValor : ID tipo EQUALS constante'''
-    p[0] = sa.DeclaracaoExplicitaSimplesComValorConcrete(p[1],p[2], p[4])
+    p[0] = sa.DeclaracaoExplicitaSimplesConcrete(p[1],p[2], p[4])
 
 def p_declaracaoExplicitaEmLista(p):
     '''declaracaoExplicitaEmLista : VAR BEG_PAREN listaExplicita END_PAREN'''
@@ -100,8 +100,9 @@ def p_declaracaoExplicitaEmListaEspacada(p):
 
 def p_listaExplicita(p):
     '''listaExplicita : tiposDeclaracoesExplicitas
-                   | listaExplicitaRecursiva
-                   | tiposDeclaracoesExplicitas NEWLINE'''
+                      | listaExplicitaRecursiva
+                      | tiposDeclaracoesExplicitas NEWLINE'''
+    
     if(p[1].__class__ == list):
         p[0] = p[1]
     else:
@@ -110,6 +111,8 @@ def p_listaExplicita(p):
 def p_listaExplicitaRecursiva(p):
     '''listaExplicitaRecursiva : tiposDeclaracoesExplicitas NEWLINE listaExplicita'''
     p[0] = [p[1]] + p[3]
+
+
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
@@ -121,6 +124,45 @@ def p_funcoes_codigo(p):
 def p_funcao(p):
     '''funcao : FUNC ID BEG_PAREN parametros END_PAREN tipo_nullavel BEG_BRACE codigo END_BRACE'''
     p[0] = sa.FuncaoConcrete(p[2], p[4], p[6], p[8]) 
+
+def p_chamadaFuncao(p):
+    '''chamadaFuncao : ID BEG_PAREN parametros END_PAREN'''
+    p[0] = sa.ChamadaFuncaoConcrete(p[1], p[3])
+
+def p_parametros(p):
+    '''parametros : parametro_simples
+                  | parametros_tipo_unico
+                  | parametros_varios_tipos
+                  | empty'''
+    p[0] = p[1]
+
+def p_parametro_simples(p):
+    '''parametro_simples : ID tipo'''
+    p[0] = sa.ParametroSimplesConcrete(p[1], p[2])
+
+def p_parametros_tipo_unico(p):
+    '''parametros_tipo_unico : ID COMMA lista_parametros_tipo_unico'''
+    p[0] = p[3].adicionarIdentificador(p[1])
+
+def p_lista_parametros_tipo_unico(p):
+    '''lista_parametros_tipo_unico : ID COMMA lista_parametros_tipo_unico 
+                                   | ID tipo'''
+    if(len(p) == 3):
+        p[0] = sa.ParametrosTipoUnicoConcrete([p[1]], p[2])
+    else:
+        p[0] = p[3].adicionarIdentificador(p[1])
+
+def p_parametros_varios_tipos(p):
+    '''parametros_varios_tipos : ID tipo COMMA lista_parametros_varios_tipos'''
+    p[0] = p[3].adicionarIdentificador(sa.ParametroSimplesConcrete(p[1], p[3]))
+
+def p_lista_parametros_varios_tipos(p):
+    '''lista_parametros_varios_tipos : ID tipo COMMA lista_parametros_varios_tipos    
+                                     | ID tipo'''
+    if(len(p) == 3):
+        p[0] = sa.ParametrosVariosTiposConcrete([sa.ParametroSimplesConcrete(p[1], p[2])])
+    else:
+        p[0] = p[4].adicionarIdentificador(sa.ParametroSimplesConcrete(p[1], p[2]))
 
 def p_codigo(p):
     '''codigo : lista_estruturas'''
@@ -158,6 +200,7 @@ def p_estruturas(p):
 def p_delimitador(p):
     '''delimitador  : SEMICOLON
                     | SEMICOLON NEWLINE'''
+    p[0] = p[1]
 
 def p_expressao(p):
     '''expressao : and
@@ -282,12 +325,28 @@ def p_operando(p):
     p[0] = p[1]
 
 def p_constante(p):
-    '''constante : ID
-                 | NUMBER
-                 | STRING
-                 | TRUE
-                 | FALSE'''
+    '''constante : constante_numero
+                 | constante_string
+                 | constante_booleano
+                 | constante_id'''
     p[0] = p[1]
+
+def p_constante_numero(p):
+    '''constante_numero : NUMBER'''
+    p[0] = sa.ConstanteConcreto (p[1],'Number')
+
+def p_constante_string(p):
+    '''constante_string : STRING'''
+    p[0] = sa.ConstanteConcreto (p[1], 'String')
+
+def p_constante_booleano(p):
+    '''constante_booleano : TRUE
+                          | FALSE'''
+    p[0] = sa.ConstanteConcreto (p[1], 'Boolean')
+
+def p_constante_id(p):
+    '''constante_id : ID'''
+    p[0] = sa.ConstanteConcreto (p[1], 'ID')
 
 def p_expParenteses(p):
     '''expParenteses : BEG_PAREN expressao END_PAREN'''
@@ -328,6 +387,35 @@ def p_estrutura_else(p):
     elif(len(p) == 3):
         p[0] = sa.EstruturaELSE_IFconcrete(p[2])
 
+def p_atribuicao(p):
+    '''atribuicao : lista_identificadores EQUALS lista_valores'''
+    p[0] = sa.AtribuicaoConcrete(p[1], p[3])
+    
+def p_declaracao(p):
+    '''declaracao : declaracaoCurta
+                  | declaracaoExplicita'''
+    p[0] = p[1]
+
+def p_declaracaoCurta(p):
+    '''declaracaoCurta : lista_identificadores COLON EQUALS lista_valores'''
+    p[0] = sa.DeclaracaoCurtaConcrete(p[1], p[4])
+
+def p_lista_identificadores(p):
+    '''lista_identificadores : lista_identificadores COMMA ID
+                             | ID'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[3]]
+
+def p_lista_valores(p):
+   '''lista_valores : lista_valores COMMA expressao
+                    | expressao'''
+   if len(p) == 2:
+        p[0] = [p[1]]
+   else:
+        p[0] = p[1] + [p[3]]
+
 def p_expressao_matematica_reduzida(p):
     '''expressao_matematica_reduzida : assign_plus
                                      | assign_minus
@@ -350,74 +438,6 @@ def p_assign_mult(p):
 def p_assign_div(p):
     '''assign_div : ID DIVISION EQUALS expressao'''
     p[0] = variaveis[p[1]] / p[4]
-
-def p_atribuicao(p):
-    '''atribuicao : lista_identificadores EQUALS lista_valores'''
-    
-    for i in range(len(p[1])):
-        variaveis[p[1][i]] = p[3][i]
-    p[0] = p[3]
-    
-def p_declaracao(p):
-    '''declaracao : declaracaoCurta
-                  | declaracaoExplicita'''
-    p[0] = p[1]
-
-def p_declaracaoCurta(p):
-    '''declaracaoCurta : lista_identificadores COLON EQUALS lista_valores'''
-    for i in range(len(p[1])):
-        variaveis[p[1][i]] = p[4][i]
-    p[0] = p[4]
-
-def p_lista_identificadores(p):
-    '''lista_identificadores : lista_identificadores COMMA ID
-                             | ID'''
-    if len(p) == 2:
-        p[0] = [p[1]]
-    else:
-        p[0] = p[1] + [p[3]]
-
-def p_lista_valores(p):
-   '''lista_valores : lista_valores COMMA expressao
-                    | expressao'''
-    
-   if len(p) == 2:
-        p[0] = [p[1]]
-   else:
-        p[0] = p[1] + [p[3]]
-
-def p_chamadaFuncao(p):
-    '''chamadaFuncao : ID BEG_PAREN parametros END_PAREN'''
-    p[0] = (p[1], p[3])
-
-def p_parametros(p):
-    '''parametros : parametro_simples
-                    | parametros_tipo_unico
-                    | parametros_varios_tipos
-                    | empty'''
-    p[0] = p[1]
-
-def p_parametro_simples(p):
-    '''parametro_simples : ID tipo'''
-    p[0] = p[1]
-
-def p_parametros_tipo_unico(p):
-    '''parametros_tipo_unico : ID COMMA lista_parametros_tipo_unico'''
-    p[0] = p[1]
-
-def p_lista_parametros_tipo_unico(p):
-    '''lista_parametros_tipo_unico : ID COMMA lista_parametros_tipo_unico 
-                                   | ID tipo'''
-    p[0] = p[1]
-
-def p_parametros_varios_tipos(p):
-    '''parametros_varios_tipos : ID tipo COMMA lista_parametros_varios_tipos'''
-    p[0] = [p[1], p[3]]
-
-def p_lista_parametros_varios_tipos(p):
-    '''lista_parametros_varios_tipos : ID tipo COMMA lista_parametros_varios_tipos    
-                                     | ID tipo'''
-    p[0] = [p[1], p[3]]
 
 def main():
 

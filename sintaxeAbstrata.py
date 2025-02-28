@@ -78,8 +78,25 @@ class FuncaoConcrete(Funcao):
     def accept(self, visitor):
         return visitor.visitFuncao(self)
 
+class Atribuicao(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class AtribuicaoConcrete(Atribuicao):
+    def __init__(self, identificadores, expressoes):
+        self.identificadores = identificadores
+        self.expressoes = expressoes
+
+    def accept(self, visitor):
+        return visitor.visitAtribuicao(self)
     
-class DeclaracaoExplicita(metaclass = ABCMeta):
+class Declaracao(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+    
+class DeclaracaoExplicita(Declaracao,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -92,26 +109,15 @@ class DeclaracaoExplicitaSimples(DeclaracaoExplicita,metaclass = ABCMeta):
         pass
 
 class DeclaracaoExplicitaSimplesConcrete(DeclaracaoExplicitaSimples):
-    def __init__(self, nomeVariavel,tipo):
-        self.nomeVariavel = nomeVariavel
-        self.tipo = tipo
-        self.valor = None
 
-    def accept(self, visitor):
-        return visitor.visitDeclaracaoExplicitaSimples(self)
-    
-    def getNomeVariavel(self):
-        return self.nomeVariavel
-
-class DeclaracaoExplicitaSimplesComValorConcrete(DeclaracaoExplicitaSimples):
-    def __init__(self, nomeVariavel,tipo,valor):
+    def __init__(self, nomeVariavel, tipo, valor):
         self.nomeVariavel = nomeVariavel
         self.tipo = tipo
         self.valor = valor
 
     def accept(self, visitor):
-        return visitor.visitDeclaracaoExplicitaSimplesComValor(self)
-
+        return visitor.visitDeclaracaoExplicitaSimples(self)
+    
     def getNomeVariavel(self):
         return self.nomeVariavel
 
@@ -126,6 +132,74 @@ class DeclaracaoExplicitaCompostaConcrete(DeclaracaoExplicita):
 
     def accept(self, visitor):
         return visitor.visitDeclaracaoExplicitaComposta(self)
+
+class DeclaracaoCurta(Declaracao,metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class DeclaracaoCurtaConcrete(DeclaracaoCurta):
+    def __init__(self, identificadores, expressoes):
+        self.identificadores = identificadores
+        self.expressoes = expressoes
+
+    def accept(self, visitor):
+        return visitor.visitDeclaracaoCurta(self)    
+    
+class Parametro(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class ParametroSimplesConcrete(Parametro):
+    def __init__(self, nome, tipo):
+        self.nome = nome
+        self.tipo = tipo
+    
+    def accept(self, visitor):
+        return visitor.visitParametroSimples(self)
+    
+class ParametroComposto(Parametro,metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+    @abstractmethod
+    def adicionarIdentificador(self, identificador):
+        pass
+
+class ParametroCompostoTipoUnicoConcrete(ParametroComposto):
+    def __init__(self, identificadores, tipo):
+        self.identificadores = identificadores
+        self.tipo = tipo
+
+    def accept(self, visitor):
+        return visitor.visitParametroCompostoTipoUnico(self)
+
+    def adicionarIdentificador(self, identificador):
+        self.identificadores + [identificador]
+
+class ParametroCompostoVariosTiposConcrete(ParametroComposto):
+    def __init__(self, identificadores):
+        self.identificadores = identificadores
+
+    def accept(self, visitor):
+        return visitor.visitParametroCompostoTipoVazio(self)
+    
+    def adicionarIdentificador(self, identificador):
+        self.identificadores + [identificador]
+
+class ChamadaFuncao(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class ChamadaFuncaoConcrete(ChamadaFuncao):
+    def __init__(self, nome, lista_parametros):
+        self.nome = nome
+        self.lista_parametros = lista_parametros
+
+    def accept(self, visitor):
+        return visitor.visitChamadaFuncao(self)
 
 class EstruturaIF(metaclass = ABCMeta):
     @abstractmethod
@@ -366,9 +440,17 @@ class Constante (Expressao):
     def accept(self, visitor):
         pass
 
-class ExpressaoPARENTESE(Constante):
-    def __init__(self, id):
-        self.id = id
+class ConstanteConcreto(Constante):
+    def __init__(self, valor, tipo):
+        self.valor = valor
+        self.tipo = tipo
+    def accept(self, visitor):
+        return visitor.visitConstanteConcreto(self)
+
+class ExpressaoPARENTESE(Expressao):
+    def __init__(self, expressao):
+        self.expressao = expressao
     
     def accept(self, visitor):
         return visitor.visitExpressaoPARENTESE(self)
+    

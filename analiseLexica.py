@@ -10,7 +10,14 @@ import ply.lex as lex     #importa módulo ply.lex e o renomeia para lex
 
 #Tipos numéricos
 numberTypes = {
-             }
+    'int':'INT', 
+    'int8':'INT8', 
+    'int16':'INT16', 
+    'int32':'INT32', 
+    'int64':'INT64', 
+    'float32':'FLOAT32', 
+    'float64':'FLOAT64' 
+}
 
 #Lista com as palavras reservadas
 reserved = {
@@ -25,20 +32,12 @@ reserved = {
     'import':'IMPORT',
     'package':'PACKAGE',
     'return':'RETURN', 
-    'var':'VAR',
-
-    'int':'INT', 
-    'int8':'INT8', 
-    'int16':'INT16', 
-    'int32':'INT32', 
-    'int64':'INT64', 
-    'float32':'FLOAT32', 
-    'float64':'FLOAT64'  
+    'var':'VAR', 
 }
 
 breakLine = {1: 0}
 # Definindo Tokens e padroes
-tokens = ["STR","INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
+tokens = ["STR","INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values()) + list(numberTypes.values())
 
 def t_COMMENT(t):
     r'(//.*)'
