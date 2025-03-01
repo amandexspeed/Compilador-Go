@@ -18,7 +18,7 @@ reserved = {
     'for':'FOR',
     'func':'FUNC',
     'if':'IF',
-    'import:':'IMPORT',
+    'import':'IMPORT',
     'package':'PACKAGE',
     'return':'RETURN', 
     'var':'VAR'  
