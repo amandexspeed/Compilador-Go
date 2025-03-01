@@ -26,7 +26,7 @@ class AbstractVisitor(metaclass = ABCMeta):
     def visitDeclaracaoGlobalComposta(self, declaracao):
         pass
 
-     @abstractmethod
+    @abstractmethod
     def visitExpressaoAND(self, expressao):
         pass
 
@@ -106,3 +106,18 @@ class AbstractVisitor(metaclass = ABCMeta):
     def visitExpressaoPARENTESE(self, expressao):
         pass
    
+    @abstractmethod
+    def vistAssignPlus(self, expMatRedu):
+       pass
+
+    @abstractmethod
+    def vistAssignMinus(self, expMatRedu):
+       pass
+
+    @abstractmethod
+    def vistAssignMult(self, expMatRedu):
+       pass
+
+    @abstractmethod
+    def vistAssigndiv(self, expMatRedu):
+       pass

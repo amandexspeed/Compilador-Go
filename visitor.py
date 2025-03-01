@@ -125,6 +125,26 @@ class Visitor(AbstractVisitor):
         expressao.expressao.accept(self)
         print(')', end='')
 
+    def vistAssignPlus(self, expMatRedu):
+       print(expMatRedu.id1, end='')
+       print('+=', end='')
+       expMatRedu.exp.accept(self)
+    
+    def vistAssignMinus(self, expMatRedu):
+       print(expMatRedu.id1, end='')
+       print('-=', end='')
+       expMatRedu.exp.accept(self)
+
+    def vistAssignMult(self, expMatRedu):
+       print(expMatRedu.id1, end='')
+       print('*=', end='')
+       expMatRedu.exp.accept(self)
+
+    def vistAssigndiv(self, expMatRedu):
+       print(expMatRedu.id1, end='')
+       print('/=', end='')
+       expMatRedu.exp.accept(self)
+
 
 def main():
     for arquivo in arquivos_go:

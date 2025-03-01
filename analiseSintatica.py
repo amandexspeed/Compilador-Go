@@ -6,7 +6,6 @@ from analiseLexica import breakLine
 from analiseLexica import arquivos_go
 import sintaxeAbstrata as sa
 
-variaveis = {}
 
 def p_programa(p):
     '''programa : pacote importacao declaracaoGlobal funcoes_codigo
@@ -425,20 +424,20 @@ def p_expressao_matematica_reduzida(p):
 
 def p_assign_plus(p):
     '''assign_plus : ID PLUS EQUALS expressao'''
-    p[0] = variaveis[p[1]] + p[4]
+    p[0] = sa.vistAssignPlus(p[1], p[4])
 
 def p_assign_minus(p):
     '''assign_minus : ID MINUS EQUALS expressao'''
-    p[0] = variaveis[p[1]] - p[4]
+    p[0] = sa.vistAssignMinus(p[1], p[4])
 
 def p_assign_mult(p):
     '''assign_mult : ID TIMES EQUALS expressao'''
-    p[0] = variaveis[p[1]] * p[4]
+    p[0] = sa.vistAssignMult(p[1], p[4])
 
 def p_assign_div(p):
     '''assign_div : ID DIVISION EQUALS expressao'''
-    p[0] = variaveis[p[1]] / p[4]
-
+    p[0] = sa.vistAssignDiv(p[1], p[4])
+    
 def main():
 
     for arquivo in arquivos_go:
