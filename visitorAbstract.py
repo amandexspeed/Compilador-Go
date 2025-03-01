@@ -26,69 +26,83 @@ class AbstractVisitor(metaclass = ABCMeta):
     def visitDeclaracaoGlobalComposta(self, declaracao):
         pass
 
-    #Começando a parte de expressões...
-    @abstractmethod
-    def visitExpressao(self, exp):
+     @abstractmethod
+    def visitExpressaoAND(self, expressao):
         pass
 
     @abstractmethod
-    def visitExpLogica(self, expLogica):
-        pass
-
-    @abstractmethod
-    def vistAnd(self, e):
-        pass
-
-    @abstractmethod
-    def visitOr(self, ou):
+    def visitExpressaoOR(self, expressao):
         pass
     
     @abstractmethod
-    def visitOpBinaria(self, expBi):
+    def visitExpressaoIGUAL(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitEquals(self, igual):
+    def visitExpressaoDIFFERENT(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitDiferent(self, diferente):
+    def visitExpressaoGREATER(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitMaiorQue(self, maior):
+    def visitExpressaoLESS(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitMenor(self,menor):
+    def visitExpressaoGREAT_OR_EQUAL(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitMenorIgual(self,menorIgual):
+    def visitExpressaoLESS_OR_EQUAL(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitMaiorIgual(self, maiorIgual):
+    def visitExpressaoSOMA(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitSoma(self, soma):
+    def visitExpressaoSUB(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitSub(self, sub):
+    def visitExpressaoMULT(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visiMult(self, mult):
+    def visitExpressaoMOD(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitDiv(self, div):
+    def visitExpressaoDIV(self, expressao):
         pass
-
+    
     @abstractmethod
-    def visitMod(self, mod):
+    def visitExpressaoNEGATION(self, expressao):
         pass
-
- 
+    
+    @abstractmethod
+    def visitExpressaoINCREMENTO(self, expressao):
+        pass
+    
+    @abstractmethod
+    def visitExpressaoPRE_INCREMENTO(self, expressao):
+        pass
+    
+    @abstractmethod
+    def visitExpressaoDECREMENTO(self, expressao):
+        pass
+    
+    @abstractmethod
+    def visitExpressaoPRE_DECREMENTO(self, expressao):
+        pass
+    
+    @abstractmethod
+    def visitConstanteConcreto(self, constante):
+        pass
+    
+    @abstractmethod
+    def visitExpressaoPARENTESE(self, expressao):
+        pass
+   

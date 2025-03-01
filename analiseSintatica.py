@@ -9,8 +9,12 @@ import sintaxeAbstrata as sa
 variaveis = {}
 
 def p_programa(p):
-    '''programa : pacote importacao declaracaoGlobal funcoes_codigo'''
-    p[0] = sa.ProgramaConcrete(p[1], p[2], p[3], p[4])
+    '''programa : pacote importacao declaracaoGlobal funcoes_codigo
+                | pacote importacao funcoes_codigo'''
+    if(len(p) == 5):
+        p[0] = sa.ProgramaConcrete(p[1], p[2], p[3], p[4])
+    else:
+        p[0] = sa.ProgramaConcrete(p[1], p[2], None, p[3])
 
 def p_empty(p):
     'empty :'
@@ -32,55 +36,83 @@ def p_importacao(p):
         else:
             p[0] = sa.ImportacaoCompostaConcrete(p[2], p[3])
 
+
+def p_tipo(p):
+    '''tipo : ID
+            | STR
+            | inteiro
+            | float'''
+    p[0] = p[1]
+
+def p_inteiro(p):
+    '''inteiro : INT
+               | INT8 
+               | INT16
+               | INT32
+               | INT64'''
+    p[0] = p[1]
+
+def p_float(p):
+    '''float : FLOAT32
+             | FLOAT64'''
+    p[0] = p[1]
+
+def p_tipo_nullavel(p):
+    '''tipo_nullavel : tipo
+                     | empty'''
+    p[0] = p[1]
+
 def p_declaracaoGlobal(p):
-    '''declaracaoGlobal : regrasDeclaracaoGlobal
-                        | regrasDeclaracaoGlobal NEWLINE
-                        | empty'''
+    '''declaracaoGlobal : declaracaoExplicita
+                        | declaracaoExplicita NEWLINE'''
     p[0] = p[1]
 
-def p_regrasDeclaracaoGlobal(p):
-    '''regrasDeclaracaoGlobal : declaracaoGlobalSimples
-                              | declaracaoEmLista
-                              | declaracaoEmListaEspacada'''
+def p_declaracaoExplicita(p):
+    '''declaracaoExplicita :  declaracaoExplicitaSimples
+                            | declaracaoExplicitaEmLista
+                            | declaracaoExplicitaEmListaEspacada'''
     p[0] = p[1]
 
-def p_declaracaoGlobalSimples(p):
-    '''declaracaoGlobalSimples : VAR tiposDeclaracoesGlobais'''
+def p_declaracaoExplicitaSimples(p):
+    '''declaracaoExplicitaSimples : VAR tiposDeclaracoesExplicitas'''
     p[0] = p[2]
 
-def p_tiposDeclaracoesGlobais(p):
-    '''tiposDeclaracoesGlobais : declaracaoGlobalSemValor
-                               | declaracaoGlobalComValor'''  
+def p_tiposDeclaracoesExplicitas(p):
+    '''tiposDeclaracoesExplicitas : declaracaoExplicitaSemValor
+                                  | declaracaoExplicitaComValor'''  
     p[0] = p[1]
 
-def p_declaracaoGlobalSemValor(p):
-    '''declaracaoGlobalSemValor : ID ID'''
-    p[0] = sa.DeclaracaoGlobalSimplesConcrete(p[1], p[2])
+def p_declaracaoExplicitaSemValor(p):
+    '''declaracaoExplicitaSemValor : ID tipo '''
+    p[0] = sa.DeclaracaoExplicitaSimplesConcrete(p[1], p[2], None)
 
-def p_declaracaoGlobalComValor(p):
-    '''declaracaoGlobalComValor : ID ID EQUALS constante'''
-    p[0] = sa.DeclaracaoGlobalSimplesComValorConcrete(p[1],p[2], p[4])
+def p_declaracaoExplicitaComValor(p):
+    '''declaracaoExplicitaComValor : ID tipo EQUALS constante'''
+    p[0] = sa.DeclaracaoExplicitaSimplesConcrete(p[1],p[2], p[4])
 
-def p_declaracaoEmLista(p):
-    '''declaracaoEmLista : VAR BEG_PAREN listaGlobal END_PAREN'''
-    p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[3])
+def p_declaracaoExplicitaEmLista(p):
+    '''declaracaoExplicitaEmLista : VAR BEG_PAREN listaExplicita END_PAREN'''
+    p[0] = sa.DeclaracaoExplicitaCompostaConcrete(p[3])
 
-def p_declaracaoEmListaEspacada(p):
-    '''declaracaoEmListaEspacada : VAR BEG_PAREN NEWLINE listaGlobal END_PAREN'''
-    p[0] = sa.DeclaracaoGlobalCompostaConcrete(p[4])
+def p_declaracaoExplicitaEmListaEspacada(p):
+    '''declaracaoExplicitaEmListaEspacada : VAR BEG_PAREN NEWLINE listaExplicita END_PAREN'''
+    p[0] = sa.DeclaracaoExplicitaCompostaConcrete(p[4])
 
-def p_listaGlobal(p):
-    '''listaGlobal : tiposDeclaracoesGlobais
-                   | listaGlobalRecursiva
-                   | tiposDeclaracoesGlobais NEWLINE'''
+def p_listaExplicita(p):
+    '''listaExplicita : tiposDeclaracoesExplicitas
+                      | listaExplicitaRecursiva
+                      | tiposDeclaracoesExplicitas NEWLINE'''
+    
     if(p[1].__class__ == list):
         p[0] = p[1]
     else:
         p[0] = [p[1]]
 
-def p_listaGlobalRecursiva(p):
-    '''listaGlobalRecursiva : tiposDeclaracoesGlobais NEWLINE listaGlobal'''
+def p_listaExplicitaRecursiva(p):
+    '''listaExplicitaRecursiva : tiposDeclaracoesExplicitas NEWLINE listaExplicita'''
     p[0] = [p[1]] + p[3]
+
+
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
@@ -90,13 +122,47 @@ def p_funcoes_codigo(p):
     p[0] = p[1]
 
 def p_funcao(p):
-    '''funcao : FUNC ID BEG_PAREN lista_parametros END_PAREN tipo_retorno BEG_BRACE codigo END_BRACE'''
+    '''funcao : FUNC ID BEG_PAREN parametros END_PAREN tipo_nullavel BEG_BRACE codigo END_BRACE'''
     p[0] = sa.FuncaoConcrete(p[2], p[4], p[6], p[8]) 
 
-def p_tipo_retorno(p):
-    '''tipo_retorno : ID
-                    | empty'''
+def p_chamadaFuncao(p):
+    '''chamadaFuncao : ID BEG_PAREN parametros END_PAREN'''
+    p[0] = sa.ChamadaFuncaoConcrete(p[1], p[3])
+
+def p_parametros(p):
+    '''parametros : parametro_simples
+                  | parametros_tipo_unico
+                  | parametros_varios_tipos
+                  | empty'''
     p[0] = p[1]
+
+def p_parametro_simples(p):
+    '''parametro_simples : ID tipo'''
+    p[0] = sa.ParametroSimplesConcrete(p[1], p[2])
+
+def p_parametros_tipo_unico(p):
+    '''parametros_tipo_unico : ID COMMA lista_parametros_tipo_unico'''
+    p[0] = p[3].adicionarIdentificador(p[1])
+
+def p_lista_parametros_tipo_unico(p):
+    '''lista_parametros_tipo_unico : ID COMMA lista_parametros_tipo_unico 
+                                   | ID tipo'''
+    if(len(p) == 3):
+        p[0] = sa.ParametrosTipoUnicoConcrete([p[1]], p[2])
+    else:
+        p[0] = p[3].adicionarIdentificador(p[1])
+
+def p_parametros_varios_tipos(p):
+    '''parametros_varios_tipos : ID tipo COMMA lista_parametros_varios_tipos'''
+    p[0] = p[3].adicionarIdentificador(sa.ParametroSimplesConcrete(p[1], p[3]))
+
+def p_lista_parametros_varios_tipos(p):
+    '''lista_parametros_varios_tipos : ID tipo COMMA lista_parametros_varios_tipos    
+                                     | ID tipo'''
+    if(len(p) == 3):
+        p[0] = sa.ParametrosVariosTiposConcrete([sa.ParametroSimplesConcrete(p[1], p[2])])
+    else:
+        p[0] = p[4].adicionarIdentificador(sa.ParametroSimplesConcrete(p[1], p[2]))
 
 def p_codigo(p):
     '''codigo : lista_estruturas'''
@@ -126,13 +192,15 @@ def p_estruturas(p):
                   | estrutura_if
                   | estrutura_for
                   | unario
-                  | chamadaFuncao"""
+                  | chamadaFuncao
+                  | expressao_matematica_reduzida"""
     p[0] = p[1]
  
 
 def p_delimitador(p):
     '''delimitador  : SEMICOLON
                     | SEMICOLON NEWLINE'''
+    p[0] = p[1]
 
 def p_expressao(p):
     '''expressao : and
@@ -142,11 +210,11 @@ def p_expressao(p):
 
 def p_and (p):
     '''and : expressao AMPERSAND AMPERSAND expressao_n2'''
-    p[0] = p[1] and p[4]
+    p[0] = sa.ExpressaoAND (p[1], p[4])
 
 def p_or (p):
     '''or : expressao PIPE PIPE expressao_n2'''
-    p[0] = p[1] or p[4]
+    p[0] =  sa.ExpressaoOR (p[1], p[4])
 
 def p_expressao_n2(p):
     '''expressao_n2 : equals
@@ -160,70 +228,72 @@ def p_expressao_n2(p):
 
 def p_equals (p):
     '''equals : expressao_n2 EQUALS EQUALS expressao_n3'''
-    p[0] = p[1] == p[4]
+    p[0] = sa.ExpressoaIGUAL (p[1], p[4])
 
 def p_different (p):
     '''different : expressao_n3 DIFFERENT expressao_n3'''
-    p[0] = p[1] != p[4]
+    p[0] = sa.ExpressaoDIFFERENT (p[1], p[4])
 
 def p_greater (p):
     '''greater : expressao_n2 GREATER expressao_n3'''
-    p[0] = p[1] > p[3]
+    p[0] = sa.ExpressaoGREATER(p[1], p[3])
 
 def p_less (p):
     '''less : expressao_n2 LESS expressao_n3'''
-    p[0] = p[1] < p[3]
+    p[0] = sa.ExpressaoLESS (p[1], p[3])
 
 def p_greater_or_equal (p):
     '''greater_or_equal : expressao_n2 GREATER EQUALS expressao_n3'''
-    p[0] = p[1] >= p[4]
+    p[0] = sa.ExpressaoGREAT_OR_EQUAL (p[1], p[4])
 
 def p_less_or_equal (p):
     '''less_or_equal : expressao_n2 LESS EQUALS expressao_n3'''
-    p[0] = p[1] <= p[4]
+    p[0] = sa.ExpressaoLESS_OR_EQUAL(p[1], p[4])
     
 def p_expressao_n3(p):
 
-    ''' expressao_n3 : soma 
-                     | sub 
-                     | expressao_n4 '''
+    '''expressao_n3 : soma 
+                    | sub 
+                    | expressao_n4 '''
     p[0] = p[1]
 
 
 def p_soma(p):
     '''soma : expressao_n3 PLUS expressao_n4'''
-    p[0] = p[1] + p[3]
+    p[0] = sa.ExpressaoSOMA (p[1] , p[3])
 
 def p_sub(p):
     '''sub : expressao_n3 MINUS expressao_n4'''
-    p[0] = p[1] - p[3]
+    p[0] = sa.ExpressaoSUB(p[1] , p[3])
 
 def p_expressao_n4(p):
-
     ''' expressao_n4 : mult 
                      | div 
                      | mod 
                      | expressao_n5 '''
     p[0] = p[1]
 
-
 def p_mult(p):
     '''mult : expressao_n4 TIMES expressao_n5'''
-    p[0] = p[1] * p[3]
+    p[0] = sa.ExpressaoMULT (p[1] , p[3])
 
 def p_mod(p):
     '''mod : expressao_n4 MOD expressao_n5'''
-    p[0] = p[1] % p[3]
+    p[0] = sa.ExpressaoMOD (p[1], p[3])
 
 def p_div(p):
     '''div : expressao_n4 DIVISION expressao_n5'''
-    p[0] = p[1] / p[3]
+    p[0] = sa.ExpressaoDIV (p[1], p[3])
 
 def p_expressao_n5(p):
     '''expressao_n5 : unario
                     | operando
                     | negation'''
     p[0] = p[1]
+
+def p_negation (p):
+    '''negation : EXCLAMATION operando'''
+    p[0] = sa.ExpressaoNEGATION (p[2])
 
 def p_unario(p):
     ''' unario : incremento
@@ -232,50 +302,55 @@ def p_unario(p):
                | pre_decremento'''
     p[0] = p[1]
 
-def p_negation (p):
-    '''negation : EXCLAMATION operando'''
-    p[0] = not p[2]
-
 def p_incremento(p):
     '''incremento : ID INCREMENT'''
-    p[0] = variaveis[p[1]] + 1
+    p[0] = sa.ExpressaoINCREMENTO (p[1])
 
 def p_pre_incremento(p):
     '''pre_incremento : INCREMENT ID'''
-    p[0] = variaveis[p[1]] + 1
+    p[0] = sa.ExpressaoPRE_INCREMENTO (p[1])
 
 def p_decremento(p):
     '''decremento : ID DECREMENT'''
-    p[0] = variaveis[p[1]] - 1
+    p[0] = sa.ExpressaoDECREMENTO (p[1])
 
 def p_pre_decremento(p):
     '''pre_decremento : DECREMENT ID''' 
-    p[0] = variaveis[p[1]] - 1
+    p[0] = sa.ExpressaoPRE_DECREMENTO (p[1])
 
 def p_operando(p):
-    '''operando : identificador
-                | constante
+    '''operando : constante
                 | chamadaFuncao
                 | expParenteses'''
     p[0] = p[1]
 
 def p_constante(p):
-    '''constante : NUMBER
-                 | STRING
-                 | TRUE
-                 | FALSE'''
+    '''constante : constante_numero
+                 | constante_string
+                 | constante_booleano
+                 | constante_id'''
     p[0] = p[1]
 
-def p_identificador(p):
-    '''identificador : ID'''
-    if(variaveis.get(p[1]) == None):
-        p[0]=p[1]
-    else:
-        p[0] = variaveis[p[1]]
+def p_constante_numero(p):
+    '''constante_numero : NUMBER'''
+    p[0] = sa.ConstanteConcreto (p[1],'Number')
+
+def p_constante_string(p):
+    '''constante_string : STRING'''
+    p[0] = sa.ConstanteConcreto (p[1], 'String')
+
+def p_constante_booleano(p):
+    '''constante_booleano : TRUE
+                          | FALSE'''
+    p[0] = sa.ConstanteConcreto (p[1], 'Boolean')
+
+def p_constante_id(p):
+    '''constante_id : ID'''
+    p[0] = sa.ConstanteConcreto (p[1], 'ID')
 
 def p_expParenteses(p):
     '''expParenteses : BEG_PAREN expressao END_PAREN'''
-    p[0] = p[2]
+    p[0] = sa.ExpressaoPARENTESE (p[2])
 
 def p_estrutura_for(p):
     '''estrutura_for : for_CLIKE
@@ -285,46 +360,61 @@ def p_estrutura_for(p):
 
 def p_for_CLIKE(p): 
     '''for_CLIKE : FOR declaracao SEMICOLON expressao SEMICOLON expressao BEG_BRACE codigo END_BRACE'''
-    p[0] = (p[2],p[4],p[6],p[8])
+    p[0] = sa.For_CLIKEconcrete(p[2],p[4],p[6],p[8])
 
 def p_for_infinito(p):
     '''for_infinito : FOR BEG_BRACE codigo END_BRACE'''
-    p[0] = p[3]
+    p[0] = sa.For_INFINITOconcrete(p[3])
 
 def p_for_while(p):
     '''for_while : FOR expressao BEG_BRACE codigo END_BRACE'''
-    p[0] = (p[2],p[4])
+    p[0] = sa.For_WHILEconcrete(p[2],p[4])
 
 
 def p_estrutura_if(p):
     '''estrutura_if : IF expressao BEG_BRACE codigo END_BRACE estrutura_else
                     | IF expressao BEG_BRACE codigo END_BRACE'''
-    if(p[2]):
-        p[0] = p[4]
+    if(len(p) == 7):
+        p[0] = sa.EstruturaIF_ELSEconcrete(p[2], p[4], p[6])
     else:
-        if(len(p) == 6):
-            p[0] = p[6]
-        else:
-            p[0] = []
+        p[0] = sa.EstruturaIFconcrete(p[2], p[4])
 
 def p_estrutura_else(p):
     '''estrutura_else : ELSE BEG_BRACE codigo END_BRACE
                       | ELSE estrutura_if'''
-    if(len(p) == 2):
-        p[0] = []
-    elif(p[4] == None):
-        p[0] = p[2]
-    else:
-        p[0] = p[3]
-
+    if(len(p) == 5):
+        p[0] = sa.EstruturaELSEconcrete(p[3])
+    elif(len(p) == 3):
+        p[0] = sa.EstruturaELSE_IFconcrete(p[2])
 
 def p_atribuicao(p):
-    '''atribuicao : lista_identificadores EQUALS lista_valores
-                  | expressao_matematica_reduzida'''
+    '''atribuicao : lista_identificadores EQUALS lista_valores'''
+    p[0] = sa.AtribuicaoConcrete(p[1], p[3])
     
-    for i in range(len(p[1])):
-        variaveis[p[1][i]] = p[3][i]
-    p[0] = p[3]
+def p_declaracao(p):
+    '''declaracao : declaracaoCurta
+                  | declaracaoExplicita'''
+    p[0] = p[1]
+
+def p_declaracaoCurta(p):
+    '''declaracaoCurta : lista_identificadores COLON EQUALS lista_valores'''
+    p[0] = sa.DeclaracaoCurtaConcrete(p[1], p[4])
+
+def p_lista_identificadores(p):
+    '''lista_identificadores : lista_identificadores COMMA ID
+                             | ID'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[3]]
+
+def p_lista_valores(p):
+   '''lista_valores : lista_valores COMMA expressao
+                    | expressao'''
+   if len(p) == 2:
+        p[0] = [p[1]]
+   else:
+        p[0] = p[1] + [p[3]]
 
 def p_expressao_matematica_reduzida(p):
     '''expressao_matematica_reduzida : assign_plus
@@ -348,42 +438,6 @@ def p_assign_mult(p):
 def p_assign_div(p):
     '''assign_div : ID DIVISION EQUALS expressao'''
     p[0] = variaveis[p[1]] / p[4]
-    
-def p_declaracao(p):
-    '''declaracao : lista_identificadores COLON EQUALS lista_valores'''
-    
-    for i in range(len(p[1])):
-        variaveis[p[1][i]] = p[4][i]
-    p[0] = p[4]
-
-def p_chamadaFuncao(p):
-    '''chamadaFuncao : ID BEG_PAREN lista_parametros END_PAREN'''
-    p[0] = (p[1], p[3])
-
-def p_lista_parametros(p):
-    '''lista_parametros : lista_identificadores
-                        | empty'''
-    if len(p) == 2:
-        p[0] = [p[1]]
-    else:
-        p[0] = p[1] + [p[3]]
-
-def p_lista_identificadores(p):
-    '''lista_identificadores : lista_identificadores COMMA ID
-                             | ID'''
-    if len(p) == 2:
-        p[0] = [p[1]]
-    else:
-        p[0] = p[1] + [p[3]]
-
-def p_lista_valores(p):
-   '''lista_valores : lista_valores COMMA expressao
-                    | expressao'''
-    
-   if len(p) == 2:
-        p[0] = [p[1]]
-   else:
-        p[0] = p[1] + [p[3]]
 
 def main():
 

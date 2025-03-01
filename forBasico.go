@@ -16,7 +16,7 @@ func main() {
 }
 func funcif(){
 
-	i:=0;
+	i,j:=0,1;
 	if (true){
 		if(i==0){
 			i++;
@@ -24,4 +24,6 @@ func funcif(){
 			i--;
 		}
 	}
+	j = i + 1;
+	i = j
 }
