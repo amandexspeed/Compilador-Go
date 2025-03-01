@@ -299,6 +299,14 @@ class ExpressaoOR(Expressao):
     def accept(self, visitor):
         return visitor.visitExpressaoOR(self)
 
+class ExpressaoAND(Expressao):
+    def __init__(self,esquerda,direita):
+        self.esquerda = esquerda
+        self.direita = direita
+
+    def accept(self, visitor):
+        return visitor.visitExpressaoAND(self)
+
 class ExpressoaIGUAL(Expressao):
     def __init__(self, esquerda, direita):
         self.esquerda = esquerda
@@ -445,6 +453,7 @@ class ExpressaoPARENTESE(Expressao):
     
     def accept(self, visitor):
         return visitor.visitExpressaoPARENTESE(self)
+    
 
 #Para a parte de expressões matemáticas reduzidas
 
