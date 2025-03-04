@@ -37,7 +37,7 @@ reserved = {
 
 breakLine = {1: 0}
 # Definindo Tokens e padroes
-tokens = ["STR","INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values()) + list(numberTypes.values())
+tokens = ["STR","INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALITY","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values()) + list(numberTypes.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -67,6 +67,7 @@ t_INCREMENT = r'\+\+'
 t_MINUS   = r'-'
 t_DECREMENT = r'--'
 t_EQUALS  = r'='
+t_EQUALITY = r'=='
 t_DIFFERENT = r'!='
 t_TIMES   = r'\*'
 t_DIVISION = r'/'

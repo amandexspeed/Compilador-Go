@@ -1,10 +1,11 @@
-package main
+package testeCompilador
 
 import "fmt"
 
-func main() {
+func init() {
     a := 5
     b := 4
+    soma(a, b)
 }
 
 func soma(a int, b int) int {

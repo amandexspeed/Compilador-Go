@@ -23,9 +23,6 @@ class Importacao(metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
-    @abstractmethod
-    def getNome(self):
-        pass
 
 class ImportacaoSimplesConcrete(Importacao):
     def __init__(self, nome):
@@ -34,9 +31,6 @@ class ImportacaoSimplesConcrete(Importacao):
     def accept(self, visitor):
         return visitor.visitImportacaoSimples(self)
     
-    def getNome(self):
-        return self.nome
-    
 class ImportacaoCompostaConcrete(Importacao):
     def __init__(self, nome, importacoes):
         self.nome= nome
@@ -44,9 +38,6 @@ class ImportacaoCompostaConcrete(Importacao):
 
     def accept(self, visitor):
         return visitor.visitImportacaoComposta(self)
-    
-    def getNome(self):
-        return self.nome + self.importacoes.toList()
 
 class Programa(metaclass = ABCMeta):
     @abstractmethod
@@ -132,6 +123,15 @@ class DeclaracaoExplicitaCompostaConcrete(DeclaracaoExplicita):
 
     def accept(self, visitor):
         return visitor.visitDeclaracaoExplicitaComposta(self)
+    
+class DeclaracaoExplicitaEmListaSimples(DeclaracaoExplicita):
+    def __init__(self, listaVariaveis,tipo,listaExpressoes):
+        self.listaVariaveis = listaVariaveis
+        self.listaExpressoes = listaExpressoes
+        self.tipo = tipo
+    def accept(self, visitor):
+        return visitor.visitDeclaracaoExplicitaEmListaSimples(self)
+
 
 class DeclaracaoCurta(Declaracao,metaclass = ABCMeta):
     @abstractmethod
@@ -164,7 +164,7 @@ class ParametroComposto(Parametro,metaclass = ABCMeta):
     def accept(self, visitor):
         pass
     @abstractmethod
-    def adicionarIdentificador(self, identificador):
+    def adicionarParametro(self, identificador):
         pass
 
 class ParametroCompostoTipoUnicoConcrete(ParametroComposto):
@@ -175,20 +175,43 @@ class ParametroCompostoTipoUnicoConcrete(ParametroComposto):
     def accept(self, visitor):
         return visitor.visitParametroCompostoTipoUnico(self)
 
-    def adicionarIdentificador(self, identificador):
+    def adicionarParametro(self, identificador):
         self.identificadores + [identificador]
 
 class ParametroCompostoVariosTiposConcrete(ParametroComposto):
     def __init__(self, identificadores):
-        self.identificadores = identificadores
+        self.Parametros = identificadores
 
     def accept(self, visitor):
         return visitor.visitParametroCompostoTipoVazio(self)
     
-    def adicionarIdentificador(self, identificador):
-        self.identificadores + [identificador]
+    def adicionarParametro(self, parametro):
+        self.Parametros + [parametro]
 
-class ChamadaFuncao(metaclass = ABCMeta):
+class Estrutura(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class Codigo(Estrutura,metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+    @abstractmethod
+    def adicionarEstrutura(self):
+        pass
+
+class CodigoConcrete(Codigo):
+    def __init__(self, listaEstruturas):
+        self.listaEstruturas = listaEstruturas
+
+    def accept(self, visitor):
+        return visitor.visitCodigo(self)
+
+    def adicionarEstrutura(self, estrutura):
+        self.listaEstruturas + [estrutura]
+
+class ChamadaFuncao(Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -201,7 +224,7 @@ class ChamadaFuncaoConcrete(ChamadaFuncao):
     def accept(self, visitor):
         return visitor.visitChamadaFuncao(self)
 
-class EstruturaIF(metaclass = ABCMeta):
+class EstruturaIF(Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -224,7 +247,7 @@ class EstruturaIF_ELSEconcrete(EstruturaIF):
         return visitor.visitEstruturaIF_ELSEconcrete(self)
         
 
-class EstruturaELSE(metaclass = ABCMeta):
+class EstruturaELSE(Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -243,7 +266,7 @@ class EstruturaELSE_IFconcrete(EstruturaELSE):
     def accept(self, visitor):
         return visitor.visitEstruturaELSE_IFconcrete(self)
         
-class EstruturaFOR(metaclass = ABCMeta):
+class EstruturaFOR(Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -277,6 +300,20 @@ class For_WHILEconcrete(EstruturaFOR):
 
     def accept(self, visitor):
         return visitor.visitFor_WHILEconcrete(self)
+    
+class RetornoFuncao(Estrutura, metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class RetornoFuncaoConcrete(RetornoFuncao):
+    def __init__(self, expressao):
+        self.expressao = expressao
+
+    def accept(self, visitor):
+        return visitor.visitRetornoFuncao(self)
+    
+# Parte do código que aceita as expressões
 
 class Expressao(metaclass = ABCMeta):
     @abstractmethod
@@ -463,21 +500,21 @@ class expMatRedu():
         pass
 
 class assignPlus():
-    def __init__(self, id1, exp):
-       self.id1 = id1
+    def __init__(self, id, exp):
+       self.id = id
        self.exp = exp
 
 class assignMinus():
     def __init__(self, id1, exp):
-       self.id1 = id1
+       self.id = id
        self.exp = exp
 
 class assignMult():
     def __init__(self, id1, exp):
-       self.id1 = id1
+       self.id = id
        self.exp = exp
 
 class assignDiv():
     def __init__(self, id1, exp):
-       self.id1 = id1
+       self.id = id
        self.exp = exp
