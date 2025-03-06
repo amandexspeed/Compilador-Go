@@ -69,7 +69,22 @@ class FuncaoConcrete(Funcao):
     def accept(self, visitor):
         return visitor.visitFuncao(self)
 
-class Atribuicao(metaclass = ABCMeta):
+class FuncaoCodigoConcrete(Funcao):
+    def __init__(self,listaFuncoes):
+        self.listaFuncoes = listaFuncoes
+    def accept(self, visitor):
+        if self.listaFuncoes != None:
+            for funcao in self.listaFuncoes:
+                funcao.accept(visitor)
+    def adicionarFuncao(self, funcao):
+        self.listaFuncoes + [funcao]
+
+class Estrutura(metaclass = ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class Atribuicao(Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -82,7 +97,7 @@ class AtribuicaoConcrete(Atribuicao):
     def accept(self, visitor):
         return visitor.visitAtribuicao(self)
     
-class Declaracao(metaclass = ABCMeta):
+class Declaracao(Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -187,11 +202,6 @@ class ParametroCompostoVariosTiposConcrete(ParametroComposto):
     
     def adicionarParametro(self, parametro):
         self.Parametros + [parametro]
-
-class Estrutura(metaclass = ABCMeta):
-    @abstractmethod
-    def accept(self, visitor):
-        pass
 
 class Codigo(Estrutura,metaclass = ABCMeta):
     @abstractmethod
@@ -439,7 +449,7 @@ class ExpressaoNEGATION(Expressao):
     def accept(self, visitor):
         return visitor.visitExpressaoNEGATION(self)
 
-class Unario (Expressao):
+class Unario (Expressao,Estrutura):
     @abstractmethod
     def accept(self, visitor):
         pass
@@ -494,27 +504,27 @@ class ExpressaoPARENTESE(Expressao):
 
 #Para a parte de expressões matemáticas reduzidas
 
-class expMatRedu():
+class expMatRedu(Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
 
-class assignPlus():
+class assignPlus(expMatRedu):
     def __init__(self, id, exp):
        self.id = id
        self.exp = exp
 
-class assignMinus():
-    def __init__(self, id1, exp):
+class assignMinus(expMatRedu):
+    def __init__(self, id, exp):
        self.id = id
        self.exp = exp
 
-class assignMult():
-    def __init__(self, id1, exp):
+class assignMult(expMatRedu):
+    def __init__(self, id, exp):
        self.id = id
        self.exp = exp
 
-class assignDiv():
-    def __init__(self, id1, exp):
+class assignDiv(expMatRedu):
+    def __init__(self, id, exp):
        self.id = id
        self.exp = exp

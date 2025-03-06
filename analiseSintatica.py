@@ -14,9 +14,9 @@ def p_programa(p):
     '''programa : pacote importacao declaracaoGlobal funcoes_codigo
                 | pacote importacao funcoes_codigo'''
     if(len(p) == 5):
-        p[0] = sa.ProgramaConcrete(p[1], p[2], p[3], p[4])
+        p[0] = sa.ProgramaConcrete(p[1], p[2], p[3], sa.FuncaoCodigoConcrete(p[4]))
     else:
-        p[0] = sa.ProgramaConcrete(p[1], p[2], None, p[3])
+        p[0] = sa.ProgramaConcrete(p[1], p[2], None, sa.FuncaoCodigoConcrete(p[3]))
 
 def p_empty(p):
     'empty :'
@@ -141,7 +141,16 @@ def p_funcoes_codigo(p):
                       | funcao NEWLINE funcoes_codigo
                       | funcao
                       | empty'''
-    p[0] = p[1]
+    if(len(p) == 2):
+        p[0] = p[1]
+    else:
+        if(p[3] == None):
+           p[0] = [p[1]]
+        elif(p[3].__class__ == list):
+           p[0] = [p[1]] + p[3]
+        else:
+           p[0] = [p[1]] + [p[3]]
+
 
 def p_funcao(p):
     '''funcao : FUNC ID BEG_PAREN parametros END_PAREN tipo_nullavel BEG_BRACE codigo END_BRACE'''
@@ -196,17 +205,21 @@ def p_lista_parametros_varios_tipos(p):
 
 def p_codigo(p):
     '''codigo : lista_estruturas'''
-    p[0] = p[1]
+    p[0] = sa.CodigoConcrete(p[1])
 
 def p_lista_estruturas(p):
     '''lista_estruturas : lista_estruturas estruturasBase
                         | empty'''
-    if len(p) == 3:
-        if(p[1].__class__ == sa.CodigoConcrete):
-            p[1].adicionarEstrutura(p[2])
+    if(len(p)==3):
+        if(isinstance(p[2],sa.Estrutura)):
+            if(p[1] == None):
+                p[0] = [p[2]]
+            elif(p[1].__class__ == list):
+                p[0] = p[1] + [p[2]]
+            else:
+                p[0] = [p[1]] + [p[2]]
+        else:
             p[0] = p[1]
-        elif(p[2].__class__ != str):
-            p[0] = sa.CodigoConcrete([p[2]])
 
 def p_estruturasBase(p):
     '''estruturasBase : estruturas SEMICOLON

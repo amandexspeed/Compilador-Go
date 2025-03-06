@@ -145,9 +145,11 @@ class AbstractVisitor(metaclass = ABCMeta):
     @abstractmethod
     def visitFuncao(self, funcao):
         pass
+
     @abstractmethod
-    def visitAtribuicao(self, atribuicao):
+    def visitRetornoFuncao(self, retorno):
         pass
+
     @abstractmethod
     def visitDeclaracaoExplicitaSimples(self, DeclaracaoExplicitaSimples):
         pass
@@ -157,6 +159,11 @@ class AbstractVisitor(metaclass = ABCMeta):
     @abstractmethod
     def visitDeclaracaoCurta(self, DeclaracaoCurta):
         pass
+
+    @abstractmethod
+    def visitAtribuicao(self, Atribuicao):
+        pass
+
     @abstractmethod
     def visitParametroSimples(self, Parametro):
         pass

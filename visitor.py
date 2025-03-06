@@ -20,9 +20,6 @@ class Visitor(AbstractVisitor):
         if(programa.funcoes_codigo != None):
             programa.funcoes_codigo.accept(self)
 
-    def visitFuncao(self, funcao):
-        print("Funcao: ", funcao.getNome())
-
     def visitPacote(self, pacote):
         print("package ", pacote.getNome())
 
@@ -35,73 +32,74 @@ class Visitor(AbstractVisitor):
             importacaoSimples.accept(self)
 
     def visitCodigo(self, codigo):
-        for comando in codigo.listaEstruturas:
-            comando.accept(self)
+        if(codigo.listaEstruturas != None):
+            for comando in codigo.listaEstruturas:
+                comando.accept(self)
     
     def visitExpressaoAND(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('&&', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoOR(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('||', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoIGUAL(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('==', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoDIFFERENT(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('!=', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoGREATER(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('>', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoLESS(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('<', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoGREAT_OR_EQUAL(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('>=', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoLESS_OR_EQUAL(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('<=', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoSOMA(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('+', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoSUB(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('-', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoMULT(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('*', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoMOD(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('%', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoDIV(self, expressao):
-        expressao.expesq.accept(self)
+        expressao.esquerda.accept(self)
         print('/', end='')
-        expressao.expdir.accept(self)
+        expressao.direita.accept(self)
     
     def visitExpressaoNEGATION(self, expressao):
         print('!', end='')
@@ -206,18 +204,15 @@ class Visitor(AbstractVisitor):
              print(f' {funcao.tipo_retorno} ', end='')
          print ("{")
          funcao.codigo.accept(self)
-         print ("}")
+         print ("\n}")
 
-    def visitAtribuicao(self, atribuicao):
-        print('Identificadores: ')
-
-        for _ in atribuicao.identificadores:
-            print(f'{_}')
-        
-        print('Expressoes: ')
-
-        for _ in atribuicao.expressoes:
-            print(f'{_}')
+    def visitAtribuicao(self, Atribuicao):
+        for _ in Atribuicao.identificadores:
+            print(f'{_}',end='')
+        print(':=',end=' ')
+        for _ in Atribuicao.expressoes:
+            _.accept(self)
+        print('')
     
     def visitDeclaracaoExplicitaSimples(self, DeclaracaoExplicitaSimples):
         if(DeclaracaoExplicitaSimples.valor != None):
@@ -232,12 +227,12 @@ class Visitor(AbstractVisitor):
         print(')')
 
     def visitDeclaracaoCurta(self, DeclaracaoCurta):
-        print('Identificadores: ')
         for _ in DeclaracaoCurta.identificadores:
-            print(f'{_}')
-        print('Expressoes: ')
+            print(f'{_}',end=' ')
+        print(':=',end=' ')
         for _ in DeclaracaoCurta.expressoes:
-            print(f'{_}')
+            _.accept(self)
+            print('',end=' ')
     
     def visitParametroSimples(self, Parametro):
         print(f'{Parametro.nome} {Parametro.tipo}',end='')
@@ -252,9 +247,15 @@ class Visitor(AbstractVisitor):
     def visitChamadaFuncao(self, estrutura):
         print(estrutura.nome, end='')
         print('(',end='')
-        if(estrutura.parametros != None):
-            estrutura.parametros.accept(self)
+        if(estrutura.lista_parametros != None):
+            for est in estrutura.lista_parametros:
+                est.accept(self)
+                print(" ",end = '')
         print(')',end='')
+
+    def visitRetornoFuncao(self, retorno):
+        print('return ', end='')
+        retorno.expressao.accept(self)
    
 def main():
     for arquivo in arquivos_go:
