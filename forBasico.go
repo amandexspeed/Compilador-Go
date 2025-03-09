@@ -36,6 +36,7 @@ func funcfor(){
 }
 
 func funcfor2(a,b int){
+	var y int = 1
 	for a=0;a<10;a++{
 		b++
 	}

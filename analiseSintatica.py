@@ -80,7 +80,8 @@ def p_declaracaoExplicitaGlobal(p):
     p[0] = p[1]
 
 def p_declaracaoExplicita(p):
-    '''declaracaoExplicita : declaracaoExplicitaEmLista
+    '''declaracaoExplicita : declaracaoExplicitaSimples
+                           | declaracaoExplicitaEmLista
                            | declaracaoExplicitaEmListaEspacada
                            | declaracaoExplicitaEmListaSimples'''
     p[0] = p[1]
@@ -126,15 +127,15 @@ def p_listaExplicitaRecursiva(p):
 
 def p_declaracaoExplicitaEmListaSimples(p):
     '''declaracaoExplicitaEmListaSimples : VAR listaExplicitaSimples'''
-    p[0] = p[1]
+    p[0] = p[2]
 
 def p_listaExplicitaSimples(p):
     '''listaExplicitaSimples : lista_identificadores tipo
                              | lista_identificadores tipo COLON EQUALS lista_valores'''
     if(len(p) == 3):
-        p[0] = [sa.DeclaracaoExplicitaSimplesConcrete(p[1], p[2], None)]
+        p[0] = sa.DeclaracaoExplicitaEmListaSimples(p[1], p[2], None)
     else:
-        p[0] = [sa.DeclaracaoExplicitaSimplesConcrete(p[2], p[2], p[5])]
+        p[0] = sa.DeclaracaoExplicitaEmListaSimples(p[2], p[2], p[5])
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo

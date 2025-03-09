@@ -102,12 +102,12 @@ class Declaracao(Estrutura,metaclass = ABCMeta):
     def accept(self, visitor):
         pass
     
-class DeclaracaoExplicita(Declaracao,metaclass = ABCMeta):
+class DeclaracaoExplicita(Declaracao,Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass
 
-class DeclaracaoExplicitaSimples(DeclaracaoExplicita,metaclass = ABCMeta):
+class DeclaracaoExplicitaSimples(DeclaracaoExplicita,Estrutura,metaclass = ABCMeta):
     @abstractmethod
     def accept(self, visitor):
         pass

@@ -34,7 +34,25 @@ class Visitor(AbstractVisitor):
     def visitCodigo(self, codigo):
         if(codigo.listaEstruturas != None):
             for comando in codigo.listaEstruturas:
+
+                if(isinstance(comando,sa.Unario)):
+                    print(blank(),end='')
+                elif(isinstance(comando,sa.Atribuicao)):
+                    print(blank(), end='')
+                elif(isinstance(comando,sa.ChamadaFuncao)):
+                    print(blank(),end='')
+
                 comando.accept(self)
+
+                if(isinstance(comando,sa.Declaracao)):
+                    print('')
+                elif(isinstance(comando,sa.Atribuicao)):
+                    print('')
+                elif(isinstance(comando,sa.ChamadaFuncao)):
+                    print('')
+                elif(isinstance(comando, sa.RetornoFuncao)):
+                    print('')
+                
     
     def visitExpressaoAND(self, expressao):
         expressao.esquerda.accept(self)
@@ -146,55 +164,74 @@ class Visitor(AbstractVisitor):
        expMatRedu.exp.accept(self)
 
     def visitFor_CLIKEconcrete(self, EstruturaFOR):
-        print('for', end='')
+        global tab
+        print(blank() + 'for ', end='')
         EstruturaFOR.declaracao.accept(self)
-        print(';', end='')
+        print('; ', end='')
         EstruturaFOR.expressao1.accept(self)
-        print(';', end='')
+        print('; ', end='')
         EstruturaFOR.expressao2.accept(self)
-        print('{')
+        print(' {')
+        tab = tab + 3
         EstruturaFOR.codigo.accept(self)
-        print('}')
+        tab = tab - 3
+        print('\n' + blank() +'}')
 
     def visitFor_INFINITOconcrete(self, EstruturaFOR):
-        print('for {', end='')
+        global tab
+        print(blank() + 'for {', end='')
+        tab = tab + 3
         EstruturaFOR.codigo.accept(self)
-        print('}')
+        tab = tab - 3
+        print('\n' + blank() + '}')
 
     def visitFor_WHILEconcrete(self, EstruturaFOR):
-        print('for', end='')
+        global tab
+        print(blank() + 'for ', end='')
         EstruturaFOR.expressao.accept(self)
-        print('{', end='')  
+        print(' {')  
+        tab = tab + 3
         EstruturaFOR.codigo.accept(self)
-        print('}')
+        tab = tab - 3
+        print('\n' + blank() + '}')
         
     def visitEstruturaIFconcrete(self, estruturaElse):
-        print('if', end='')
+        global tab
+        print(blank() + 'if ', end='')
         estruturaElse.expressao.accept(self)
-        print('{')
+        print(' {')
+        tab = tab + 3
         estruturaElse.codigo.accept(self)
-        print('}')
+        tab = tab - 3
+        print('\n' + blank() + '}')
 
     def visitEstruturaIF_ELSEconcrete (self, estruturaElse):
-        print('if', end='')
+        global tab
+        print(blank() +'if ', end='')
         estruturaElse.expressao.accept(self)
         print('{')
+        tab = tab + 3
         estruturaElse.codigo.accept(self)
-        print('}')
+        tab = tab - 3
+        print('\n'+blank()+'}')
         estruturaElse.expressao_else.accept(self)
 
     def visitEstruturaELSEconcrete(self, estruturaElse):
-        print('else', end='')
+        global tab
+        print(blank() + 'else ', end='')
         print('{')
+        tab = tab + 3
         estruturaElse.codigo.accept(self)
-        print('}')
+        tab = tab - 3
+        print('\n' + blank() + '}',end="")
         
     def visitEstruturaELSE_IFconcrete(self, estruturaElse):
-        print('else', end='')
+        print('else ', end='')
         estruturaElse.estrutura_if.accept(self)
     
     def visitFuncao(self, funcao):
-         print(f'{funcao.id} (', end='')
+         global tab
+         print('\nfunc',f'{funcao.id} (', end='')
 
          if(funcao.lista_parametros != None):
             funcao.lista_parametros.accept(self)
@@ -202,31 +239,49 @@ class Visitor(AbstractVisitor):
          print(')', end='')
          if(funcao.tipo_retorno != None):
              print(f' {funcao.tipo_retorno} ', end='')
-         print ("{")
+         print ("{\n")
+         tab = tab + 3
          funcao.codigo.accept(self)
+         tab = tab - 3
          print ("\n}")
 
     def visitAtribuicao(self, Atribuicao):
         for _ in Atribuicao.identificadores:
-            print(f'{_}',end='')
-        print(':=',end=' ')
+            print(f'{_} ',end='')
+        print('=',end=' ')
         for _ in Atribuicao.expressoes:
             _.accept(self)
-        print('')
     
     def visitDeclaracaoExplicitaSimples(self, DeclaracaoExplicitaSimples):
         if(DeclaracaoExplicitaSimples.valor != None):
-            print(f'{DeclaracaoExplicitaSimples.nomeVariavel} {DeclaracaoExplicitaSimples.tipo} := {DeclaracaoExplicitaSimples.valor}')
+            print(blank() + f'var {DeclaracaoExplicitaSimples.nomeVariavel} {DeclaracaoExplicitaSimples.tipo} = ',end="")
+            DeclaracaoExplicitaSimples.valor.accept(self)
         else:
-            print(f'{DeclaracaoExplicitaSimples.nomeVariavel} {DeclaracaoExplicitaSimples.tipo}')
+            print(blank() + f'var {DeclaracaoExplicitaSimples.nomeVariavel} {DeclaracaoExplicitaSimples.tipo}',end="")
     
     def visitDeclaracaoExplicitaComposta(self, DeclaracaoExplicita):
+        global tab
+        tab = tab + 3
         print('var (')
         for declaracao in DeclaracaoExplicita.listaVariaveis:
             declaracao.accept(self) 
+            print("")
+        tab = tab - 3
         print(')')
 
+    def visitDeclaracaoExplicitaEmListaSimples(self, DeclaracaoExplicita):
+        print(blank()+"var ", end='')
+        for declaracao in DeclaracaoExplicita.listaVariaveis:
+            print(declaracao, end=' ')
+        print(DeclaracaoExplicita.tipo, end=' ')
+        if(DeclaracaoExplicita.listaExpressoes != None):
+            print('=', end=' ')
+            for expressao in DeclaracaoExplicita.listaExpressoes:
+                expressao.accept(self)
+                print('', end=' ')
+
     def visitDeclaracaoCurta(self, DeclaracaoCurta):
+        print(blank(), end='')
         for _ in DeclaracaoCurta.identificadores:
             print(f'{_}',end=' ')
         print(':=',end=' ')
@@ -254,7 +309,7 @@ class Visitor(AbstractVisitor):
         print(')',end='')
 
     def visitRetornoFuncao(self, retorno):
-        print('return ', end='')
+        print(blank() + 'return ', end='')
         retorno.expressao.accept(self)
    
 def main():
