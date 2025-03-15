@@ -368,24 +368,29 @@ def p_operando(p):
     p[0] = p[1]
 
 def p_constante(p):
-    '''constante : constante_numero
+    '''constante : constante_int
+                 | constante_float
                  | constante_string
                  | constante_booleano
                  | constante_id'''
     p[0] = p[1]
 
-def p_constante_numero(p):
-    '''constante_numero : NUMBER'''
-    p[0] = sa.ConstanteConcreto (p[1],'Number')
+def p_constante_int(p):
+    '''constante_int : INTNUMBER'''
+    p[0] = sa.ConstanteConcreto (p[1],'int')
+
+def p_constante_float(p):
+    '''constante_float : FLOATNUMBER'''
+    p[0] = sa.ConstanteConcreto (p[1],'float')
 
 def p_constante_string(p):
     '''constante_string : STRING'''
-    p[0] = sa.ConstanteConcreto (p[1], 'String')
+    p[0] = sa.ConstanteConcreto (p[1], 'string')
 
 def p_constante_booleano(p):
     '''constante_booleano : TRUE
                           | FALSE'''
-    p[0] = sa.ConstanteConcreto (p[1], 'Boolean')
+    p[0] = sa.ConstanteConcreto (p[1], 'boolean')
 
 def p_constante_id(p):
     '''constante_id : ID'''

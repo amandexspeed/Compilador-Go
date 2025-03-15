@@ -1,7 +1,7 @@
 package testeCompilador
 
 var (
-    a int
+    a float64 = 1.0
     b string
     c bool
 )
