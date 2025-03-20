@@ -298,6 +298,9 @@ class Visitor(AbstractVisitor):
             print(f'{_} ',end="")
         print(f'{ParametroComposto.tipo}')
 
+    def visitParametroCompostoVariosTipos(self, ParametroComposto):
+        for _ in ParametroComposto.Parametros:
+            _.accept(self)
     
     def visitChamadaFuncao(self, estrutura):
         print(estrutura.nome, end='')

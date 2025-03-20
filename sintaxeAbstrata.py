@@ -198,7 +198,7 @@ class ParametroCompostoVariosTiposConcrete(ParametroComposto):
         self.Parametros = identificadores
 
     def accept(self, visitor):
-        return visitor.visitParametroCompostoTipoVazio(self)
+        return visitor.visitParametroCompostoVariosTipos(self)
     
     def adicionarParametro(self, parametro):
         self.Parametros + [parametro]
