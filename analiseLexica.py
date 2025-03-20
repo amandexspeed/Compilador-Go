@@ -18,15 +18,23 @@ reserved = {
     'for':'FOR',
     'func':'FUNC',
     'if':'IF',
-    'import:':'IMPORT',
+    'import':'IMPORT',
     'package':'PACKAGE',
     'return':'RETURN', 
-    'var':'VAR'  
+    'var':'VAR',
+    'int':'INT',
+    'int8':'INT8',
+    'int16':'INT16',
+    'int32':'INT32',
+    'int64':'INT64',
+    'float32':'FLOAT32',
+    'float64':'FLOAT64',
+    'string':'STR' 
 }
 
 breakLine = {1: 0}
 # Definindo Tokens e padroes
-tokens = ["INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","NUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
+tokens = ["STR","INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALITY","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","FLOATNUMBER","INTNUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -51,11 +59,13 @@ def adjustBlockComment(t):
         t.lexer.lineno += 1
     t.lexer.lineno -= 1
 
+t_STR = r'string'
 t_PLUS    = r'\+'
 t_INCREMENT = r'\+\+'
 t_MINUS   = r'-'
 t_DECREMENT = r'--'
 t_EQUALS  = r'='
+t_EQUALITY = r'=='
 t_DIFFERENT = r'!='
 t_TIMES   = r'\*'
 t_DIVISION = r'/'
@@ -86,7 +96,12 @@ def t_STRING(t):
     r'\".*?\"'
     return t
 
-def t_NUMBER(t):
+def t_FLOATNUMBER(t):
+    r'\d+\.\d+'
+    t.value = float(t.value)
+    return t
+
+def t_INTNUMBER(t):
     r'\d+'
     t.value = int(t.value)    
     return t
