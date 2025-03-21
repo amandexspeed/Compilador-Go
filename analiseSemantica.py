@@ -40,8 +40,6 @@ class RegistradorDeFuncao():
             funcao.accept(self)
 
     def visitFuncaoConcrete(self, funcao):
-        global nomeArquivo
-        global nomePacote
 
         if(ts.getBindable(funcao.nome) != None):
             print("Função " + funcao.nome + " já declarada")
@@ -49,7 +47,7 @@ class RegistradorDeFuncao():
             params = None
             if(funcao.lista_parametros != None):
                 params = funcao.lista_parametros.accept(self)
-            ts.addFunction(funcao.nome, funcao.tipoRetorno, params, nomePacote , 'global' + nomeArquivo)
+            ts.addFunction(funcao.nome, funcao.tipoRetorno, params)
 
     def visitParametroSimples(self, Parametro):
         if(ts.getBindable(Parametro.nome) != None):

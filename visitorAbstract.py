@@ -3,6 +3,10 @@ from abc import ABCMeta, abstractmethod
 class AbstractVisitor(metaclass = ABCMeta):
 
     @abstractmethod
+    def visitPrograma(self, pacote):
+        pass
+
+    @abstractmethod
     def visitPacote(self, pacote):
         pass
 
