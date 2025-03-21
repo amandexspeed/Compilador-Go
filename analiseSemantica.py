@@ -27,6 +27,146 @@ class AnaliseSemantica(AbstractVisitor):
         global nomePacote
         nomePacote = pacote.nome
 
+    def visitImportacaoSimples(self, importacao):
+        pass
+
+    @abstractmethod
+    def visitImportacaoComposta(self, importacao):
+        pass
+
+    def visitCodigo(self, codigo):
+        pass
+
+    def visitExpressaoAND(self, expressao):
+        pass
+
+    def visitExpressaoOR(self, expressao):
+        pass
+    
+    def visitExpressaoIGUAL(self, expressao):
+        pass
+    
+    def visitExpressaoDIFFERENT(self, expressao):
+        pass
+    
+    def visitExpressaoGREATER(self, expressao):
+        pass
+    
+    def visitExpressaoLESS(self, expressao):
+        pass
+    
+    def visitExpressaoGREAT_OR_EQUAL(self, expressao):
+        pass
+    
+    def visitExpressaoLESS_OR_EQUAL(self, expressao):
+        pass
+    
+    def visitExpressaoSOMA(self, expressao):
+        pass
+    
+    def visitExpressaoSUB(self, expressao):
+        pass
+    
+    def visitExpressaoMULT(self, expressao):
+        pass
+    
+    def visitExpressaoMOD(self, expressao):
+        pass
+    
+    
+    def visitExpressaoDIV(self, expressao):
+        pass
+    
+    def visitExpressaoNEGATION(self, expressao):
+        pass
+    
+    def visitExpressaoINCREMENTO(self, expressao):
+        pass
+    
+    def visitExpressaoPRE_INCREMENTO(self, expressao):
+        pass
+    
+    def visitExpressaoDECREMENTO(self, expressao):
+        pass
+   
+    def visitExpressaoPRE_DECREMENTO(self, expressao):
+        pass
+    
+    def visitConstanteConcreto(self, constante):
+        pass
+    
+    def visitExpressaoPARENTESE(self, expressao):
+        pass
+   
+    def visitAssignPlus(self, expMatRedu):
+       pass
+
+    def visitAssignMinus(self, expMatRedu):
+       pass
+
+    def visitAssignMult(self, expMatRedu):
+       pass
+
+    def visitAssigndiv(self, expMatRedu):
+       pass
+    
+    def visitFor_CLIKEconcrete(self, EstruturaFOR):
+        pass
+    
+    def visitFor_INFINITOconcrete(self, EstruturaFOR):
+        pass
+
+    def visitFor_WHILEconcrete(self, EstruturaFOR):
+        pass
+
+    def visitEstruturaIFconcrete(self, estruturaIf):
+        pass
+
+    def visitEstruturaIF_ELSEconcrete (self, estruturaElse):
+        pass
+    
+    def visitEstruturaELSEconcrete(self, estruturaElse):
+        pass
+    
+    def visitEstruturaELSE_IFconcrete(self, estruturaElse):
+        pass
+    
+    def visitFuncao(self, funcao):
+        pass
+
+    def visitRetornoFuncao(self, retorno):
+        pass
+
+    def visitAtribuicao(self, Atribuicao):
+        pass
+
+    def visitDeclaracaoExplicitaSimples(self, DeclaracaoExplicitaSimples):
+        pass
+
+    def visitDeclaracaoExplicitaEmListaSimples(self, DeclaracaoExplicita):
+        pass
+
+    def visitDeclaracaoExplicitaComposta(self, DeclaracaoExplicita):
+        pass
+
+    def visitDeclaracaoCurta(self, DeclaracaoCurta):
+        pass
+
+    def visitParametroSimples(self, Parametro):
+        pass
+
+    def visitParametroCompostoTipoUnico(self, ParametroComposto):
+        pass
+
+    def visitParametroCompostoVariosTipos(self, ParametroComposto):
+        pass
+
+    def visitChamadaFuncao(self, ChamadaFuncao):
+        pass
+
+    def visitRetornoFuncao(self, retorno):
+        pass
+
 class RegistradorDeFuncao():
     def __init__(self,programa):
         self.programa = programa
