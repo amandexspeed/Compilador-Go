@@ -302,11 +302,11 @@ class Visitor(AbstractVisitor):
         for _ in ParametroComposto.Parametros:
             _.accept(self)
     
-    def visitChamadaFuncao(self, estrutura):
-        print(estrutura.nome, end='')
+    def visitChamadaFuncao(self, ChamadaFuncao):
+        print(ChamadaFuncao.nome, end='')
         print('(',end='')
-        if(estrutura.lista_parametros != None):
-            for est in estrutura.lista_parametros:
+        if(ChamadaFuncao.lista_parametros != None):
+            for est in ChamadaFuncao.lista_parametros:
                 est.accept(self)
                 print(" ",end = '')
         print(')',end='')
