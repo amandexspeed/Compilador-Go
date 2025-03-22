@@ -189,7 +189,3 @@ class AbstractVisitor(metaclass = ABCMeta):
     @abstractmethod
     def visitChamadaFuncao(self, ChamadaFuncao):
         pass
-
-    @abstractmethod
-    def visitRetornoFuncao(self, retorno):
-        pass

@@ -1,12 +1,11 @@
 from visitor import *
 import tabelaSimbolos as ts
 
-global nomeArquivo
-global nomePacote
+global isFineSemantic
 
 class AnaliseSemantica(AbstractVisitor):
 
-    def __init__(self):
+    def __init__(self, nomeArquivo):
         self.printer = Visitor()
         ts.beginScope('global' + nomeArquivo)
 
@@ -30,7 +29,6 @@ class AnaliseSemantica(AbstractVisitor):
     def visitImportacaoSimples(self, importacao):
         pass
 
-    @abstractmethod
     def visitImportacaoComposta(self, importacao):
         pass
 
@@ -72,8 +70,7 @@ class AnaliseSemantica(AbstractVisitor):
     
     def visitExpressaoMOD(self, expressao):
         pass
-    
-    
+        
     def visitExpressaoDIV(self, expressao):
         pass
     
@@ -135,22 +132,72 @@ class AnaliseSemantica(AbstractVisitor):
         pass
 
     def visitRetornoFuncao(self, retorno):
-        pass
+        scope = ts.currentScope()
+        if(scope[ts.TYPE] != retorno.expressao.accept(self)):
+            print("Erro: Tipo de retorno incompatível")
+            global isFineSemantic
+            isFineSemantic = False
+            return None
+        return scope[ts.TYPE]
 
     def visitAtribuicao(self, Atribuicao):
-        pass
+        if(ts.getBindable(Atribuicao.identificador) == None):
+            print("Erro: Variável não declarada")
+            global isFineSemantic
+            isFineSemantic = False
+        else:
+            tipo = Atribuicao.expressao.accept(self)
+            if(ts.getBindable(Atribuicao.identificador)[ts.TYPE] != tipo):
+                print("Erro: Tipo de variável não compatível com o valor atribuído")
+                global isFineSemantic
+                isFineSemantic = False
 
     def visitDeclaracaoExplicitaSimples(self, DeclaracaoExplicitaSimples):
-        pass
+        if(ts.getBindable(DeclaracaoExplicitaSimples.nome) != None):
+            print("Aviso: Variável redeclarada")
+        if(DeclaracaoExplicitaSimples.valor != None):
+            if(DeclaracaoExplicitaSimples.tipo != DeclaracaoExplicitaSimples.valor.visit(self)):              
+                print("Erro: Tipo de variável não compatível com o valor atribuído")
+                global isFineSemantic
+                isFineSemantic = False
+            else:
+                ts.addExplicitVariable(DeclaracaoExplicitaSimples.nome, DeclaracaoExplicitaSimples.tipo)
+                return DeclaracaoExplicitaSimples.tipo
+
 
     def visitDeclaracaoExplicitaEmListaSimples(self, DeclaracaoExplicita):
-        pass
+        listaObjetosDeclarados = []
+        for variavel in DeclaracaoExplicita.listaVariaveis:
+            listaObjetosDeclarados.append(sa.DeclaracaoExplicitaSimplesConcrete(variavel, DeclaracaoExplicita.tipo, None))
+
+        if(DeclaracaoExplicita.listaExpressoes != None):
+            if(len(DeclaracaoExplicita.listaVariaveis) != len(DeclaracaoExplicita.listaExpressoes)):
+                print("Erro: Número de variáveis e valores incompatíveis")
+                global isFineSemantic
+                isFineSemantic = False
+            
+            for i in range(len(listaObjetosDeclarados)):
+                listaObjetosDeclarados[i].valor = DeclaracaoExplicita.listaExpressoes[i]
+
+        for declaracao in listaObjetosDeclarados:
+            declaracao.accept(self)
 
     def visitDeclaracaoExplicitaComposta(self, DeclaracaoExplicita):
-        pass
+        for variavel in DeclaracaoExplicita.listaVariaveis:
+            variavel.accept(self)
 
     def visitDeclaracaoCurta(self, DeclaracaoCurta):
-        pass
+        if(ts.getBindable(DeclaracaoCurta.nome) != None):
+            print("Aviso: Variável redeclarada")
+
+        if(len(DeclaracaoCurta.expressao) != len(DeclaracaoCurta.identificadores)):
+            print("Erro: Número de variáveis e valores incompatíveis")
+            global isFineSemantic
+            isFineSemantic = False
+
+        for i in range(len(DeclaracaoCurta.identificadores)):
+            tipo = DeclaracaoCurta.expressoes[i].accept(self)
+            ts.addMultableVariable(DeclaracaoCurta.nome, tipo)
 
     def visitParametroSimples(self, Parametro):
         pass
@@ -162,9 +209,6 @@ class AnaliseSemantica(AbstractVisitor):
         pass
 
     def visitChamadaFuncao(self, ChamadaFuncao):
-        pass
-
-    def visitRetornoFuncao(self, retorno):
         pass
 
 class RegistradorDeFuncao():

@@ -51,6 +51,10 @@ def addFunction(nome, tipoRetorno, parametros):
     tabelaDesimbolos[-1][nome] = {BINDABLE: FUNCTION, TYPE: tipoRetorno, PARAMS: parametros}
     printTable()
 
+def currentScope():
+    global tabelaDesimbolos
+    return tabelaDesimbolos[-1]
+
 def getBindable(nome):
     global tabelaDesimbolos
     for i in reversed(range(len(tabelaDesimbolos))):
@@ -84,6 +88,9 @@ def main():
     print(str(getBindable('a')))
     print('\n# Consultando bindable')
     print(str(getBindable('c')))
+
+    print('\n# Consultando escopo atual')
+    print(str(currentScope()))
 
     print('\n# Removendo escopo some')
     endScope()
