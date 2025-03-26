@@ -16,9 +16,11 @@ SCOPE = 'scope'
 EXPLICITVARIABLE = 'expvar'
 MUTABLEVARIABLE = 'mutvar' 
 
-DEBUG = -1
+DEBUG = 0
 
 Numero = [INT, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64]
+inteiro = [INT, INT8, INT16, INT32, INT64]
+real = [FLOAT32, FLOAT64]
 
 def printTable():
     global DEBUG
