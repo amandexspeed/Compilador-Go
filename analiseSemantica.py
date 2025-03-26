@@ -652,7 +652,7 @@ class AnaliseSemantica(AbstractVisitor):
                 return ts.getBindable(constante.valor)[ts.TYPE]
     
     def visitExpressaoPARENTESE(self, expressao):
-        pass
+        return expressao.exp.accept(self)
    
     def visitAssignPlus(self, expMatRedu):
        tipoId = ts.getBindable(expMatRedu.id)[ts.TYPE]
