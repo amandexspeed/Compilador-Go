@@ -124,7 +124,7 @@ class AnaliseSemantica(AbstractVisitor):
                         return tipoExp2
                     else:
                         return -1
-                    
+
                 case "boolean":
                     if(Exp2.accept(self) == ts.BOOL):
                         return ts.BOOL
@@ -203,23 +203,21 @@ class AnaliseSemantica(AbstractVisitor):
             estrutura.accept(self)
 
     def visitExpressaoAND(self, expressao):
-        """avalia a expressoa logica de AND entre operadores"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        """avalia a expressao logica de AND entre operadores"""
+        global isFineSemantic
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoAND(expressao)
 
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if (left==ts.BOOLEAN) and (right==ts.BOOLEAN):
                 return ts.BOOLEAN
             else:
                 print(f'ERROR semantico: necessario boleanos, mas foi encontrado {left} e {right}')
-                global isFineSemantic
                 isFineSemantic = False
                 self.printer.visitExpressaoAND(expressao)
         
@@ -227,29 +225,26 @@ class AnaliseSemantica(AbstractVisitor):
             if(coersao == ts.BOOL):
                 return ts.BOOL
             print(f'ERROR semantico: necessario boleanos, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoAND(expressao)
         
 
     def visitExpressaoOR(self, expressao):
         """"avalia a expressao logica OR entre operadores"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        global isFineSemantic
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoOR(expressao)
 
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right==ts.BOOL) or (left==ts.BOOL):
                 return ts.BOOL 
             else:
                 print(f'ERROR semantico: necessario boleanos, mas foi encontrado {left} e  {right}')
-                global isFineSemantic
                 isFineSemantic = False
                 self.printer.visitExpressaoOR(expressao)
 
@@ -257,29 +252,25 @@ class AnaliseSemantica(AbstractVisitor):
             if(coersao == ts.BOOL):
                 return ts.BOOL
             print(f'ERROR semantico: necessario boleanos, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoOR(expressao)
     
     def visitExpressaoIGUAL(self, expressao):
         """"avalia a expressao logica IGUAL entre operadores"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
-
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoIgual(expressao)
 
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right==left):
                 return ts.BOOL
             else:
                 print(f'ERROR semantico: Foi encontrado tipos diferentes: {left} e  {right}')
-                global isFineSemantic
                 isFineSemantic = False
                 self.printer.visitExpressaoIGUAL(expressao)
 
@@ -288,24 +279,21 @@ class AnaliseSemantica(AbstractVisitor):
     
     def visitExpressaoDIFFERENT(self, expressao):
         """"avalia a expressao logica DIFERENTE entre operadores"""
-
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        global isFineSemantic
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoDIFFERENT(expressao)
 
         elif(coersao == None):
 
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right==left):
                 return ts.BOOL 
             else:
                 print(f'ERROR semantico: É necessário tipos iguais. Foi encontrado {left} e  {right}')
-                global isFineSemantic
                 isFineSemantic = False
                 self.printer.visitExpressaoDIFFERENT(expressao)
 
@@ -315,29 +303,25 @@ class AnaliseSemantica(AbstractVisitor):
     def visitExpressaoGREATER(self, expressao):
 
         """"avalia a expressao logica MAIOR OU IGUAL entre operadores"""
-
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        global isFineSemantic
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoGREATER(expressao)
 
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right==left):
                     return ts.BOOL
                 else:
                     print(f'ERROR semantico: necessário tipos numéricos iguais, mas foi encontrado {left} e  {right}')
-                    global isFineSemantic
                     isFineSemantic = False
                     self.printer.visitExpressaoGREATER(expressao)
             else:
                 print(f'ERROR semantico: necessário tipos numéricos, mas foi encontrado {left} e  {right}')
-                global isFineSemantic
                 isFineSemantic = False
                 self.printer.visitExpressaoGREATER(expressao)
 
@@ -345,35 +329,31 @@ class AnaliseSemantica(AbstractVisitor):
             if(coersao in ts.Numero):
                 return ts.BOOL
             print(f'ERROR semantico: necessario números, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoGREATER(expressao)
     
     def visitExpressaoLESS(self, expressao):
 
         """Avalia a expressão menor que entre operadores"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoLESS(expressao)
 
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right==left):
                     return ts.BOOL
                 else:
                     print(f'ERROR semantico: necessário tipos numéricos iguais, mas foi encontrado {left} e  {right}')
-                    global isFineSemantic
                     isFineSemantic = False
                     self.printer.visitExpressaoLESS(expressao)
             else:
                 print(f'ERROR semantico: necessário tipos numéricos, mas foi encontrado {left} e  {right}')
-                global isFineSemantic
                 isFineSemantic = False
                 self.printer.visitExpressaoLESS(expressao)
 
@@ -381,185 +361,172 @@ class AnaliseSemantica(AbstractVisitor):
             if(coersao in ts.Numero):
                 return ts.BOOL
             print(f'ERROR semantico: necessario tipo númerico, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoLESS(expressao)
     
 
     def visitExpressaoGREAT_OR_EQUAL(self, expressao):
         """Avalia a expressão maior ou igual entre operadores"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoGREAT_OR_EQUAL(expressao)
 
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right == left):
                     return ts.BOOL
-                global isFineSemantic
                 isFineSemantic = False
                 print(f'ERROR semantico: necessário tipos numéricos iguais, mas foi encontrado {left} e  {right}')
                 self.printer.visitExpressaoGREAT_OR_EQUAL(expressao)
             else:
                 print(f'ERROR semantico: necessário tipos numéricos iguais, mas foi encontrado {left} e  {right}')
-                global isFineSemantic
                 isFineSemantic = False
                 self.printer.visitExpressaoGREAT_OR_EQUAL(expressao)
         else:
             if(coersao == ts.BOOL):
                 return ts.BOOL
             print(f'ERROR semantico: necessario tipo númerico, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoGREAT_OR_EQUAL(expressao)
 
     def visitExpressaoLESS_OR_EQUAL(self, expressao):
         """Avalia a expressão menor ou igual que entre operadroes"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoLESS_OR_EQUAL(expressao)
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right==left):
                     return ts.BOOL
                 else:
                     print(f'ERROR semantico: necessario numeros do mesmo tipo {left} e  {right}')
-                    self.isFineSemantic = False
+                    isFineSemantic = False
                     self.printer.visitExpressaoLESS_OR_EQUAL(expressao)
             else:
                 print(f'ERROR semantico: necessario numeros do mesmo tipo {type(left)} e  {type(right)}')
-                self.isFineSemantic = False
+                isFineSemantic = False
                 self.printer.visitExpressaoLESS_OR_EQUAL(expressao)
         else:
             if(coersao in ts.Numero):
                 return ts.BOOL
             print(f'ERROR semantico: necessario tipo númerico, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoLESS_OR_EQUAL(expressao)
     
     def visitExpressaoSOMA(self, expressao):
         """Avalia a expressao de soma entre operadroes"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoSOMA(expressao)
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right==left):
                     return right
                 else:
                     print(f'ERROR semantico: necessario numeros do mesmo tipo {left} e  {right}')
-                    self.isFineSemantic = False
+                    isFineSemantic = False
                     self.printer.visitExpressaoSOMA(expressao)
             else:
                 print(f'ERROR semantico: necessario numeros do mesmo tipo {type(left)} e  {type(right)}')
-                self.isFineSemantic = False
+                isFineSemantic = False
                 self.printer.visitExpressaoSOMA(expressao)
         else:
             if(coersao in ts.Numero):
                 return coersao
             print(f'ERROR semantico: necessario tipo númerico, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoSOMA(expressao)
     
     def visitExpressaoSUB(self, expressao):
         """Avalia a expressao de subtracao entre operadroes"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoSUB(expressao)
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right == left):
                     return right
                 else:
                     print(f'ERROR semantico: esperado numeros do mesmo tipo mas recebeu {left} e  {right}')
-                    self.isFineSemantic = False
+                    isFineSemantic = False
                     self.printer.visitExpressaoSUB(expressao)
             else:
                 print(f'ERROR semantico: esperado tipos numericos mas recebeu {left} e  {right}')
-                self.isFineSemantic = False
+                isFineSemantic = False
                 self.printer.visitExpressaoSUB(expressao)
         else:
             if(coersao in ts.Numero):
                 return coersao
             print(f'ERROR semantico: necessario tipo númerico, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoSUB(expressao)
 
     def visitExpressaoMULT(self, expressao):
         """Avalia se a multiplicação é válida"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoMULT(expressao)
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right == left):
                     return right
                 else:
                     print(f'ERROR semantico: necessario numeros do mesmo tipo {left} e  {right}')
-                    self.isFineSemantic = False
+                    isFineSemantic = False
                     self.printer.visitExpressaoMULT(expressao)
             else:
                 if(coersao in ts.Numero):
                     return coersao
                 print(f'ERROR semantico: necessario numero,encontrado {coersao}')
-                self.isFineSemantic = False
+                isFineSemantic = False
                 self.printer.visitExpressaoMULT(expressao)
             
     def visitExpressaoMOD(self, expressao):
         """Avalia a expressao de modulo entre operadroes"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoMOD(expressao)
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right == left):
                     return ts.INT
                 else:
                     print(f'ERROR semantico: esperado numeros do mesmo tipo mas recebeu {left} e  {right}')
-                    self.isFineSemantic = False
+                    isFineSemantic = False
                     self.printer.visitExpressaoMOD(expressao)
             else:
                 print(f'ERROR semantico: esperado tipos numerios mas recebeu {left} e  {right}')
-                self.isFineSemantic = False
+                isFineSemantic = False
                 self.printer.visitExpressaoMOD(expressao)
         else:
             if(coersao in ts.Numero):
@@ -567,32 +534,30 @@ class AnaliseSemantica(AbstractVisitor):
         
     def visitExpressaoDIV(self, expressao):
         """Avalia a expressao de divisao entre operadroes"""
-        coersao = self.constCoercion(expressao.esq, expressao.dir)
+        coersao = self.constCoercion(expressao.esquerda, expressao.direita)
+        global isFineSemantic
         if(coersao == -1):
             print(f'ERROR semantico: As constantes são de tipos diferentes')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoDIV(expressao)
         elif(coersao == None):
-            left = expressao.esq.accept(self)
-            right = expressao.dir.accept(self)
-            global isFineSemantic
+            left = expressao.esquerda.accept(self)
+            right = expressao.direita.accept(self)
             if(right in ts.Numero) and (left in ts.Numero):
                 if(right == left):
                     return right
                 else:
                     print(f'ERROR semantico: esperado numeros do mesmo tipo mas recebeu {left} e  {right}')
-                    self.isFineSemantic = False
+                    isFineSemantic = False
                     self.printer.visitExpressaoDIV(expressao)
             else:
                 print(f'ERROR semantico: esperado tipos numericos mas recebeu {left} e  {right}')
-                self.isFineSemantic = False
+                isFineSemantic = False
                 self.printer.visitExpressaoDIV(expressao)
         else:
             if(coersao in ts.Numero):
                 return coersao
             print(f'ERROR semantico: necessario tipo númerico, encontrado {coersao}')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitExpressaoDIV(expressao)
 
@@ -604,61 +569,89 @@ class AnaliseSemantica(AbstractVisitor):
             return ts.BOOL
         else:
             print(f'ERROR semantico: esperado tipo boleano mas recebeu {exp}')
-            self.isFineSemantic = False
+            isFineSemantic = False
             self.printer.visitExpressaoNEGATION(expressao)
         
     def visitExpressaoINCREMENTO(self, expressao):
-        tipoId = ts.getBindable(expressao.id)[ts.TYPE]
-        if(tipoId != ts.Numero):
-           print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
-           global isFineSemantic
-           isFineSemantic = False
-           self.printer.visitExpressaoINCREMENTO(expressao)
+        global isFineSemantic
+        bindable = ts.getBindable(expressao.id)
+        if(bindable == None):
+            print(f'ERROR semantico: Variavel {expressao.id} não declarada')
+            isFineSemantic = False
+            self.printer.visitExpressaoINCREMENTO(expressao)
+        else:
+            tipoId = bindable[ts.TYPE]
+            if(tipoId != ts.Numero):
+                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
+                isFineSemantic = False
+                self.printer.visitExpressaoINCREMENTO(expressao)
+            else:
+                return tipoId
 
     
     def visitExpressaoPRE_INCREMENTO(self, expressao):
-        tipoId = ts.getBindable(expressao.id)[ts.TYPE]
-        if(tipoId != ts.Numero):
-           print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
-           global isFineSemantic
+        global isFineSemantic
+        bindable = ts.getBindable(expressao.id)
+        if(bindable == None):
+           print(f'ERROR semantico: Variavel {expressao.id} não declarada')
            isFineSemantic = False
            self.printer.visitExpressaoPRE_INCREMENTO(expressao)
+        else:
+            tipoId = bindable[ts.TYPE]
+            if(tipoId != ts.Numero):
+                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
+                isFineSemantic = False
+                self.printer.visitExpressaoPRE_INCREMENTO(expressao)
     
     def visitExpressaoDECREMENTO(self, expressao):
-        tipoId = ts.getBindable(expressao.id)[ts.TYPE]
-        if(tipoId != ts.Numero):
-           print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
-           global isFineSemantic
+        global isFineSemantic
+        bindable = ts.getBindable(expressao.id)
+        if(bindable == None):
+           print(f'ERROR semantico: Variavel {expressao.id} não declarada')
            isFineSemantic = False
            self.printer.visitExpressaoDECREMENTO(expressao)
+        else:
+            tipoId = bindable[ts.TYPE]
+            if(tipoId != ts.Numero):
+                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
+                isFineSemantic = False
+                self.printer.visitExpressaoDECREMENTO(expressao)
    
     def visitExpressaoPRE_DECREMENTO(self, expressao):
-        tipoId = ts.getBindable(expressao.id)[ts.TYPE]
-        if(tipoId != ts.Numero):
-           print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
-           global isFineSemantic
+        global isFineSemantic
+        bindable = ts.getBindable(expressao.id)
+        if(bindable == None):
+           print(f'ERROR semantico: Variavel {expressao.id} não declarada')
            isFineSemantic = False
            self.printer.visitExpressaoPRE_DECREMENTO(expressao)
+        else:
+            tipoId = bindable[ts.TYPE]
+            if(tipoId != ts.Numero):
+                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
+                isFineSemantic = False
+                self.printer.visitExpressaoPRE_DECREMENTO(expressao)
     
     def visitConstanteConcreto(self, constante):
         if(constante.tipo != "ID" ):
             return constante.tipo
         else:
-            if(ts.getBindable(constante.valor) == None):
+            bindable = ts.getBindable(constante.valor)
+            if(bindable == None):
                 print("Erro: Variável não declarada")
                 global isFineSemantic
                 isFineSemantic = False
+                self.printer.visitConstanteConcreto(constante)
             else:
-                return ts.getBindable(constante.valor)[ts.TYPE]
+                return bindable[ts.TYPE]
     
     def visitExpressaoPARENTESE(self, expressao):
-        return expressao.exp.accept(self)
+        return expressao.expressao.accept(self)
    
     def visitAssignPlus(self, expMatRedu):
+       global isFineSemantic
        tipoId = ts.getBindable(expMatRedu.id)[ts.TYPE]
        if(tipoId != ts.Numero):
            print(f'ERROR semantico: Variavel {expMatRedu.id} deve ser do tipo numerico')
-           global isFineSemantic
            isFineSemantic = False
            self.printer.visitAssignPlus(expMatRedu)
 
@@ -666,16 +659,15 @@ class AnaliseSemantica(AbstractVisitor):
 
        if(exp not in ts.Numero):
             print(f'ERROR semantico: Expressao deve ser do tipo numerico')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitAssignPlus(expMatRedu)
            
 
     def visitAssignMinus(self, expMatRedu):
+       global isFineSemantic
        tipoId = ts.getBindable(expMatRedu.id)[ts.TYPE]
        if(tipoId != ts.Numero):
            print(f'ERROR semantico: Variavel {expMatRedu.id} deve ser do tipo numerico')
-           global isFineSemantic
            isFineSemantic = False
            self.printer.visitAssignMinus(expMatRedu)
 
@@ -683,15 +675,14 @@ class AnaliseSemantica(AbstractVisitor):
 
        if(exp not in ts.Numero):
             print(f'ERROR semantico: Expressao deve ser do tipo numerico')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitAssignMinus(expMatRedu)
 
     def visitAssignMult(self, expMatRedu):
+       global isFineSemantic
        tipoId = ts.getBindable(expMatRedu.id)[ts.TYPE]
        if(tipoId != ts.Numero):
            print(f'ERROR semantico: Variavel {expMatRedu.id} deve ser do tipo numerico')
-           global isFineSemantic
            isFineSemantic = False
            self.printer.visitAssignMult(expMatRedu)
 
@@ -699,15 +690,14 @@ class AnaliseSemantica(AbstractVisitor):
 
        if(exp not in ts.Numero):
             print(f'ERROR semantico: Expressao deve ser do tipo numerico')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitAssignMult(expMatRedu)
 
     def visitAssigndiv(self, expMatRedu):
+       global isFineSemantic
        tipoId = ts.getBindable(expMatRedu.id)[ts.TYPE]
        if(tipoId != ts.Numero):
            print(f'ERROR semantico: Variavel {expMatRedu.id} deve ser do tipo numerico')
-           global isFineSemantic
            isFineSemantic = False
            self.printer.visitAssigndiv(expMatRedu)
 
@@ -715,24 +705,22 @@ class AnaliseSemantica(AbstractVisitor):
 
        if(exp not in ts.Numero):
             print(f'ERROR semantico: Expressao deve ser do tipo numerico')
-            global isFineSemantic
             isFineSemantic = False
             self.printer.visitAssigndiv(expMatRedu)
     
     def visitFor_CLIKEconcrete(self, EstruturaFOR):
         
         EstruturaFOR.declaracao.accept(self)
+        global isFineSemantic
         tipoExp1 = EstruturaFOR.expressao1.accept(self)
         if(tipoExp1 != ts.BOOL):
             print("Erro: Expressão de controle do for deve ser booleana")
-            global isFineSemantic
             isFineSemantic = False
             EstruturaFOR.expressao1.accept(self.printer)
             
         tipoExp2 = EstruturaFOR.expressao2.accept(self)
-        if(tipoExp2 is not ts.Numero):
+        if(tipoExp2 not in ts.Numero):
             print("Erro: Expressão de incremento do for deve ser numérica")
-            global isFineSemantic
             isFineSemantic = False
             EstruturaFOR.expressao2.accept(self.printer)
 
@@ -795,27 +783,39 @@ class AnaliseSemantica(AbstractVisitor):
         return scope[ts.TYPE]
 
     def visitAtribuicao(self, Atribuicao):
-        if(ts.getBindable(Atribuicao.identificador) == None):
-            print("Erro: Variável não declarada")
-            global isFineSemantic
+        global isFineSemantic
+
+        if(len(Atribuicao.identificadores) != len(Atribuicao.expressoes)):
+            print("Erro: Número de variáveis e valores incompatíveis")
             isFineSemantic = False
-        else:
-            tipo = Atribuicao.expressao.accept(self)
-            if(ts.getBindable(Atribuicao.identificador)[ts.TYPE] != tipo):
-                print("Erro: Tipo de variável não compatível com o valor atribuído")
-                global isFineSemantic
+            return
+
+        for i in range(len(Atribuicao.identificadores)):
+            bindable = ts.getBindable(Atribuicao.identificadores[i])
+            if(bindable == None):
+                print("Erro: Variável não declarada")
                 isFineSemantic = False
+            else:
+                tipo = Atribuicao.expressoes[i].accept(self)
+                if(bindable[ts.TYPE] != tipo):
+                        if(bindable[ts.BINDABLE] == ts.EXPLICITVARIABLE):
+                            print("Erro: Tipo de variável não compatível com o valor atribuído")
+                            isFineSemantic = False
+                            self.printer.visitAtribuicao(Atribuicao)
+                        else:
+                            print("Aviso: Coersão de tipo")
+                            ts.getBindable(Atribuicao.identificadores[i])[ts.TYPE] = tipo
 
     def visitDeclaracaoExplicitaSimples(self, DeclaracaoExplicitaSimples):
-        if(ts.getBindable(DeclaracaoExplicitaSimples.nome) != None):
+        if(ts.getBindable(DeclaracaoExplicitaSimples.nomeVariavel) != None):
             print("Aviso: Variável redeclarada")
         if(DeclaracaoExplicitaSimples.valor != None):
-            if(DeclaracaoExplicitaSimples.tipo != DeclaracaoExplicitaSimples.valor.visit(self)):              
+            if(DeclaracaoExplicitaSimples.tipo != DeclaracaoExplicitaSimples.valor.accept(self)):              
                 print("Erro: Tipo de variável não compatível com o valor atribuído")
                 global isFineSemantic
                 isFineSemantic = False
             else:
-                ts.addExplicitVariable(DeclaracaoExplicitaSimples.nome, DeclaracaoExplicitaSimples.tipo)
+                ts.addExplicitVariable(DeclaracaoExplicitaSimples.nomeVariavel, DeclaracaoExplicitaSimples.tipo)
                 return DeclaracaoExplicitaSimples.tipo
 
 
@@ -841,17 +841,19 @@ class AnaliseSemantica(AbstractVisitor):
             variavel.accept(self)
 
     def visitDeclaracaoCurta(self, DeclaracaoCurta):
-        if(ts.getBindable(DeclaracaoCurta.nome) != None):
-            print("Aviso: Variável redeclarada")
 
-        if(len(DeclaracaoCurta.expressao) != len(DeclaracaoCurta.identificadores)):
+        if(len(DeclaracaoCurta.expressoes) != len(DeclaracaoCurta.identificadores)):
             print("Erro: Número de variáveis e valores incompatíveis")
             global isFineSemantic
             isFineSemantic = False
 
         for i in range(len(DeclaracaoCurta.identificadores)):
-            tipo = DeclaracaoCurta.expressoes[i].accept(self)
-            ts.addMultableVariable(DeclaracaoCurta.nome, tipo)
+
+            if(ts.getBindable(DeclaracaoCurta.identificadores[i]) != None):
+                print("Aviso: Variável redeclarada")
+            else:
+                tipo = DeclaracaoCurta.expressoes[i].accept(self)
+                ts.addMultableVariable(DeclaracaoCurta.identificadores[i], tipo)
 
     def visitParametroSimples(self, Parametro):
         if(ts.getBindable(Parametro.nome) != None):
@@ -878,22 +880,20 @@ class AnaliseSemantica(AbstractVisitor):
         return listaParams
 
     def visitChamadaFuncao(self, ChamadaFuncao):
+        global isFineSemantic
         if(ts.getBindable(ChamadaFuncao.nome) == None):
             print("Erro: Função não declarada" + ChamadaFuncao.nome)
-            global isFineSemantic
             isFineSemantic = False
         else:
             params = ts.getBindable(ChamadaFuncao.nome)[ts.PARAMS]
             if(params != None):
                 if(len(params) != len(ChamadaFuncao.parametros)):
                     print("Erro: Número de parâmetros incompatível")
-                    global isFineSemantic
                     isFineSemantic = False
                 else:
                     for i in range(len(params)):
                         if(params[i][1] != ChamadaFuncao.parametros[i].accept(self)):
                             print("Erro: Tipo de parâmetro incompatível")
-                            global isFineSemantic
                             isFineSemantic = False
                             ChamadaFuncao.parametros[i].accept(self.printer)
             return ts.getBindable(ChamadaFuncao.nome)[ts.TYPE]
@@ -906,15 +906,15 @@ class RegistradorDeFuncao():
         if(self.programa.funcoes_codigo != None):
             self.programa.funcoes_codigo.accept(self)
 
-    def visitFuncaoConcrete(self, funcao):
+    def visitFuncao(self, funcao):
 
-        if(ts.getBindable(funcao.nome) != None):
-            print("Função " + funcao.nome + " já declarada")
+        if(ts.getBindable(funcao.id) != None):
+            print("Função " + funcao.id + " já declarada")
         else:
             params = None
             if(funcao.lista_parametros != None):
                 params = funcao.lista_parametros.accept(self)
-            ts.addFunction(funcao.nome, funcao.tipoRetorno, params)
+            ts.addFunction(funcao.id, funcao.tipo_retorno, params)
 
     def visitParametroSimples(self, Parametro):
         if(ts.getBindable(Parametro.nome) != None):
@@ -939,3 +939,23 @@ class RegistradorDeFuncao():
                 print("Parametro " + resposta[0][0] + " já declarado")
             listaParams += resposta[0]
         return listaParams
+    
+def main():
+    for arquivo in arquivos_go:
+        isFineSemantic = True
+        print("-----------Análise semântica no arquivo: ", arquivo,"-----------")
+        f = open(arquivo, "r")
+
+        lexer.input(f.read())
+        parser = yacc.yacc(start='programa')
+        result = parser.parse(debug=False)
+        visitor = AnaliseSemantica(arquivo)
+        result.accept(visitor)
+
+        if(isFineSemantic):
+            print("Análise semântica concluída com sucesso")
+        else:
+            print("Erro na análise semântica")
+
+if __name__ == "__main__":
+    main()
