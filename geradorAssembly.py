@@ -155,7 +155,7 @@ class geradorAssembly(visitorAbstract):
                 code.append(f"    la $v0, {constante.valor}")
             case "bool":
                 code = self.getList() 
-                value = 1 if booleanExp.boolValue == "true" else 0
+                value = 1 if constante.valor == "true" else 0
                 code.append(f"    li $v0, {value}")
             case "id":
                 code = self.getList() 
