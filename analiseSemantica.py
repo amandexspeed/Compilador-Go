@@ -5,9 +5,8 @@ global isFineSemantic
 
 class AnaliseSemantica(AbstractVisitor):
 
-    def __init__(self, nomeArquivo):
+    def __init__(self):
         self.printer = Visitor()
-        ts.beginScope('global' + nomeArquivo)
 
     def constCoercion(self,Exp1, Exp2):
 
@@ -176,6 +175,7 @@ class AnaliseSemantica(AbstractVisitor):
 
 
     def visitPrograma(self, programa):
+        ts.beginScope('global')
         programa.pacote.accept(self)
         if(programa.importacao != None):
             programa.importacao.accept(self)
@@ -186,6 +186,7 @@ class AnaliseSemantica(AbstractVisitor):
 
         if(programa.funcoes_codigo != None):
             programa.funcoes_codigo.accept(self)
+        ts.endScope()
 
     def visitPacote(self, pacote):
         ts.beginScope(pacote.nome)
@@ -581,8 +582,8 @@ class AnaliseSemantica(AbstractVisitor):
             self.printer.visitExpressaoINCREMENTO(expressao)
         else:
             tipoId = bindable[ts.TYPE]
-            if(tipoId != ts.Numero):
-                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
+            if(not(tipoId in ts.inteiro)):
+                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo inteiro')
                 isFineSemantic = False
                 self.printer.visitExpressaoINCREMENTO(expressao)
             else:
@@ -598,10 +599,12 @@ class AnaliseSemantica(AbstractVisitor):
            self.printer.visitExpressaoPRE_INCREMENTO(expressao)
         else:
             tipoId = bindable[ts.TYPE]
-            if(tipoId != ts.Numero):
-                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
+            if(not(tipoId in ts.inteiro)):
+                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo inteiro')
                 isFineSemantic = False
                 self.printer.visitExpressaoPRE_INCREMENTO(expressao)
+            else:
+                return tipoId
     
     def visitExpressaoDECREMENTO(self, expressao):
         global isFineSemantic
@@ -612,10 +615,12 @@ class AnaliseSemantica(AbstractVisitor):
            self.printer.visitExpressaoDECREMENTO(expressao)
         else:
             tipoId = bindable[ts.TYPE]
-            if(tipoId != ts.Numero):
-                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
+            if(not(tipoId in ts.inteiro)):
+                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo inteiro')
                 isFineSemantic = False
                 self.printer.visitExpressaoDECREMENTO(expressao)
+            else:
+                return tipoId
    
     def visitExpressaoPRE_DECREMENTO(self, expressao):
         global isFineSemantic
@@ -626,10 +631,12 @@ class AnaliseSemantica(AbstractVisitor):
            self.printer.visitExpressaoPRE_DECREMENTO(expressao)
         else:
             tipoId = bindable[ts.TYPE]
-            if(tipoId != ts.Numero):
-                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo numerico')
+            if(not(tipoId in ts.inteiro)):
+                print(f'ERROR semantico: Variavel {expressao.id} deve ser do tipo inteiro')
                 isFineSemantic = False
                 self.printer.visitExpressaoPRE_DECREMENTO(expressao)
+            else:
+                return tipoId
     
     def visitConstanteConcreto(self, constante):
         if(constante.tipo != "ID" ):
@@ -637,7 +644,7 @@ class AnaliseSemantica(AbstractVisitor):
         else:
             bindable = ts.getBindable(constante.valor)
             if(bindable == None):
-                print("Erro: Variável não declarada")
+                print(f"Erro: Variável {constante.valor} não declarada")
                 global isFineSemantic
                 isFineSemantic = False
                 self.printer.visitConstanteConcreto(constante)
@@ -734,7 +741,7 @@ class AnaliseSemantica(AbstractVisitor):
         
         tipoExp = EstruturaFOR.expressao.accept(self)
         if(tipoExp != ts.BOOL):
-            print("Erro: Expressão de controle do while deve ser booleana")
+            print("Erro: Expressão de controle do for deve ser booleana")
             global isFineSemantic
             isFineSemantic = False
             EstruturaFOR.expressao.accept(self.printer)
@@ -770,6 +777,10 @@ class AnaliseSemantica(AbstractVisitor):
     
     def visitFuncao(self, funcao):
         ts.beginScope(funcao.id)
+        if(funcao.lista_parametros != None):
+            parametros = ts.getBindable(funcao.id)[ts.PARAMS]
+            for i in range(len(parametros)):
+                ts.addExplicitVariable(parametros[i][0], parametros[i][1])
         funcao.codigo.accept(self)
         ts.endScope()
 
@@ -788,13 +799,17 @@ class AnaliseSemantica(AbstractVisitor):
         if(len(Atribuicao.identificadores) != len(Atribuicao.expressoes)):
             print("Erro: Número de variáveis e valores incompatíveis")
             isFineSemantic = False
+            self.printer.visitAtribuicao(Atribuicao)
             return
-
+        
+        retorno = []
         for i in range(len(Atribuicao.identificadores)):
             bindable = ts.getBindable(Atribuicao.identificadores[i])
             if(bindable == None):
-                print("Erro: Variável não declarada")
+                print(f"Erro: Variável não declarada: {Atribuicao.identificadores[i]}")
+                self.printer.visitAtribuicao(Atribuicao)
                 isFineSemantic = False
+                
             else:
                 tipo = Atribuicao.expressoes[i].accept(self)
                 if(bindable[ts.TYPE] != tipo):
@@ -804,37 +819,50 @@ class AnaliseSemantica(AbstractVisitor):
                             self.printer.visitAtribuicao(Atribuicao)
                         else:
                             print("Aviso: Coersão de tipo")
+                            self.printer.visitAtribuicao(Atribuicao)
                             ts.getBindable(Atribuicao.identificadores[i])[ts.TYPE] = tipo
+                            retorno.append(tipo)
+                else:
+                    retorno.append(tipo)
+        return retorno
 
     def visitDeclaracaoExplicitaSimples(self, DeclaracaoExplicitaSimples):
         if(ts.getBindable(DeclaracaoExplicitaSimples.nomeVariavel) != None):
             print("Aviso: Variável redeclarada")
-        if(DeclaracaoExplicitaSimples.valor != None):
-            if(DeclaracaoExplicitaSimples.tipo != DeclaracaoExplicitaSimples.valor.accept(self)):              
+            self.printer.visitDeclaracaoExplicitaSimples(DeclaracaoExplicitaSimples)
+        if(DeclaracaoExplicitaSimples.valor.__class__!= None):
+            coersao = self.constCoercion(DeclaracaoExplicitaSimples.nomeVariavel,DeclaracaoExplicitaSimples.valor)
+            if(coersao == -1):              
                 print("Erro: Tipo de variável não compatível com o valor atribuído")
                 global isFineSemantic
                 isFineSemantic = False
+                self.printer.visitDeclaracaoExplicitaSimples(DeclaracaoExplicitaSimples)
             else:
                 ts.addExplicitVariable(DeclaracaoExplicitaSimples.nomeVariavel, DeclaracaoExplicitaSimples.tipo)
                 return DeclaracaoExplicitaSimples.tipo
-
-
+        else:
+            ts.addExplicitVariable(DeclaracaoExplicitaSimples.nomeVariavel, DeclaracaoExplicitaSimples.tipo)
+            return DeclaracaoExplicitaSimples.tipo
+        
     def visitDeclaracaoExplicitaEmListaSimples(self, DeclaracaoExplicita):
         listaObjetosDeclarados = []
+        retorno = []
         for variavel in DeclaracaoExplicita.listaVariaveis:
             listaObjetosDeclarados.append(sa.DeclaracaoExplicitaSimplesConcrete(variavel, DeclaracaoExplicita.tipo, None))
 
         if(DeclaracaoExplicita.listaExpressoes != None):
             if(len(DeclaracaoExplicita.listaVariaveis) != len(DeclaracaoExplicita.listaExpressoes)):
                 print("Erro: Número de variáveis e valores incompatíveis")
+                self.printer.visitDeclaracaoExplicitaEmListaSimples(DeclaracaoExplicita)
                 global isFineSemantic
                 isFineSemantic = False
-            
-            for i in range(len(listaObjetosDeclarados)):
-                listaObjetosDeclarados[i].valor = DeclaracaoExplicita.listaExpressoes[i]
+            else: 
+                for i in range(len(listaObjetosDeclarados)):
+                    listaObjetosDeclarados[i].valor = DeclaracaoExplicita.listaExpressoes[i]
 
         for declaracao in listaObjetosDeclarados:
-            declaracao.accept(self)
+            retorno.append(declaracao.accept(self))
+        return retorno
 
     def visitDeclaracaoExplicitaComposta(self, DeclaracaoExplicita):
         for variavel in DeclaracaoExplicita.listaVariaveis:
@@ -842,8 +870,10 @@ class AnaliseSemantica(AbstractVisitor):
 
     def visitDeclaracaoCurta(self, DeclaracaoCurta):
 
+        retorno = []
         if(len(DeclaracaoCurta.expressoes) != len(DeclaracaoCurta.identificadores)):
             print("Erro: Número de variáveis e valores incompatíveis")
+            self.printer.visitDeclaracaoCurta(self.printer)
             global isFineSemantic
             isFineSemantic = False
 
@@ -851,31 +881,38 @@ class AnaliseSemantica(AbstractVisitor):
 
             if(ts.getBindable(DeclaracaoCurta.identificadores[i]) != None):
                 print("Aviso: Variável redeclarada")
+                DeclaracaoCurta.identificadores[i].accept(self.printer)
+                retorno.append(DeclaracaoCurta.identificadores[i].accept(self))
             else:
                 tipo = DeclaracaoCurta.expressoes[i].accept(self)
                 ts.addMultableVariable(DeclaracaoCurta.identificadores[i], tipo)
-
+                retorno.append(tipo)
+        return retorno
+            
     def visitParametroSimples(self, Parametro):
-        if(ts.getBindable(Parametro.nome) != None):
+        """if(ts.getBindable(Parametro.nome) != None):
             print("Parametro " + Parametro.nome + " já declarado")
         else:
-            return [[Parametro.nome, Parametro.tipo]]
+            """
+        return [[Parametro.nome, Parametro.tipo]]
 
     def visitParametroCompostoTipoUnico(self, ParametroComposto):
         listaParams = []
         for _ in ParametroComposto.identificadores:
-            if(ts.getBindable(_.nome) != None):
-                print("Parametro " + _.nome + " já declarado")
+            """if(ts.getBindable(_) != None):
+                print("Parametro " + _ + " já declarado")
             else:
-                listaParams.append([_.nome, ParametroComposto.tipo])
+            """
+            listaParams.append([_, ParametroComposto.tipo])
         return listaParams
 
     def visitParametroCompostoVariosTipos(self, ParametroComposto):
         listaParams = []
         for _ in ParametroComposto.Parametros:
             resposta = _.accept(self)
-            if(ts.getBindable(resposta[0][0]) != None):
+            """if(ts.getBindable(resposta[0][0]) != None):
                 print("Parametro " + resposta[0][0] + " já declarado")
+            """
             listaParams += resposta[0]
         return listaParams
 
@@ -901,6 +938,7 @@ class AnaliseSemantica(AbstractVisitor):
 class RegistradorDeFuncao():
     def __init__(self,programa):
         self.programa = programa
+        self.printer = Visitor()
     
     def registraFuncoes(self):
         if(self.programa.funcoes_codigo != None):
@@ -910,6 +948,7 @@ class RegistradorDeFuncao():
 
         if(ts.getBindable(funcao.id) != None):
             print("Função " + funcao.id + " já declarada")
+            funcao.accept(self.printer)
         else:
             params = None
             if(funcao.lista_parametros != None):
@@ -917,30 +956,30 @@ class RegistradorDeFuncao():
             ts.addFunction(funcao.id, funcao.tipo_retorno, params)
 
     def visitParametroSimples(self, Parametro):
-        if(ts.getBindable(Parametro.nome) != None):
-            print("Parametro " + Parametro.nome + " já declarado")
-        else:
-            return [[Parametro.nome, Parametro.tipo]]
+        Parametro.accept(self.printer)
+        return [[Parametro.nome, Parametro.tipo]]
 
     def visitParametroCompostoTipoUnico(self, ParametroComposto):
         listaParams = []
         for _ in ParametroComposto.identificadores:
-            if(ts.getBindable(_.nome) != None):
-                print("Parametro " + _.nome + " já declarado")
-            else:
-                listaParams.append([_.nome, ParametroComposto.tipo])
+                listaParams.append([_, ParametroComposto.tipo])
         return listaParams
 
     def visitParametroCompostoVariosTipos(self, ParametroComposto):
         listaParams = []
         for _ in ParametroComposto.Parametros:
             resposta = _.accept(self)
+            """
             if(ts.getBindable(resposta[0][0]) != None):
                 print("Parametro " + resposta[0][0] + " já declarado")
+            """
+            
+            _.accept(self.printer)
             listaParams += resposta[0]
         return listaParams
     
 def main():
+    global isFineSemantic
     for arquivo in arquivos_go:
         isFineSemantic = True
         print("-----------Análise semântica no arquivo: ", arquivo,"-----------")
@@ -949,7 +988,7 @@ def main():
         lexer.input(f.read())
         parser = yacc.yacc(start='programa')
         result = parser.parse(debug=False)
-        visitor = AnaliseSemantica(arquivo)
+        visitor = AnaliseSemantica()
         result.accept(visitor)
 
         if(isFineSemantic):

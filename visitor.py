@@ -233,6 +233,7 @@ class Visitor(AbstractVisitor):
          global tab
          print('\nfunc',f'{funcao.id} (', end='')
 
+         print(f'{funcao.lista_parametros}', end='')
          if(funcao.lista_parametros != None):
             funcao.lista_parametros.accept(self)
 

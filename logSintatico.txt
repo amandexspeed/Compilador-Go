@@ -1,4 +1,8 @@
 -----------Analise Sintática do arquivo: forBasico.go -----------
-<sintaxeAbstrata.ProgramaConcrete object at 0x000001A52F5CE1E0>
+<sintaxeAbstrata.ProgramaConcrete object at 0x00000134EED5E3F0>
+Analise sintatica realizada com sucesso!
+
+-----------Analise Sintática do arquivo: testeGo.go -----------
+<sintaxeAbstrata.ProgramaConcrete object at 0x00000134EED890A0>
 Analise sintatica realizada com sucesso!
 

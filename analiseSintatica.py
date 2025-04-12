@@ -43,10 +43,10 @@ def p_importacao(p):
 
 
 def p_tipo(p):
-    '''tipo : ID
-            | STR
+    '''tipo : STR
             | inteiro
-            | float'''
+            | float
+            | boolean'''
     p[0] = p[1]
 
 def p_inteiro(p):
@@ -60,6 +60,10 @@ def p_inteiro(p):
 def p_float(p):
     '''float : FLOAT32
              | FLOAT64'''
+    p[0] = p[1]
+
+def p_boolean(p):
+    '''boolean : BOOL'''
     p[0] = p[1]
 
 def p_tipo_nullavel(p):
@@ -100,7 +104,7 @@ def p_declaracaoExplicitaSemValor(p):
     p[0] = sa.DeclaracaoExplicitaSimplesConcrete(p[1], p[2], None)
 
 def p_declaracaoExplicitaComValor(p):
-    '''declaracaoExplicitaComValor : ID tipo EQUALS constante'''
+    '''declaracaoExplicitaComValor : ID tipo EQUALS expressao'''
     p[0] = sa.DeclaracaoExplicitaSimplesConcrete(p[1],p[2], p[4])
 
 def p_declaracaoExplicitaEmLista(p):
@@ -130,12 +134,12 @@ def p_declaracaoExplicitaEmListaSimples(p):
     p[0] = p[2]
 
 def p_listaExplicitaSimples(p):
-    '''listaExplicitaSimples : lista_identificadores tipo
-                             | lista_identificadores tipo COLON EQUALS lista_valores'''
-    if(len(p) == 3):
-        p[0] = sa.DeclaracaoExplicitaEmListaSimples(p[1], p[2], None)
+    '''listaExplicitaSimples : ID COMMA lista_identificadores tipo
+                             | ID COMMA lista_identificadores tipo COLON EQUALS lista_valores'''
+    if(len(p) == 5):
+        p[0] = sa.DeclaracaoExplicitaEmListaSimples([p[1]] + p[3], p[4], None)
     else:
-        p[0] = sa.DeclaracaoExplicitaEmListaSimples(p[2], p[2], p[5])
+        p[0] = sa.DeclaracaoExplicitaEmListaSimples([p[1]] + p[3], p[4], p[5])
 
 def p_funcoes_codigo(p):
     '''funcoes_codigo : funcao delimitador funcoes_codigo
@@ -154,8 +158,17 @@ def p_funcoes_codigo(p):
 
 
 def p_funcao(p):
-    '''funcao : FUNC ID BEG_PAREN parametros END_PAREN tipo_nullavel BEG_BRACE codigo END_BRACE'''
-    p[0] = sa.FuncaoConcrete(p[2], p[4], p[6], p[8]) 
+    '''funcao : funcaoComParametros
+              | funcaoSemParametros'''
+    p[0] = p[1]
+
+def p_funcaoComParametros(p):
+    '''funcaoComParametros : FUNC ID BEG_PAREN parametros END_PAREN tipo_nullavel BEG_BRACE codigo END_BRACE'''
+    p[0] = sa.FuncaoConcrete(p[2], p[4], p[6], p[8])
+
+def p_funcaoSemParametros(p):
+    '''funcaoSemParametros : FUNC ID BEG_PAREN END_PAREN tipo_nullavel BEG_BRACE codigo END_BRACE'''
+    p[0] = sa.FuncaoConcrete(p[2], None, p[5], p[7])
 
 def p_chamadaFuncao(p):
     '''chamadaFuncao : ID BEG_PAREN lista_valores END_PAREN
@@ -168,8 +181,7 @@ def p_chamadaFuncao(p):
 def p_parametros(p):
     '''parametros : parametro_simples
                   | parametros_tipo_unico
-                  | parametros_varios_tipos
-                  | empty'''
+                  | parametros_varios_tipos'''
     p[0] = p[1]
 
 def p_parametro_simples(p):
@@ -178,30 +190,33 @@ def p_parametro_simples(p):
 
 def p_parametros_tipo_unico(p):
     '''parametros_tipo_unico : ID COMMA lista_parametros_tipo_unico'''
-    p[0] = p[3].adicionarParametro(p[1])
+    p[0] = sa.ParametroCompostoTipoUnicoConcrete([p[1]] + p[3][0],p[3][1])
+    print(p[0])
 
 def p_lista_parametros_tipo_unico(p):
     '''lista_parametros_tipo_unico : ID COMMA lista_parametros_tipo_unico 
                                    | ID tipo'''
     if(len(p) == 3):
-        p[0] = sa.ParametroCompostoTipoUnicoConcrete([p[1]],p[2])
+        p[0] = ([p[1]], p[2])
     else:
-        if(p[3].__class__ == sa.ParametroCompostoTipoUnicoConcrete):
-            p[3].adicionarParametro(p[1])
-            p[0] = p[3]
+        if(p[3] != None):
+            p[3][0].append(p[1])
+            p[0] = (p[3], p[2])
+        else:
+            p[0] = ([p[1]], p[2])
 
 def p_parametros_varios_tipos(p):
     '''parametros_varios_tipos : ID tipo COMMA lista_parametros_varios_tipos'''
-    p[0] = p[4].adicionarParametro(sa.ParametroSimplesConcrete(p[1], p[2]))
+    p[0] = sa.ParametroCompostoVariosTiposConcrete([sa.ParametroSimplesConcrete(p[1],p[2])] + p[3])
 
 def p_lista_parametros_varios_tipos(p):
     '''lista_parametros_varios_tipos : ID tipo COMMA lista_parametros_varios_tipos    
                                      | ID tipo'''
     if(len(p) == 3):
-        p[0] = sa.ParametroCompostoVariosTiposConcrete([sa.ParametroSimplesConcrete(p[1], p[2])])
+        p[0] = [sa.ParametroSimplesConcrete(p[1], p[2])]
     else:
-        if(p[4].__class__ == sa.ParametroCompostoVariosTiposConcrete):
-            p[4].adicionarParametro(sa.ParametroSimplesConcrete(p[1], p[2]))
+        if(p[4] != None):
+            p[4].append(sa.ParametroSimplesConcrete(p[1], p[2]))
             p[0] = p[4]
 
 def p_codigo(p):
@@ -469,6 +484,7 @@ def p_lista_identificadores(p):
     else:
         p[0] = p[1] + [p[3]]
 
+
 def p_lista_valores(p):
    '''lista_valores : lista_valores COMMA expressao
                     | expressao'''
@@ -520,7 +536,7 @@ def main():
 
             lexer.input(f.read())
             parser = yacc.yacc(start='programa')
-            result = parser.parse(debug=1)
+            result = parser.parse(debug=0)
             print(result)
             log.write(str(result))
             log.write("\n")
