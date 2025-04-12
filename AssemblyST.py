@@ -1,20 +1,28 @@
 #Dicionario que representa a tabela de simbolos.
 symbolTable = []
 INT = 'int'
-FLOAT = 'float'
+INT8 = 'int8'
+INT16 = 'int16'
+INT32 = 'int32'
+INT64 = 'int64'
+FLOAT32 = 'float32'
+FLOAT64 = 'float64'
 BOOL = 'boolean'
 TYPE = 'type'
 PARAMS = 'params'
 BINDABLE = 'bindable'
 FUNCTION = 'fun'
-VARIABLE = 'var'
+EXPLICITVARIABLE = 'expvar'
+MUTABLEVARIABLE = 'mutvar' 
 SCOPE = 'scope'
 SCOPE_MAIN = 'main'
 OFFSET = 'offset'
 SP = 'sp'
 # Se DEBUG = -1, imprime conteudo da tabela de símbolos após cada mudança
 DEBUG = 0
-Number = [INT, FLOAT]
+Numero = [INT, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64]
+inteiro = [INT, INT8, INT16, INT32, INT64]
+real = [FLOAT32, FLOAT64]
 
 
 def printTable():
@@ -33,7 +41,7 @@ def endScope():
     global symbolTable
     symbolTable = symbolTable[0:-1]
     printTable()
-
+"""
 def addVar(name, type):
     global symbolTable
     if not name in symbolTable[-1]:
@@ -41,6 +49,24 @@ def addVar(name, type):
         symbolTable[-1][name] = {BINDABLE: VARIABLE, TYPE : type, OFFSET: symbolTable[-1][SP]}
     else:
         symbolTable[-1][name] = {BINDABLE: VARIABLE, TYPE : type, OFFSET: symbolTable[-1][name][OFFSET]}
+    printTable()
+
+"""
+
+def addMultableVariable(nome, tipo):
+    global symbolTable
+    if not nome in symbolTable[-1]:
+        symbolTable[-1][SP] -= 4
+        symbolTable[-1][nome] = {BINDABLE: MUTABLEVARIABLE, TYPE: tipo}
+    else:
+        symbolTable[-1][nome] = {BINDABLE: MUTABLEVARIABLE, TYPE: tipo}
+    printTable()
+
+def addExplicitVariable(nome, tipo):
+    global symbolTable
+    if not nome in symbolTable[-1]:
+        symbolTable[-1][SP] -= 4
+        symbolTable[-1][nome] = {BINDABLE: EXPLICITVARIABLE, TYPE: tipo}
     printTable()
 
 def addFunction(name, params, returnType):
@@ -76,24 +102,7 @@ def getScope(bindableName = None):
 def main():
     global DEBUG
     DEBUG = -1
-    print('\n# Criando escopo main')
-    beginScope('main')
-    print ('\n# Adicionando Vinculavel funcao some')
-    addFunction('some', ['a', INT, 'b', INT], INT)
-    print('\n# Criando escopo some')
-    beginScope('some')
-    print('\n# Adicionando var a do tipo int')
-    addVar('a', INT)
-    print('\n# Adicionando var b do tipo int')
-    addVar('b', INT)
-    print('\n# Atualizando var a do tipo bool')
-    addVar('a', BOOL)
-    print('\n# Consultando bindable')
-    print(str(getBindable('sumparabola')))
-    print('\n# Consultando bindable')
-    print(str(getBindable('some')))
-    print('\n# Removendo escopo some')
-    endScope()
+   
 
 if __name__ == "__main__":
     main()
