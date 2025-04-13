@@ -912,10 +912,15 @@ class geradorAssembly(visitorAbstract):
         pass
 
     def visitParametroCompostoVariosTipos(self, ParametroComposto):
-        pass
+        for _ in ParametroComposto.Parametros:
+            _.accept(self)
 
     def visitChamadaFuncao(self, ChamadaFuncao):
-        code = self.getList() 
+        code = self.getList()
+        if ChamadaFuncao.lista_parametros != None:
+            for parametro in ChamadaFuncao.lista_parametros:
+                registrador = st.getBindable(parametro)[st.REGISTRADOR]
+                code.append(f"    move $a0, {registrador}")  # Passar parâmetro
         code.append(f"    jal {ChamadaFuncao.nome}")  # Chamar funcao
 
 
