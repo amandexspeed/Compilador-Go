@@ -916,7 +916,7 @@ class geradorAssembly(visitorAbstract):
 
     def visitChamadaFuncao(self, ChamadaFuncao):
         code = self.getList() 
-        code.append(f"    jal {ChamadaFuncao.id}")  # Chamar funcao
+        code.append(f"    jal {ChamadaFuncao.nome}")  # Chamar funcao
 
 
     #gera código assembly
