@@ -3,6 +3,10 @@ from abc import ABCMeta, abstractmethod
 class AbstractVisitor(metaclass = ABCMeta):
 
     @abstractmethod
+    def visitPrograma(self, pacote):
+        pass
+
+    @abstractmethod
     def visitPacote(self, pacote):
         pass
 
@@ -113,18 +117,6 @@ class AbstractVisitor(metaclass = ABCMeta):
     @abstractmethod
     def visitAssigndiv(self, expMatRedu):
        pass
-
-    @abstractmethod
-    def visitEstruturaIF_ELSEconcrete (self, estruturaElse):
-        pass
-    
-    @abstractmethod
-    def visitEstruturaELSEconcrete(self, estruturaElse):
-        pass
-    
-    @abstractmethod
-    def visitEstruturaELSE_IFconcrete(self, estruturaElse):
-        pass
     
     @abstractmethod
     def visitFor_CLIKEconcrete(self, EstruturaFOR):
@@ -139,7 +131,19 @@ class AbstractVisitor(metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def visitPrograma(self, programa):
+    def visitEstruturaIFconcrete(self, estruturaIf):
+        pass
+
+    @abstractmethod
+    def visitEstruturaIF_ELSEconcrete (self, estruturaElse):
+        pass
+    
+    @abstractmethod
+    def visitEstruturaELSEconcrete(self, estruturaElse):
+        pass
+    
+    @abstractmethod
+    def visitEstruturaELSE_IFconcrete(self, estruturaElse):
         pass
     
     @abstractmethod
@@ -151,28 +155,37 @@ class AbstractVisitor(metaclass = ABCMeta):
         pass
 
     @abstractmethod
+    def visitAtribuicao(self, Atribuicao):
+        pass
+
+    @abstractmethod
     def visitDeclaracaoExplicitaSimples(self, DeclaracaoExplicitaSimples):
         pass
+
+    @abstractmethod
+    def visitDeclaracaoExplicitaEmListaSimples(self, DeclaracaoExplicita):
+        pass
+
     @abstractmethod
     def visitDeclaracaoExplicitaComposta(self, DeclaracaoExplicita):
         pass
+
     @abstractmethod
     def visitDeclaracaoCurta(self, DeclaracaoCurta):
         pass
 
     @abstractmethod
-    def visitAtribuicao(self, Atribuicao):
+    def visitParametroSimples(self, Parametro):
         pass
 
     @abstractmethod
-    def visitParametroSimples(self, Parametro):
-        pass
-    @abstractmethod
     def visitParametroCompostoTipoUnico(self, ParametroComposto):
         pass
+
+    @abstractmethod
+    def visitParametroCompostoVariosTipos(self, ParametroComposto):
+        pass
+
     @abstractmethod
     def visitChamadaFuncao(self, ChamadaFuncao):
-        pass
-    @abstractmethod
-    def visitEstruturaIFconcrete(self, EstruturaIF):
         pass

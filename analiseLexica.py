@@ -19,6 +19,7 @@ reserved = {
     'func':'FUNC',
     'if':'IF',
     'import':'IMPORT',
+    'import':'IMPORT',
     'package':'PACKAGE',
     'return':'RETURN', 
     'var':'VAR',
@@ -29,12 +30,13 @@ reserved = {
     'int64':'INT64',
     'float32':'FLOAT32',
     'float64':'FLOAT64',
-    'string':'STR' 
+    'string':'STR',
+    'bool':'BOOL'
 }
 
 breakLine = {1: 0}
 # Definindo Tokens e padroes
-tokens = ["STR","INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALITY","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","FLOATNUMBER","INTNUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
+tokens = ["INCREMENT","PLUS","DECREMENT","MINUS","TIMES","DIVISION","MOD","POWER","DIFFERENT","EQUALITY","EQUALS","LESS","GREATER","BEG_PAREN","END_PAREN","BEG_BRACE","END_BRACE","FLOATNUMBER","INTNUMBER","QUOTATION_MARKS","EXCLAMATION","COLON","SEMICOLON","COMMA","ID","STRING","NEWLINE","AMPERSAND","PIPE"] + list(reserved.values())
 
 def t_COMMENT(t):
     r'(//.*)'
@@ -65,6 +67,7 @@ t_INCREMENT = r'\+\+'
 t_MINUS   = r'-'
 t_DECREMENT = r'--'
 t_EQUALS  = r'='
+t_EQUALITY = r'=='
 t_EQUALITY = r'=='
 t_DIFFERENT = r'!='
 t_TIMES   = r'\*'

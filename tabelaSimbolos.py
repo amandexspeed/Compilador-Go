@@ -16,9 +16,11 @@ SCOPE = 'scope'
 EXPLICITVARIABLE = 'expvar'
 MUTABLEVARIABLE = 'mutvar' 
 
-DEBUG = -1
+DEBUG = 0
 
 Numero = [INT, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64]
+inteiro = [INT, INT8, INT16, INT32, INT64]
+real = [FLOAT32, FLOAT64]
 
 def printTable():
     global DEBUG
@@ -50,6 +52,10 @@ def addFunction(nome, tipoRetorno, parametros):
     global tabelaDesimbolos
     tabelaDesimbolos[-1][nome] = {BINDABLE: FUNCTION, TYPE: tipoRetorno, PARAMS: parametros}
     printTable()
+
+def currentScope():
+    global tabelaDesimbolos
+    return tabelaDesimbolos[-1]
 
 def getBindable(nome):
     global tabelaDesimbolos
@@ -84,6 +90,9 @@ def main():
     print(str(getBindable('a')))
     print('\n# Consultando bindable')
     print(str(getBindable('c')))
+
+    print('\n# Consultando escopo atual')
+    print(str(currentScope()))
 
     print('\n# Removendo escopo some')
     endScope()

@@ -233,6 +233,7 @@ class Visitor(AbstractVisitor):
          global tab
          print('\nfunc',f'{funcao.id} (', end='')
 
+         print(f'{funcao.lista_parametros}', end='')
          if(funcao.lista_parametros != None):
             funcao.lista_parametros.accept(self)
 
@@ -298,12 +299,15 @@ class Visitor(AbstractVisitor):
             print(f'{_} ',end="")
         print(f'{ParametroComposto.tipo}')
 
+    def visitParametroCompostoVariosTipos(self, ParametroComposto):
+        for _ in ParametroComposto.Parametros:
+            _.accept(self)
     
-    def visitChamadaFuncao(self, estrutura):
-        print(estrutura.nome, end='')
+    def visitChamadaFuncao(self, ChamadaFuncao):
+        print(ChamadaFuncao.nome, end='')
         print('(',end='')
-        if(estrutura.lista_parametros != None):
-            for est in estrutura.lista_parametros:
+        if(ChamadaFuncao.lista_parametros != None):
+            for est in ChamadaFuncao.lista_parametros:
                 est.accept(self)
                 print(" ",end = '')
         print(')',end='')

@@ -1,4 +1,4 @@
-package testeCompilador
+package main
 
 var (
     a float64 = 1.0
@@ -6,18 +6,19 @@ var (
     c bool
 )
 
-func main() {
+func main(){
 	i := 0
 	for (i<10) {
 		i++
-	}	
-	funcif()
-
+	}
+	funcif()	
 }
+
 func funcif(){
 
 	i,j:=0,1;
 	if (true){
+
 		if i==0 { 
 			i++;
 		}else{
@@ -38,6 +39,6 @@ func funcfor(){
 func funcfor2(a,b int){
 	var y int = 1
 	for a=0;a<10;a++{
-		b++
+		y++
 	}
 }
