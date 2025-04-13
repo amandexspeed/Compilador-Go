@@ -19,6 +19,7 @@ reserved = {
     'func':'FUNC',
     'if':'IF',
     'import':'IMPORT',
+    'import':'IMPORT',
     'package':'PACKAGE',
     'return':'RETURN', 
     'var':'VAR',
@@ -60,11 +61,13 @@ def adjustBlockComment(t):
         t.lexer.lineno += 1
     t.lexer.lineno -= 1
 
+t_STR = r'string'
 t_PLUS    = r'\+'
 t_INCREMENT = r'\+\+'
 t_MINUS   = r'-'
 t_DECREMENT = r'--'
 t_EQUALS  = r'='
+t_EQUALITY = r'=='
 t_EQUALITY = r'=='
 t_DIFFERENT = r'!='
 t_TIMES   = r'\*'

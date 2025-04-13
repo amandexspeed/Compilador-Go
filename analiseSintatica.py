@@ -334,6 +334,7 @@ def p_expressao_n4(p):
 def p_mult(p):
     '''mult : expressao_n4 TIMES expressao_n5'''
     p[0] = sa.ExpressaoMULT (p[1] , p[3])
+    p[0] = sa.ExpressaoMULT (p[1] , p[3])
 
 def p_mod(p):
     '''mod : expressao_n4 MOD expressao_n5'''

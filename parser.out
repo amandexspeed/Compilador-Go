@@ -336,6 +336,10 @@ state 0
     (2) programa -> . pacote importacao funcoes_codigo
     (4) pacote -> . PACKAGE ID delimitador
     (5) pacote -> . PACKAGE ID NEWLINE
+    (1) programa -> . pacote importacao declaracaoGlobal funcoes_codigo
+    (2) programa -> . pacote importacao funcoes_codigo
+    (4) pacote -> . PACKAGE ID delimitador
+    (5) pacote -> . PACKAGE ID NEWLINE
 
     PACKAGE         shift and go to state 3
 
@@ -370,7 +374,10 @@ state 3
 
     (4) pacote -> PACKAGE . ID delimitador
     (5) pacote -> PACKAGE . ID NEWLINE
+    (4) pacote -> PACKAGE . ID delimitador
+    (5) pacote -> PACKAGE . ID NEWLINE
 
+    ID              shift and go to state 7
     ID              shift and go to state 7
 
 
@@ -414,6 +421,9 @@ state 4
 
 state 5
 
+    (6) importacao -> IMPORT . STRING NEWLINE importacao
+    (7) importacao -> IMPORT . STRING delimitador importacao
+    (8) importacao -> IMPORT . STRING
     (6) importacao -> IMPORT . STRING NEWLINE importacao
     (7) importacao -> IMPORT . STRING delimitador importacao
     (8) importacao -> IMPORT . STRING
@@ -467,7 +477,9 @@ state 8
 state 9
 
     (2) programa -> pacote importacao funcoes_codigo .
+    (2) programa -> pacote importacao funcoes_codigo .
 
+    $end            reduce using rule 2 (programa -> pacote importacao funcoes_codigo .)
     $end            reduce using rule 2 (programa -> pacote importacao funcoes_codigo .)
 
 
@@ -1364,6 +1376,7 @@ state 68
 
     END_PAREN       reduce using rule 59 (parametros -> parametros_tipo_unico .)
 
+    lista_parametros_tipo_unico    shift and go to state 86
 
 state 69
 
@@ -1640,6 +1653,7 @@ state 84
     COMMA           reduce using rule 102 (expressao_n3 -> soma .)
     BEG_BRACE       reduce using rule 102 (expressao_n3 -> soma .)
 
+    lista_parametros_varios_tipos  shift and go to state 91
 
 state 85
 
