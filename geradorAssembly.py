@@ -871,16 +871,24 @@ class geradorAssembly(visitorAbstract):
         st.addFunction(funcao.id, funcao.tipo, funcao.parametros, funcao.codigo)
         code = self.getList()
         rotulo_funcao = self.novo_rotulo(funcao.id)
+        rotuloFim = self.novo_rotulo(f"fim_{funcao.id}")
         code.append(f"{rotulo_funcao}:")
+        code.append("    move $fp, $sp")  # Configurar o frame pointer
         if(funcao.lista_parametros != None):
             parametros = st.getBindable(funcao.id)[st.PARAMS]
             for i in range(len(parametros)):
                 st.addExplicitVariable(parametros[i][0], parametros[i][1],self.escolhaRegistrador(parametros[i][1]))
+
+        code.append(f"    addi $sp, $sp, {st.getSP()}")  # Ajustar pilha
         funcao.codigo.accept(self)
         st.endScope()
+        code.append(f"{rotuloFim}:")
 
     def visitRetornoFuncao(self, retorno):
-        pass
+        code = self.getList()
+        code.append(f"    move $v0, {retorno.expressao.accept(self)[1]}")
+        code.append("    move $sp, $fp")  # Restaurar stack pointer
+        code.append("    lw $ra, 0($sp)")  # Restaurar return address
 
     def visitAtribuicao(self, Atribuicao):
         pass
@@ -907,7 +915,9 @@ class geradorAssembly(visitorAbstract):
         pass
 
     def visitChamadaFuncao(self, ChamadaFuncao):
-        pass
+        code = self.getList() 
+        code.append(f"    jal {ChamadaFuncao.id}")  # Chamar funcao
+
 
     #gera código assembly
     def get_code(self):
